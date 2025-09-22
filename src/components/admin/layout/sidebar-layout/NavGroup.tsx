@@ -19,7 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/core/dropdown-menu'
-import { NavCollapsible, NavGroupType, NavItem, NavLink } from '../types/index'
+
 import { usePathname } from 'next/navigation'
 import {
   SidebarGroup,
@@ -32,6 +32,7 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from './Sidebar'
+import { NavCollapsible, NavGroupType, NavItem, NavLink } from '../../types'
 
 export function NavGroup({ title, items }: NavGroupType) {
   const { state, isMobile } = useSidebar()
