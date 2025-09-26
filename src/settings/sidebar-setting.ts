@@ -208,7 +208,7 @@ export const sidebarData: SidebarData = {
         {
           title: 'Logs',
           icon: IconSettings,
-          url: '/admin/logs',
+          url: '/admin/log',
         },
       ],
     },
