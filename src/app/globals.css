@@ -119,6 +119,9 @@
   body {
     @apply bg-background text-foreground;
   }
+  .main-container {
+    @apply max-w-[1400px];
+  }
 }
 
 @utility container {
@@ -155,4 +158,8 @@ html::-webkit-scrollbar {
 
 html::-webkit-scrollbar-thumb {
   background-color: #a3a3a3;
+}
+
+button {
+  cursor: pointer;
 }
