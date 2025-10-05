@@ -23,23 +23,23 @@ const ListFolderUi = () => {
 
   return (
     <div className='space-y-5 w-full'>
-      <div className='flex items-center gap-20'>
-        <legend className='text-foreground text-sm leading-none font-medium'>
-          SELECT FOLDER
+      <div className='flex items-center gap-5 sm:gap-20'>
+        <legend className='text-foreground text-sm leading-none font-medium whitespace-nowrap'>
+          Select Folder
         </legend>
         <AddFolder />
       </div>
 
       <ScrollArea className='pb-5 w-full'>
         <RadioGroup
-          className='inline-flex gap-6 min-w-max'
+          className='inline-flex gap-3 sm:gap-6 min-w-max'
           // value={getCurrenId ?? ''}
           // onValueChange={handleFolderChange}
         >
           {mockDataFolder.map((item) => (
             <div
               key={`${item.id}-${item.name}`}
-              className='border-input has-data-[state=checked]:border-primary/50 relative flex flex-col gap-4 rounded-md border p-4 shadow-xs outline-none cursor-pointer min-w-[150px]'
+              className='border-input has-data-[state=checked]:border-primary/50 relative flex flex-col gap-4 rounded-md border p-4 shadow-xs outline-none cursor-pointer min-w-[130px] sm:min-w-[150px]'
             >
               <div className='flex justify-between gap-2 cursor-pointer'>
                 <RadioGroupItem
