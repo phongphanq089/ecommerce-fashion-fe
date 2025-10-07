@@ -1,13 +1,14 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client'
-
 import { Edit, FolderClosed } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Label } from '~/components/ui/core/label'
 import { RadioGroup, RadioGroupItem } from '~/components/ui/core/radio-group'
 import { ScrollArea, ScrollBar } from '~/components/ui/core/scroll-area'
 import { mockDataFolder } from '~/content/moc-data'
 import AddFolder from './AddFolder'
 import UpdateFolder from './UpdateFolder'
+import { useQueryState } from 'nuqs'
 
 const ListFolderUi = () => {
   const [selectedFolder, setSelectedFolder] = useState<{
@@ -17,9 +18,20 @@ const ListFolderUi = () => {
 
   const [open, setOpen] = useState(false)
 
+  const [folderMedia, setFolderMedia] = useQueryState('folderMedia')
+
   const handleUpdateValue = (id: string, value: string) => {
     console.log('update Folder', id, value)
   }
+
+  const handleFolderChange = (id: string) => {
+    setFolderMedia(id)
+  }
+  useEffect(() => {
+    if (!folderMedia && mockDataFolder.length > 0) {
+      setFolderMedia(mockDataFolder[0].id)
+    }
+  }, [folderMedia])
 
   return (
     <div className='space-y-5 w-full'>
@@ -33,8 +45,8 @@ const ListFolderUi = () => {
       <ScrollArea className='pb-5 w-full'>
         <RadioGroup
           className='inline-flex gap-3 sm:gap-6 min-w-max'
-          // value={getCurrenId ?? ''}
-          // onValueChange={handleFolderChange}
+          value={folderMedia ?? ''}
+          onValueChange={handleFolderChange}
         >
           {mockDataFolder.map((item) => (
             <div
@@ -44,7 +56,7 @@ const ListFolderUi = () => {
               <div className='flex justify-between gap-2 cursor-pointer'>
                 <RadioGroupItem
                   key={`${item.id}-${item.name}`}
-                  value={item.name as string}
+                  value={item.id as string}
                   className='order-1 after:absolute after:inset-0 cursor-pointer'
                 />
                 <FolderClosed />

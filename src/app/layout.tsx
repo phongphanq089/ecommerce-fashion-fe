@@ -1,7 +1,11 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import type { Metadata } from 'next'
 import { Antonio } from 'next/font/google'
+// @ts-ignore
 import './globals.css'
+
 import { ThemeProvider } from '~/providers/ThemeProvider'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 const font = Antonio({
   weight: ['300', '400', '500', '600', '700'],
@@ -30,7 +34,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <NuqsAdapter> {children}</NuqsAdapter>
         </ThemeProvider>
       </body>
     </html>
