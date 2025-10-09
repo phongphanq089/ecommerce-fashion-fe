@@ -5,10 +5,14 @@ import React, { useEffect, useState } from 'react'
 import { Label } from '~/components/ui/core/label'
 import { RadioGroup, RadioGroupItem } from '~/components/ui/core/radio-group'
 import { ScrollArea, ScrollBar } from '~/components/ui/core/scroll-area'
-import { mockDataFolder } from '~/content/moc-data'
+
 import AddFolder from './AddFolder'
 import UpdateFolder from './UpdateFolder'
 import { useQueryState } from 'nuqs'
+import { _mediaService } from '~/service/queries/media'
+import { LoadingUiFolder } from '../shared/LoadingUIFolder'
+import { toast } from 'react-toastify'
+import { useUiStore } from '~/store/useUiStore'
 
 const ListFolderUi = () => {
   const [selectedFolder, setSelectedFolder] = useState<{
@@ -20,16 +24,56 @@ const ListFolderUi = () => {
 
   const [folderMedia, setFolderMedia] = useQueryState('folderMedia')
 
+  const { data: mediaFolderData, isLoading } = _mediaService.useMediaFolder()
+
+  const { setLoading } = useUiStore()
+
+  const { mutate: updateFolder } = _mediaService.useMediaFolderUpdate()
+
+  const { mutate: deleteFolder } = _mediaService.useMediaFolderDelete()
+
   const handleUpdateValue = (id: string, value: string) => {
-    console.log('update Folder', id, value)
+    const payload = {
+      id: id,
+      name: value,
+    }
+    setLoading(true)
+    updateFolder(payload, {
+      onSuccess: () => {
+        toast.success(`Update folder ${value} successfuly`)
+        setOpen(false)
+      },
+      onError: (error) => {
+        toast.error(error.message)
+      },
+      onSettled: () => {
+        setLoading(false)
+      },
+    })
+  }
+
+  const handleDeleteFolder = (id: string) => {
+    setLoading(true)
+    deleteFolder(id, {
+      onSuccess: () => {
+        toast.success(`Delete successfuly`)
+        setOpen(false)
+      },
+      onError: (error) => {
+        toast.error(error.message)
+      },
+      onSettled: () => {
+        setLoading(false)
+      },
+    })
   }
 
   const handleFolderChange = (id: string) => {
     setFolderMedia(id)
   }
   useEffect(() => {
-    if (!folderMedia && mockDataFolder.length > 0) {
-      setFolderMedia(mockDataFolder[0].id)
+    if (!folderMedia) {
+      setFolderMedia(mediaFolderData?.result[0].id as string)
     }
   }, [folderMedia])
 
@@ -43,39 +87,46 @@ const ListFolderUi = () => {
       </div>
 
       <ScrollArea className='pb-5 w-full'>
-        <RadioGroup
-          className='inline-flex gap-3 sm:gap-6 min-w-max'
-          value={folderMedia ?? ''}
-          onValueChange={handleFolderChange}
-        >
-          {mockDataFolder.map((item) => (
-            <div
-              key={`${item.id}-${item.name}`}
-              className='border-input has-data-[state=checked]:border-primary/50 relative flex flex-col gap-4 rounded-md border p-4 shadow-xs outline-none cursor-pointer min-w-[130px] sm:min-w-[150px]'
-            >
-              <div className='flex justify-between gap-2 cursor-pointer'>
-                <RadioGroupItem
-                  key={`${item.id}-${item.name}`}
-                  value={item.id as string}
-                  className='order-1 after:absolute after:inset-0 cursor-pointer'
-                />
-                <FolderClosed />
+        {isLoading ? (
+          <LoadingUiFolder />
+        ) : folderMedia === undefined ? (
+          <LoadingUiFolder />
+        ) : (
+          <RadioGroup
+            key={folderMedia}
+            className='inline-flex gap-3 sm:gap-6 min-w-max'
+            value={folderMedia ?? ''}
+            onValueChange={handleFolderChange}
+          >
+            {mediaFolderData?.result.map((item) => (
+              <div
+                key={`${item.id}-${item.name}`}
+                className='border-input has-data-[state=checked]:border-primary/50 relative flex flex-col gap-4 rounded-md border p-4 shadow-xs outline-none cursor-pointer min-w-[130px] sm:min-w-[150px]'
+              >
+                <div className='flex justify-between gap-2 cursor-pointer'>
+                  <RadioGroupItem
+                    key={item.id}
+                    value={item.id}
+                    className='order-1 after:absolute after:inset-0 cursor-pointer'
+                  />
+                  <FolderClosed />
+                </div>
+                <Label htmlFor={`${item.id}-${item.name}`}>{item.name}</Label>
+                <div className='absolute bottom-3 right-2'>
+                  <Edit
+                    className='text-red-500 cursor-pointer'
+                    size={18}
+                    onClick={() => {
+                      setSelectedFolder(item)
+                      setOpen(true)
+                    }}
+                  />
+                </div>
               </div>
-              <Label htmlFor={`${item.id}-${item.name}`}>{item.name}</Label>
+            ))}
+          </RadioGroup>
+        )}
 
-              <div className='absolute bottom-3 right-2'>
-                <Edit
-                  className='text-red-500 cursor-pointer'
-                  size={18}
-                  onClick={() => {
-                    setSelectedFolder(item)
-                    setOpen(true)
-                  }}
-                />
-              </div>
-            </div>
-          ))}
-        </RadioGroup>
         <ScrollBar orientation='horizontal' />
       </ScrollArea>
       <UpdateFolder
@@ -83,6 +134,7 @@ const ListFolderUi = () => {
         setOpen={setOpen}
         folder={selectedFolder}
         handleUpdateValue={handleUpdateValue}
+        handleDeleteFolder={handleDeleteFolder}
       />
     </div>
   )

@@ -25,6 +25,7 @@ interface UpdateFolderProps {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   folder?: { id: string; name: string } | null
   handleUpdateValue: (id: string, value: string) => void
+  handleDeleteFolder: (id: string) => void
 }
 
 const UpdateFolder = ({
@@ -32,6 +33,7 @@ const UpdateFolder = ({
   setOpen,
   folder,
   handleUpdateValue,
+  handleDeleteFolder,
 }: UpdateFolderProps) => {
   const { values, errors, handleChange, setValues, validateForm } =
     useFormValidation(
@@ -55,6 +57,10 @@ const UpdateFolder = ({
     setOpen(false)
   }
 
+  const handleDelete = () => {
+    if (!validateForm() || !folder) return
+    handleDeleteFolder(folder.id)
+  }
   return (
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogContent>
@@ -95,7 +101,7 @@ const UpdateFolder = ({
             Update
             <Edit2 />
           </Button>
-          <Button variant={'destructive'} onClick={hanleSubmit}>
+          <Button variant={'destructive'} onClick={handleDelete}>
             Remove
             <Trash2 />
           </Button>

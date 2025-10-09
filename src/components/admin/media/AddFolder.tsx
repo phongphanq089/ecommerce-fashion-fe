@@ -1,7 +1,8 @@
 'use client'
 
-import { FolderClosed, FolderEdit, Plus } from 'lucide-react'
+import { FolderClosed, FolderEdit } from 'lucide-react'
 import React, { useState } from 'react'
+import { toast } from 'react-toastify'
 import { Button } from '~/components/ui/core/button'
 import {
   Dialog,
@@ -20,21 +21,49 @@ import {
   required,
   useFormValidation,
 } from '~/hooks/useFormValidation'
+import { _mediaService } from '~/service/queries/media'
+import { useUiStore } from '~/store/useUiStore'
 
 const AddFolder = () => {
   const [open, setOpen] = useState(false)
 
-  const { values, errors, handleChange, validateForm } = useFormValidation(
-    {
-      name: '',
-    },
-    {
-      name: [required('Name is required'), minLength(3)],
-    }
-  )
+  const { values, errors, handleChange, validateForm, resetForm } =
+    useFormValidation(
+      {
+        name: '',
+      },
+      {
+        name: [required('Name is required'), minLength(3)],
+      }
+    )
+
+  const { mutate: addFolder } = _mediaService.useMediaFolderCreate()
+
+  const { setLoading } = useUiStore()
 
   const hanleSubmit = async () => {
     if (!validateForm()) return
+
+    const payload = {
+      ...values,
+      parentId: null,
+    }
+
+    setLoading(true)
+
+    addFolder(payload, {
+      onSuccess: () => {
+        toast.success(`Add folder ${values.name} successfuly`)
+        resetForm()
+        setOpen(false)
+      },
+      onError: (error) => {
+        toast.error(error.message)
+      },
+      onSettled: () => {
+        setLoading(false)
+      },
+    })
   }
 
   return (

@@ -6,6 +6,9 @@ import './globals.css'
 
 import { ThemeProvider } from '~/providers/ThemeProvider'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
+import ProviderReactQuery from '~/providers/ProviderReactQuery'
+import ToasterCustom from '~/components/shared/ToasterCustom'
+import GlobalLoadingOverlay from '~/components/shared/GlobalLoadingOverlay'
 
 const font = Antonio({
   weight: ['300', '400', '500', '600', '700'],
@@ -28,14 +31,18 @@ export default function RootLayout({
         className={`${font.variable} ${font.variable} antialiased`}
         suppressHydrationWarning
       >
-        <ThemeProvider
-          attribute='class'
-          defaultTheme='system'
-          enableSystem
-          disableTransitionOnChange
-        >
-          <NuqsAdapter> {children}</NuqsAdapter>
-        </ThemeProvider>
+        <ToasterCustom />
+        <GlobalLoadingOverlay />
+        <ProviderReactQuery>
+          <ThemeProvider
+            attribute='class'
+            defaultTheme='system'
+            enableSystem
+            disableTransitionOnChange
+          >
+            <NuqsAdapter> {children}</NuqsAdapter>
+          </ThemeProvider>
+        </ProviderReactQuery>
       </body>
     </html>
   )

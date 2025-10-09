@@ -10,7 +10,7 @@ import { AspectRatio } from '~/components/ui/core/aspect-ratio'
 import { Button } from '~/components/ui/core/button'
 import { Checkbox } from '~/components/ui/core/checkbox'
 
-import { listMedia } from '~/content/moc-data'
+import { listMedia } from '~/content/mock-data'
 import { useFileUpload } from '~/hooks/use-file-upload'
 
 const maxSizeMB = 20
