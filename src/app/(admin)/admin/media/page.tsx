@@ -8,8 +8,8 @@ const PageMedia = () => {
     <div className='w-full'>
       <Suspense fallback={<LoadingUiFolder />}>
         <ListFolderUi />
+        <MediaList />
       </Suspense>
-      <MediaList />
     </div>
   )
 }

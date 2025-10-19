@@ -1,17 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+
+import { mediaKeys } from './keys'
 import {
-  _mediaApi,
-  FolderDeleteType,
+  FileItem,
   FolderInputType,
   FolderUpdateType,
-} from '../api/media'
-import { mediaKeys } from './keys'
+  MediaFileDelete,
+  MediaFileQuery,
+} from '../types/media'
+import { _mediaApi } from '../api/media'
 
 export const _mediaService = {
+  // ======= MEDIA FOLDER SETTING ====== //
   useMediaFolder: () => {
     return useQuery({
       queryKey: mediaKeys.folder,
       queryFn: () => _mediaApi.fetchFolderMedia(),
+      enabled: true,
     })
   },
   useMediaFolderCreate: () => {
@@ -38,6 +43,38 @@ export const _mediaService = {
       mutationFn: (id: string) => _mediaApi.fetchFolderDelete(id),
       onSuccess: () =>
         queryClient.invalidateQueries({ queryKey: mediaKeys.folder }),
+    })
+  },
+  // ======= MEDIA ITEM SETTING ====== //
+  useMediaFileList: (params?: MediaFileQuery) => {
+    return useQuery({
+      queryKey: mediaKeys.fileList(params),
+      queryFn: () => _mediaApi.fetchMediFileList(params),
+      staleTime: 1000 * 30, // cache 30s
+    })
+  },
+  useMediaUploadFiles: () => {
+    return useMutation({
+      mutationFn: ({
+        files,
+        folderId,
+        onProgress,
+      }: {
+        files: FileItem[]
+        folderId?: string
+        onProgress?: (fileId: string, percent: number) => void
+      }) => _mediaApi.fetchMediaUpload(files, folderId, onProgress),
+    })
+  },
+  useMediaDeleteSingle: () => {
+    return useMutation({
+      mutationFn: (id: string) => _mediaApi.fetchMediaDeleteSingle(id),
+    })
+  },
+  useMediaDeletes: () => {
+    return useMutation({
+      mutationFn: (ids: MediaFileDelete) =>
+        _mediaApi.fetchMediaDeleteMutiple(ids),
     })
   },
 }

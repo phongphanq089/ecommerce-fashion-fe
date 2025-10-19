@@ -13,6 +13,7 @@ import { _mediaService } from '~/service/queries/media'
 import { LoadingUiFolder } from '../shared/LoadingUIFolder'
 import { toast } from 'react-toastify'
 import { useUiStore } from '~/store/useUiStore'
+import { DEFAULT_FOLDER_MEDIA } from '~/settings/key-setting'
 
 const ListFolderUi = () => {
   const [selectedFolder, setSelectedFolder] = useState<{
@@ -31,6 +32,16 @@ const ListFolderUi = () => {
   const { mutate: updateFolder } = _mediaService.useMediaFolderUpdate()
 
   const { mutate: deleteFolder } = _mediaService.useMediaFolderDelete()
+
+  useEffect(() => {
+    if (
+      folderMedia === undefined ||
+      folderMedia === null ||
+      folderMedia === ''
+    ) {
+      setFolderMedia(DEFAULT_FOLDER_MEDIA)
+    }
+  }, [folderMedia])
 
   const handleUpdateValue = (id: string, value: string) => {
     const payload = {
@@ -69,13 +80,12 @@ const ListFolderUi = () => {
   }
 
   const handleFolderChange = (id: string) => {
-    setFolderMedia(id)
-  }
-  useEffect(() => {
-    if (!folderMedia) {
-      setFolderMedia(mediaFolderData?.result[0].id as string)
+    if (id === DEFAULT_FOLDER_MEDIA) {
+      setFolderMedia(null)
+    } else {
+      setFolderMedia(id)
     }
-  }, [folderMedia])
+  }
 
   return (
     <div className='space-y-5 w-full'>
@@ -98,6 +108,20 @@ const ListFolderUi = () => {
             value={folderMedia ?? ''}
             onValueChange={handleFolderChange}
           >
+            <div
+              key='all-folder'
+              className='border-input has-data-[state=checked]:border-primary/50 relative flex flex-col gap-4 rounded-md border p-4 shadow-xs outline-none cursor-pointer min-w-[130px] sm:min-w-[150px]'
+            >
+              <div className='flex justify-between gap-2 cursor-pointer'>
+                <RadioGroupItem
+                  value={DEFAULT_FOLDER_MEDIA}
+                  className='order-1 after:absolute after:inset-0 cursor-pointer'
+                />
+                <FolderClosed />
+              </div>
+              <Label htmlFor='all-folder'>All</Label>
+            </div>
+
             {mediaFolderData?.result.map((item) => (
               <div
                 key={`${item.id}-${item.name}`}
@@ -113,14 +137,16 @@ const ListFolderUi = () => {
                 </div>
                 <Label htmlFor={`${item.id}-${item.name}`}>{item.name}</Label>
                 <div className='absolute bottom-3 right-2'>
-                  <Edit
-                    className='text-red-500 cursor-pointer'
-                    size={18}
-                    onClick={() => {
-                      setSelectedFolder(item)
-                      setOpen(true)
-                    }}
-                  />
+                  <div className='absolute bottom-3 right-2'>
+                    <Edit
+                      className='text-red-500 cursor-pointer'
+                      size={18}
+                      onClick={() => {
+                        setSelectedFolder(item)
+                        setOpen(true)
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             ))}

@@ -2,26 +2,29 @@
 
 import { IconFileUploadFilled } from '@tabler/icons-react'
 import { CheckIcon, ImageIcon, Trash, UploadIcon, X, XIcon } from 'lucide-react'
+
 import Image from 'next/image'
+import { useSearchParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
+import LoadingData from '~/components/shared/LoadingData'
 import Pagination from '~/components/shared/Pagination'
 // import Pagination from '~/components/shared/Pagination'
 import { AspectRatio } from '~/components/ui/core/aspect-ratio'
 import { Button } from '~/components/ui/core/button'
 import { Checkbox } from '~/components/ui/core/checkbox'
+import { Progress } from '~/components/ui/core/progress'
 
-import { listMedia } from '~/content/mock-data'
 import { useFileUpload } from '~/hooks/use-file-upload'
+import { _mediaService } from '~/service/queries/media'
+import { FileItem } from '~/service/types/media'
+import { DEFAULT_FOLDER_MEDIA } from '~/settings/key-setting'
+import { useUiStore } from '~/store/useUiStore'
 
-const maxSizeMB = 20
+const maxSizeMB = 10
 const maxSize = maxSizeMB * 1024 * 1024
 const maxFiles = 6
 
-type FileItem = {
-  file: File
-  id: string
-  preview: string
-}
 type DisplayItem = {
   clientId?: string
   preview?: string
@@ -32,27 +35,6 @@ type DisplayItem = {
 }
 
 const MediaList = () => {
-  const [selectMedia, setSelectMedia] = useState<string[]>([])
-  const [isSelectMedia, setIsSelectMedia] = useState<boolean>(false)
-
-  const handleSelectMedia = (id: string) => {
-    setSelectMedia((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((item) => item !== id)
-      } else {
-        return [...prev, id]
-      }
-    })
-  }
-
-  useEffect(() => {
-    if (selectMedia.length > 0) {
-      setIsSelectMedia(true)
-    } else {
-      setIsSelectMedia(false)
-    }
-  }, [selectMedia])
-
   const [
     { files, isDragging, errors },
     {
@@ -72,10 +54,112 @@ const MediaList = () => {
     maxFiles,
   })
 
-  const handleUploadMedia = async () => {}
+  const [selectMedia, setSelectMedia] = useState<string[]>([])
 
+  const { setLoading, uploadProgress, setUploadProgress, clearUploadProgress } =
+    useUiStore()
+
+  const [isSelectMedia, setIsSelectMedia] = useState<boolean>(false)
+
+  const searchParams = useSearchParams()
+
+  const folderMedia = searchParams.get('folderMedia') || ''
+
+  const pageSize = searchParams.get('page') || 1
+
+  const {
+    data: mediaList,
+    isLoading,
+    refetch,
+  } = _mediaService.useMediaFileList({
+    folderId: folderMedia !== 'all' ? folderMedia : '',
+    page: Number(pageSize),
+  })
+
+  const metadata = {
+    total: mediaList?.data.result.total as number,
+    page: mediaList?.data.result.page as number,
+    limit: mediaList?.data.result.limit as number,
+    totalPages: mediaList?.data.result.totalPages as number,
+  }
+
+  const { mutate: uploadFiles } = _mediaService.useMediaUploadFiles()
+
+  const { mutate: deleteFileSingle } = _mediaService.useMediaDeleteSingle()
+
+  const { mutate: deleteFiles } = _mediaService.useMediaDeletes()
+
+  const handleSelectMedia = (id: string) => {
+    setSelectMedia((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter((item) => item !== id)
+      } else {
+        return [...prev, id]
+      }
+    })
+  }
+
+  useEffect(() => {
+    if (selectMedia.length > 0) {
+      setIsSelectMedia(true)
+    } else {
+      setIsSelectMedia(false)
+    }
+  }, [selectMedia])
+
+  const handleUploadMedia = async () => {
+    uploadFiles(
+      {
+        files: files as FileItem[],
+        folderId: folderMedia !== DEFAULT_FOLDER_MEDIA ? folderMedia : '',
+        onProgress: (fileId: string, percent: number) => {
+          setUploadProgress(fileId, percent)
+        },
+      },
+      {
+        onSuccess: () => {
+          refetch()
+          clearFiles()
+          clearUploadProgress()
+        },
+      }
+    )
+  }
+
+  const handleDeleteFileMutiple = async () => {
+    setLoading(true)
+    const payload = {
+      Ids: selectMedia,
+    }
+    deleteFiles(payload, {
+      onSuccess: () => {
+        if (!isLoading) {
+          refetch()
+          setSelectMedia([])
+        }
+      },
+      onSettled: () => {
+        setLoading(false)
+      },
+    })
+  }
+
+  const handleDeleteFileSingle = async (id: string) => {
+    setLoading(true)
+    deleteFileSingle(id, {
+      onSuccess: () => {
+        if (!isLoading) {
+          refetch()
+        }
+      },
+      onSettled: () => {
+        setLoading(false)
+      },
+    })
+  }
+
+  // ====== kết hợp giữa danh sách api trả về và các file tạm dưới client upload ======= //
   const displayItems: DisplayItem[] = [
-    // ==== Use preview as url for display  ======= //
     ...files.map((file) => ({
       clientId: file.id,
       preview: file.preview,
@@ -84,7 +168,7 @@ const MediaList = () => {
       url: file.preview,
       id: file.id,
     })),
-    ...listMedia.map((u) => ({
+    ...(mediaList?.data.result.items ?? []).map((u) => ({
       clientId: '',
       preview: u.url,
       fileId: u.fileId ?? u.id ?? '',
@@ -93,6 +177,13 @@ const MediaList = () => {
       id: u.id,
     })),
   ]
+
+  useEffect(() => {
+    if (errors) {
+      toast.error(errors[0])
+    }
+  }, [errors])
+
   return (
     <div className='flex flex-col gap-2 mt-5'>
       <div
@@ -130,7 +221,7 @@ const MediaList = () => {
 
                 <Button
                   disabled={!isSelectMedia}
-                  // onClick={handleDeleteManyMedia}
+                  onClick={handleDeleteFileMutiple}
                   variant='destructive'
                 >
                   {selectMedia.length > 0
@@ -165,104 +256,128 @@ const MediaList = () => {
             {/* Display Combined Media List */}
             {displayItems.length > 0 && (
               <div className='my-4'>
-                <div className='grid grid-cols-2 md:grid-cols-3 gap-4 lg:grid-cols-4 xl:grid-cols-5 mt-2'>
-                  {displayItems.map((item, index) => {
-                    return (
-                      <div key={index}>
-                        <AspectRatio
-                          ratio={1}
-                          className='bg-accent relative  rounded-md mb-5'
-                        >
-                          <div className='absolute -top-2 right-0 p-1 rounded-md flex items-center gap-3 bg-white shadow-2xl border'>
-                            {!item.clientId ? (
-                              <label className='border-gray-800 bg-gray-200 text-gray-700 has-data-[state=checked]:border-primary-color has-data-[state=checked]:bg-primary has-data-[state=checked]:text-white has-focus-visible:border-ring has-focus-visible:ring-ring/50 flex size-5 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border text-center shadow-xs transition-[color,box-shadow] outline-none has-focus-visible:ring-[3px] has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50'>
-                                <Checkbox
-                                  className='sr-only after:absolute after:inset-0'
-                                  checked={selectMedia.includes(
-                                    item.id as string
-                                  )}
-                                  onCheckedChange={() =>
-                                    handleSelectMedia(item.id as string)
-                                  }
-                                />
-                                <span
-                                  aria-hidden='true'
-                                  className='text-sm font-medium'
-                                >
-                                  <CheckIcon className='size-3' />
-                                </span>
-                              </label>
-                            ) : (
-                              ''
-                            )}
-                            <Button
-                              onClick={() => {
-                                if (item.clientId) {
-                                  removeFile(item.clientId)
-                                } else {
-                                  // handleDeleteMedia(item.id as string)
-                                }
-                              }}
-                              size='icon'
-                              className='focus-visible:border-background  size-6 rounded-full border-2 shadow-none'
-                              aria-label='Remove image'
+                {isLoading ? (
+                  <LoadingData
+                    size='small'
+                    message='Loading Media'
+                    submessage='Retrieving data from server...'
+                    fullscreen={false}
+                  />
+                ) : (
+                  <>
+                    <div className='grid grid-cols-2 md:grid-cols-3 gap-4 lg:grid-cols-4 xl:grid-cols-5 mt-2'>
+                      {displayItems.map((item, index) => {
+                        return (
+                          <div key={index}>
+                            <AspectRatio
+                              ratio={1}
+                              className='bg-accent relative  rounded-md mb-5'
                             >
-                              <XIcon className='size-3.5' />
-                            </Button>
-                          </div>
-                          <Image
-                            src={item.preview || item.url || ''}
-                            alt={item.altText || item.fileId}
-                            className='size-full rounded-[inherit] object-cover'
-                            width={500}
-                            height={500}
-                          />
-                        </AspectRatio>
+                              <div className='absolute z-10 -top-2 right-0 p-1 rounded-md flex items-center gap-3 bg-white shadow-2xl border'>
+                                {!item.clientId ? (
+                                  <label className='border-gray-800 bg-gray-200 text-gray-700 has-data-[state=checked]:border-primary-color has-data-[state=checked]:bg-primary has-data-[state=checked]:text-white has-focus-visible:border-ring has-focus-visible:ring-ring/50 flex size-5 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border text-center shadow-xs transition-[color,box-shadow] outline-none has-focus-visible:ring-[3px] has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50'>
+                                    <Checkbox
+                                      className='sr-only after:absolute after:inset-0'
+                                      checked={selectMedia.includes(
+                                        item.id as string
+                                      )}
+                                      onCheckedChange={() =>
+                                        handleSelectMedia(item.id as string)
+                                      }
+                                    />
+                                    <span
+                                      aria-hidden='true'
+                                      className='text-sm font-medium'
+                                    >
+                                      <CheckIcon className='size-3' />
+                                    </span>
+                                  </label>
+                                ) : (
+                                  ''
+                                )}
+                                <Button
+                                  onClick={() => {
+                                    if (item.clientId) {
+                                      removeFile(item.clientId)
+                                    } else {
+                                      handleDeleteFileSingle(item.id as string)
+                                    }
+                                  }}
+                                  size='icon'
+                                  className='focus-visible:border-background  size-6 rounded-full border-2 shadow-none'
+                                  aria-label='Remove image'
+                                >
+                                  <XIcon className='size-3.5' />
+                                </Button>
+                              </div>
+                              <Image
+                                src={item.preview || item.url || ''}
+                                alt={item.altText || item.fileId}
+                                className='size-full rounded-[inherit] object-cover'
+                                width={500}
+                                height={500}
+                              />
 
-                        {/* {uploading && item.clientId && (
-                          <div className='absolute inset-0 flex items-center justify-center bg-black/50 text-white'>
-                            Uploading...
+                              {uploadProgress[item.fileId] && (
+                                <div className='absolute inset-0 bg-black/50 z-0 rounded-md flex items-end justify-center'>
+                                  <Progress
+                                    value={uploadProgress[item.fileId]}
+                                    className='w-full'
+                                  />
+                                </div>
+                              )}
+                            </AspectRatio>
                           </div>
-                        )} */}
-                        {/* {item.clientId && (
-                          <div className='absolute bottom-0 left-0 right-0 h-4 bg-black/50'>
-                            <div
-                              className='h-full bg-orange-600'
-                              style={{
-                                width: `${progress[item.clientId] || 0}%`,
-                              }}
-                            />
-                          </div>
-                        )} */}
-                      </div>
-                    )
-                  })}
-                </div>
-                <Pagination
-                  meta={{ total: 30, page: 1, limit: 30, totalPages: 30 }}
-                  className='justify-center fixed bottom-3 left-1/2 min-md:left-[55%] -translate-x-1/2'
-                  variant='numbers'
-                />
+                        )
+                      })}
+                    </div>
+
+                    {!isLoading && (
+                      <Pagination
+                        meta={metadata}
+                        className='justify-center fixed bottom-3 left-1/2 min-md:left-[55%] -translate-x-1/2'
+                        variant='numbers'
+                      />
+                    )}
+                  </>
+                )}
               </div>
             )}
           </div>
         ) : (
-          <div className='flex flex-col items-center justify-center px-4 py-3 text-center'>
-            <div
-              className='bg-background mb-2 flex size-11 shrink-0 items-center justify-center rounded-full border'
-              aria-hidden='true'
-            >
-              <ImageIcon className='size-4 opacity-60' />
-            </div>
-            <p className='mb-1.5 text-sm font-medium'>Drop your images here</p>
-            <p className='text-muted-foreground text-xs'>
-              SVG, PNG, JPG or GIF (max. {maxSizeMB}MB)
-            </p>
-            <Button variant='outline' className='mt-4' onClick={openFileDialog}>
-              <UploadIcon className='-ms-1 opacity-60' aria-hidden='true' />
-              Select images
-            </Button>
-          </div>
+          <>
+            {isLoading ? (
+              <LoadingData
+                size='small'
+                message='Loading Media'
+                submessage='Retrieving data from server...'
+                fullscreen={false}
+              />
+            ) : (
+              <div className='flex flex-col items-center justify-center px-4 py-3 text-center'>
+                <div
+                  className='bg-background mb-2 flex size-11 shrink-0 items-center justify-center rounded-full border'
+                  aria-hidden='true'
+                >
+                  <ImageIcon className='size-4 opacity-60' />
+                </div>
+                <p className='mb-1.5 text-sm font-medium'>
+                  Drop your images here
+                </p>
+                <p className='text-muted-foreground text-xs'>
+                  SVG, PNG, JPG or GIF (max. {maxSizeMB}MB)
+                </p>
+                <Button
+                  variant='outline'
+                  className='mt-4'
+                  onClick={openFileDialog}
+                >
+                  <UploadIcon className='-ms-1 opacity-60' aria-hidden='true' />
+                  Select images
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
