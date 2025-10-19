@@ -15,9 +15,7 @@ const Layout = ({
       <SearchProvider>
         <SidebarProvider>
           <AppSidebar />
-          <div className='p-2 w-full min-h-full'>
-            <LayoutAdmin>{children}</LayoutAdmin>
-          </div>
+          <LayoutAdmin>{children}</LayoutAdmin>
         </SidebarProvider>
       </SearchProvider>
     </div>

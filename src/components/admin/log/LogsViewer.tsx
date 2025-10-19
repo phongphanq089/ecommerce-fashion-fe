@@ -7,7 +7,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '~/components/ui/accordion'
+} from '~/components/ui/core/accordion'
 import { Button } from '~/components/ui/core/button'
 import {
   Card,
@@ -28,7 +28,7 @@ const LogsViewer = () => {
 
   const fetchFiles = () => {
     https.get<ApiResponse<any>>('/logs/files').then((res) => {
-      setFiles(res.data.result)
+      setFiles((res.data as any).result)
     })
   }
 
@@ -41,7 +41,7 @@ const LogsViewer = () => {
     setLoading(true)
     https
       .get<ApiResponse<any>>(`/logs/view/${selectedFile}`)
-      .then((res) => setLogs(res.data.result))
+      .then((res) => setLogs((res.data as any).result))
       .finally(() => setLoading(false))
   }, [selectedFile])
 
