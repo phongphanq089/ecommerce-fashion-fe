@@ -1,5 +1,5 @@
 import React from 'react'
-import LogsViewer from '~/components/admin/log/LogsViewer'
+import LogsViewer from '~/features/log/LogsViewer'
 
 const PageLog = () => {
   return (
