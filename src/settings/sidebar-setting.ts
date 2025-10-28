@@ -56,11 +56,11 @@ export const sidebarData: SidebarData = {
           items: [
             {
               title: 'Product List',
-              url: '/admin/products',
+              url: '/admin/product/list',
             },
             {
               title: 'Create Product',
-              url: '/admin/products/create',
+              url: '/admin/product/edit',
             },
           ],
         },
