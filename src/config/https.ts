@@ -1,9 +1,9 @@
 import axios from 'axios'
-import { URL_API } from '~/settings/apiconfig'
+
 // import { useAuthStore } from '~/stores/useAuthStore'
 
 const https = axios.create({
-  baseURL: URL_API,
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
 })
 
