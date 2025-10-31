@@ -60,7 +60,7 @@ export const sidebarData: SidebarData = {
             },
             {
               title: 'Create Product',
-              url: '/admin/product/edit',
+              url: '/admin/product/create',
             },
           ],
         },

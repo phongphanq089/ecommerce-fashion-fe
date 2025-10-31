@@ -1,5 +1,5 @@
 import React from 'react'
-import ProductTable from '~/features/product/components/ProductList/ProductTable'
+import ProductTable from '~/features/admin/product/components/ProductList/ProductTable'
 
 const CreateComponent = () => <div>Đây là trang TẠO MỚI</div>
 const NotFoundComponent = () => <div>Hành động không hợp lệ</div>

@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react'
-import MediaList from '~/features/media/components/MediaList'
-import { LoadingUiFolder } from '~/features/media/components/LoadingUIFolder'
-import ListFolderUi from '~/features/media/components/ListFolderUi'
+import ListFolderUi from '~/features/admin/media/components/ListFolderUi'
+import { LoadingUiFolder } from '~/features/admin/media/components/LoadingUIFolder'
+import MediaList from '~/features/admin/media/components/MediaList'
 
 const PageMedia = () => {
   return (
