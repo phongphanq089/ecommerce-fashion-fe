@@ -1,5 +1,6 @@
 import { FlagIcon } from 'lucide-react'
 import Link from 'next/link'
+import { buttonVariants } from '~/components/ui/core/button'
 
 export default function NotFound() {
   return (
@@ -16,7 +17,10 @@ export default function NotFound() {
           Don&apos;t worry, our team is already on it.Please try refreshing the
           page or come back later.
         </p>
-        <Link href='/' className='w-full px-4 md:w-[8rem]'>
+        <Link
+          href='/'
+          className={`w-full px-4 md:w-[8rem] ${buttonVariants()} `}
+        >
           back home
         </Link>
       </div>
