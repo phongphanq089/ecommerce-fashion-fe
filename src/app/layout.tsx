@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       <body
-        className={`${font.variable} ${font.variable} antialiased`}
+        className={`${font.variable} ${font.variable} antialiased overflow-x-hidden`}
         suppressHydrationWarning
       >
         <ToasterCustom />

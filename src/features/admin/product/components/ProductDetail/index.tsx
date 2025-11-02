@@ -26,8 +26,8 @@ const ProductDetail = () => {
         <CardHeader>
           <HeadingSectionAdmin title='Add New Product' />
         </CardHeader>
-        <CardContent>
-          <div className='grid grid-cols-12 gap-5'>
+        <CardContent className='max-sm:p-2'>
+          <div className='flex flex-col xl:grid grid-cols-12 gap-5'>
             <div className='col-span-7 space-y-10'>
               <ProductInfoForm />
               <ProductVariantForm />
