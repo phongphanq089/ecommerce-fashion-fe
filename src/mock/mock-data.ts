@@ -1,4 +1,4 @@
-import { Product } from '~/features/product/types'
+import { Product } from '~/features/admin/product/types'
 
 export const mockDataFolder = [
   {

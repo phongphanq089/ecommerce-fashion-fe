@@ -1,7 +1,7 @@
 import React from 'react'
-import ProductTable from '~/features/product/components/ProductList/ProductTable'
+import ProductDetail from '~/features/admin/product/components/ProductDetail'
+import ProductTable from '~/features/admin/product/components/ProductList/ProductTable'
 
-const CreateComponent = () => <div>Đây là trang TẠO MỚI</div>
 const NotFoundComponent = () => <div>Hành động không hợp lệ</div>
 
 const PageAction = async ({
@@ -13,7 +13,7 @@ const PageAction = async ({
 
   switch (action) {
     case 'create':
-      return <CreateComponent />
+      return <ProductDetail />
     case 'list':
       return <ProductTable />
     default:

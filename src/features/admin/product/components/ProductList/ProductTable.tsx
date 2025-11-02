@@ -131,7 +131,7 @@ const ProductTable = () => {
   }
 
   return (
-    <div className='w-full whitespace-nowrap bg-accent p-6 min-h-screen rounded-2xl'>
+    <div className='w-full bg-accent p-6 min-h-screen rounded-2xl'>
       <h1 className='text-3xl font-bold mb-5'>Products</h1>
       <TableToolbar
         filterValue={globalFilter}
@@ -151,8 +151,8 @@ const ProductTable = () => {
         selectedRows={selectedRows}
         onDelete={handleDelete}
       />
-      <ScrollArea className='w-full rounded-md border whitespace-nowrap'>
-        <table className='w-full text-sm text-left'>
+      <ScrollArea className='w-full max-w-full rounded-md border whitespace-nowrap'>
+        <table className='text-sm text-left w-full'>
           <thead className='bg-accent'>
             {table.getHeaderGroups().map((headerGroup) => {
               return (

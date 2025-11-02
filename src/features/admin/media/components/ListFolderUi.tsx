@@ -12,10 +12,11 @@ import { toast } from 'react-toastify'
 import { useUiStore } from '~/store/useUiStore'
 
 import AddFolder from './AddFolder'
-import { LoadingUiFolder } from '~/features/media/components/LoadingUIFolder'
+
 import UpdateFolder from './UpdateFolder'
 import { _mediaService } from '../queries'
 import { DEFAULT_FOLDER_MEDIA } from '~/constants'
+import { LoadingUiFolder } from './LoadingUIFolder'
 
 const ListFolderUi = () => {
   const [selectedFolder, setSelectedFolder] = useState<{

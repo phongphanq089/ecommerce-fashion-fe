@@ -7,7 +7,8 @@ import { MainContent } from './MainContent'
 
 const LayoutAdmin = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className='w-full p-2 overflow-hidden'>
+    // overflow-hidden
+    <div className='w-full p-2'>
       <Header fixed>
         <div className='ml-auto flex items-center space-x-4'></div>{' '}
         <SearchBar />
