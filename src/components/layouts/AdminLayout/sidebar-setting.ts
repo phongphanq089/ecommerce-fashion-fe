@@ -84,7 +84,7 @@ export const sidebarData: SidebarData = {
           items: [
             {
               title: 'Category List',
-              url: '/admin/category',
+              url: '/admin/category/list',
             },
             {
               title: 'Create Category',

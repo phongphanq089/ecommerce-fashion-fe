@@ -1,3 +1,4 @@
+import { Category } from '~/features/admin/category/types'
 import { Product } from '~/features/admin/product/types'
 
 export const mockDataFolder = [
@@ -568,5 +569,258 @@ export const productData: Product[] = [
     isActive: true,
     updatedAt: '2025-09-18T11:11:00.000Z',
     variants: [{ price: 799000 }],
+  },
+]
+
+export const categoryData: Category[] = [
+  {
+    id: 'cat-0001-uuid-abc1-network',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Network Interface Card',
+    parent: { name: 'Network Components' },
+    icon: null,
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    id: 'cat-0002-uuid-abc1-network',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Routers',
+    parent: { name: 'Network Components' },
+    icon: null,
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    id: 'cat-0003-uuid-abc1-network',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Modems',
+    parent: { name: 'Network Components' },
+    icon: null,
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    id: 'cat-0004-uuid-abc1-network',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Access Points',
+    parent: { name: 'Network Components' },
+    icon: null,
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    id: 'cat-0005-uuid-abc1-network',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Switches',
+    parent: { name: 'Network Components' },
+    icon: null,
+    isFeatured: false,
+    isActive: true,
+  },
+  {
+    id: 'cat-0006-uuid-abc1-network',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Network Cables',
+    parent: { name: 'Network Components' },
+    icon: null,
+    isFeatured: false,
+    isActive: true,
+  },
+  {
+    id: 'cat-0007-uuid-abc1-network',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Patch Panels',
+    parent: { name: 'Network Components' },
+    icon: null,
+    isFeatured: false,
+    isActive: true,
+  },
+  {
+    id: 'cat-0008-uuid-abc1-network',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Wireless Adapters',
+    parent: { name: 'Network Components' },
+    icon: null,
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    id: 'cat-0009-uuid-abc1-network',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Network Tools',
+    parent: { name: 'Network Components' },
+    icon: null,
+    isFeatured: false,
+    isActive: true,
+  },
+  {
+    id: 'cat-0010-uuid-abc1-computer',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Processors',
+    parent: { name: 'Computer Components' },
+    icon: null,
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    id: 'cat-0011-uuid-abc1-computer',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'RAM',
+    parent: { name: 'Computer Components' },
+    icon: null,
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    id: 'cat-0012-uuid-abc1-computer',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Motherboards',
+    parent: { name: 'Computer Components' },
+    icon: null,
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    id: 'cat-0013-uuid-abc1-computer',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Graphics Cards',
+    parent: { name: 'Computer Components' },
+    icon: null,
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    id: 'cat-0014-uuid-abc1-computer',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Power Supplies',
+    parent: { name: 'Computer Components' },
+    icon: null,
+    isFeatured: false,
+    isActive: true,
+  },
+  {
+    id: 'cat-0015-uuid-abc1-computer',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Cooling Fans',
+    parent: { name: 'Computer Components' },
+    icon: null,
+    isFeatured: false,
+    isActive: true,
+  },
+  {
+    id: 'cat-0016-uuid-abc1-computer',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'CPU Coolers',
+    parent: { name: 'Computer Components' },
+    icon: null,
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    id: 'cat-0017-uuid-abc1-computer',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Computer Cases',
+    parent: { name: 'Computer Components' },
+    icon: null,
+    isFeatured: false,
+    isActive: true,
+  },
+  {
+    id: 'cat-0018-uuid-abc1-computer',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Storage Devices',
+    parent: { name: 'Computer Components' },
+    icon: null,
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    id: 'cat-0019-uuid-abc1-computer',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Solid State Drives (SSD)',
+    parent: { name: 'Computer Components' },
+    icon: null,
+    isFeatured: false,
+    isActive: true,
+  },
+  {
+    id: 'cat-0020-uuid-abc1-computer',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Hard Disk Drives (HDD)',
+    parent: { name: 'Computer Components' },
+    icon: null,
+    isFeatured: false,
+    isActive: true,
+  },
+  {
+    id: 'cat-0021-uuid-abc1-peripherals',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Keyboards',
+    parent: { name: 'Peripherals' },
+    icon: null,
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    id: 'cat-0022-uuid-abc1-peripherals',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Mice',
+    parent: { name: 'Peripherals' },
+    icon: null,
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    id: 'cat-0023-uuid-abc1-peripherals',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Monitors',
+    parent: { name: 'Peripherals' },
+    icon: null,
+    isFeatured: true,
+    isActive: true,
+  },
+  {
+    id: 'cat-0024-uuid-abc1-peripherals',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Headsets',
+    parent: { name: 'Peripherals' },
+    icon: null,
+    isFeatured: false,
+    isActive: true,
+  },
+  {
+    id: 'cat-0025-uuid-abc1-peripherals',
+    metaImage:
+      'https://cartlooks.themelooks.us/public/storage/all_files/2023/May/img-06_986250x250.png',
+    name: 'Webcams',
+    parent: { name: 'Peripherals' },
+    icon: null,
+    isFeatured: false,
+    isActive: true,
   },
 ]
