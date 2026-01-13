@@ -15,7 +15,7 @@ import {
 } from '~/components/ui/core/tabs'
 
 import { RecentSales } from './recent-sales'
-import { Overview } from './overview'
+import { Overview } from './OverviewCard'
 
 const DashboardPage = () => {
   return (
