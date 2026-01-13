@@ -9,7 +9,7 @@ import {
 } from './types'
 
 import { mediaKeys } from './key-queries'
-import { _mediaApi } from './api'
+import { _mediaApi } from './media.api'
 
 export const _mediaService = {
   // ======= MEDIA FOLDER SETTING ====== //

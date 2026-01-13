@@ -4,11 +4,11 @@ import { Antonio } from 'next/font/google'
 // @ts-ignore
 import './globals.css'
 
-import { ThemeProvider } from '~/providers/ThemeProvider'
+import { ThemeProvider } from '~/providers/theme-provider'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
-import ProviderReactQuery from '~/providers/ProviderReactQuery'
-import ToasterCustom from '~/components/shared/ToasterCustom'
-import GlobalLoadingOverlay from '~/components/shared/GlobalLoadingOverlay'
+import ToasterCustom from '~/components/shared/toaster-custom'
+import GlobalLoadingOverlay from '~/components/shared/global-loading-overlay'
+import ProviderReactQuery from '~/providers/provider-react-query'
 
 const font = Antonio({
   weight: ['300', '400', '500', '600', '700'],

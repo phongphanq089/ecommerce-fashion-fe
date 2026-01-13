@@ -1,7 +1,6 @@
-import React from 'react'
-import HeadingSectionAdmin from '~/components/shared/HeadingSectionAdmin'
+import HeadingSectionAdmin from '~/components/shared/heading-section-admin'
 import { Card, CardContent, CardHeader } from '~/components/ui/core/card'
-import NewCategoryForm from './NewCategoryForm'
+import NewCategoryForm from './new-category-form'
 
 const CategoriesDetail = () => {
   return (

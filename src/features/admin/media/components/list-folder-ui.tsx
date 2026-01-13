@@ -11,12 +11,12 @@ import { useQueryState } from 'nuqs'
 import { toast } from 'react-toastify'
 import { useUiStore } from '~/store/useUiStore'
 
-import AddFolder from './AddFolder'
+import AddFolder from './add-folder'
 
-import UpdateFolder from './UpdateFolder'
-import { _mediaService } from '../queries'
+import UpdateFolder from './update-folder'
+import { _mediaService } from '../media.queries'
 import { DEFAULT_FOLDER_MEDIA } from '~/constants'
-import { LoadingUiFolder } from './LoadingUIFolder'
+import { LoadingUiFolder } from './loading-ui-folder'
 
 const ListFolderUi = () => {
   const [selectedFolder, setSelectedFolder] = useState<{

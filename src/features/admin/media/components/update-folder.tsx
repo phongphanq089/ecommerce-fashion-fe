@@ -18,7 +18,7 @@ import {
   minLength,
   required,
   useFormValidation,
-} from '~/hooks/useFormValidation'
+} from '~/hooks/use-form-validation'
 
 interface UpdateFolderProps {
   open: boolean

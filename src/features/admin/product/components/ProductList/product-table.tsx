@@ -11,54 +11,64 @@ import {
 } from '@tanstack/react-table'
 import React, { useEffect, useMemo, useState } from 'react'
 import { ScrollArea, ScrollBar } from '~/components/ui/core/scroll-area'
-import { columns } from './Columns'
+
+import { columns } from './columns'
+
 import { ArrowDown, ArrowUp, ChevronsUpDown } from 'lucide-react'
 import { Button } from '~/components/ui/core/button'
-import { Category, TableMeta } from '../../types'
-import { TableToolbar } from './TableToolbar'
-import { categoryData } from '~/mock/mock-data'
-import { TableSkeletonLoading } from '~/components/shared/TableSkeletonLoading'
+import { Product, TableMeta } from '../../types'
+import { TableToolbar } from './table-toolbar'
+import { productData } from '~/mock/mock-data'
 
+// NEW: Giả lập một hàm gọi API từ server
 const fetchProductsFromServer = async (options: {
   pageIndex: number
   pageSize: number
 }) => {
   console.log(`Đang tải dữ liệu cho trang: ${options.pageIndex + 1}...`)
+  // Giả lập độ trễ mạng
 
   await new Promise((r) => setTimeout(r, 500))
 
   const { pageIndex, pageSize } = options
+  // Ở server, bạn sẽ query database với `LIMIT` và `OFFSET`
+  // Ở đây, chúng ta dùng slice() để giả lập
 
   const start = pageIndex * pageSize
   const end = start + pageSize
-  const pageData = categoryData.slice(start, end)
+  const pageData = productData.slice(start, end)
 
-  const pageCount = Math.ceil(categoryData.length / pageSize)
+  const pageCount = Math.ceil(productData.length / pageSize)
   return {
     data: pageData,
     pageCount: pageCount,
   }
 }
 
-const CategoryTable = () => {
-  const [data, setData] = useState<Category[]>([])
+const ProductTable = () => {
+  const [data, setData] = useState<Product[]>([])
   const [globalFilter, setGlobalFilter] = useState('')
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [sorting, setSorting] = useState<SortingState>([])
 
+  // NEW: State để quản lý phân trang
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   })
 
+  // NEW: State để quản lý tổng số trang và trạng thái loading
   const [pageCount, setPageCount] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
 
+  // Dùng useMemo để tránh việc `pagination` object bị tạo lại mỗi lần render
+  // Điều này giúp useEffect không bị gọi lại một cách không cần thiết
   const pagination = useMemo(
     () => ({ pageIndex, pageSize }),
     [pageIndex, pageSize]
   )
 
+  // NEW: useEffect để gọi API mỗi khi `pagination` thay đổi
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true)
@@ -68,7 +78,7 @@ const CategoryTable = () => {
       setIsLoading(false)
     }
     fetchData()
-  }, [pagination])
+  }, [pagination]) // Hook này sẽ chạy lại mỗi khi `pagination` thay đổi
 
   const updateProductStatus = (
     productId: string,
@@ -85,10 +95,10 @@ const CategoryTable = () => {
     )
   }
 
-  const table = useReactTable<Category>({
+  const table = useReactTable<Product>({
     data,
     columns,
-    pageCount,
+    pageCount, // NEW: Cung cấp tổng số trang cho table
     meta: {
       updateProductStatus,
     } as TableMeta,
@@ -98,8 +108,10 @@ const CategoryTable = () => {
       sorting,
       pagination,
     },
-
+    // NEW: Bật chế độ thủ công cho các tính năng phía server
     manualPagination: true,
+    // manualSorting: true, // Bạn cũng sẽ bật cái này khi làm sort server-side
+    // manualFiltering: true, // Và cái này cho filter
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -120,7 +132,7 @@ const CategoryTable = () => {
 
   return (
     <div className='w-full bg-accent p-6 min-h-screen rounded-2xl'>
-      <h1 className='text-3xl font-bold mb-5'>Categories</h1>
+      <h1 className='text-3xl font-bold mb-5'>Products</h1>
       <TableToolbar
         filterValue={globalFilter}
         setFilter={(key: string, value: string | boolean | undefined) => {
@@ -149,12 +161,15 @@ const CategoryTable = () => {
                     <th key={header.id} className='p-3 font-semibold'>
                       <div
                         className={
+                          // header.column.getCanSort(): Kiểm tra xem cột này có được phép sắp xếp hay không
                           header.column.getCanSort()
                             ? 'flex items-center gap-2 cursor-pointer select-none'
                             : ''
                         }
+                        // Đây là hàm "ma thuật" của TanStack Table. Khi bạn click, nó sẽ tự động xử lý việc chuyển đổi trạng thái: không sắp xếp -> tăng dần -> giảm dần -> không sắp xếp.
                         onClick={header.column.getToggleSortingHandler()}
                         title={
+                          // Hàm này trả về false, 'asc' (tăng dần), hoặc 'desc' (giảm dần). Chúng ta dùng nó để hiển thị icon tương ứng.
                           header.column.getIsSorted() === 'desc'
                             ? 'Sorted descending'
                             : header.column.getIsSorted() === 'asc'
@@ -189,10 +204,11 @@ const CategoryTable = () => {
           </thead>
           <tbody>
             {isLoading ? (
-              <TableSkeletonLoading
-                rowCount={pageSize}
-                colCount={columns.length}
-              />
+              <tr>
+                <td colSpan={columns.length} className='text-center p-4'>
+                  Loading...
+                </td>
+              </tr>
             ) : table.getRowModel().rows.length === 0 ? (
               <tr>
                 <td colSpan={columns.length} className='text-center p-4'>
@@ -245,4 +261,4 @@ const CategoryTable = () => {
   )
 }
 
-export default CategoryTable
+export default ProductTable

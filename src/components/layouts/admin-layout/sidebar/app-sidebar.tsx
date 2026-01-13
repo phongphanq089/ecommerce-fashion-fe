@@ -3,17 +3,16 @@
 import { IconLogout2 } from '@tabler/icons-react'
 import Link from 'next/link'
 import { ScrollArea } from '~/components/ui/core/scroll-area'
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenuButton,
-  SidebarRail,
-} from './Sidebar'
-import LogoUi from '~/components/shared/LogoUi'
-import { sidebarData } from '~/components/layouts/AdminLayout/sidebar-setting'
-import { NavGroup } from './NavGroup'
+
+import LogoUi from '~/components/shared/logo-ui'
+import { sidebarData } from '~/components/layouts/admin-layout/sidebar-setting'
+
+import { NavGroup } from './nav-group'
+import { Sidebar, SidebarHeader } from './nav-sidebar'
+import { SidebarContent } from './nav-sidebar'
+import { SidebarMenuButton } from './nav-sidebar'
+import { SidebarRail } from './nav-sidebar'
+import { SidebarFooter } from './nav-sidebar'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (

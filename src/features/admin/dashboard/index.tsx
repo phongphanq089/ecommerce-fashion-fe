@@ -13,8 +13,9 @@ import {
   TabsList,
   TabsTrigger,
 } from '~/components/ui/core/tabs'
-import { Overview } from './Overview'
-import { RecentSales } from './RecentSales'
+
+import { RecentSales } from './recent-sales'
+import { Overview } from './overview'
 
 const DashboardPage = () => {
   return (

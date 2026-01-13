@@ -14,8 +14,9 @@ import {
   CommandSeparator,
 } from './command'
 import { ScrollArea } from './scroll-area'
-import { sidebarData } from '~/components/layouts/AdminLayout/sidebar-setting'
+
 import { useRouter } from 'next/navigation'
+import { sidebarData } from '~/components/layouts/admin-layout/sidebar-setting'
 
 export function CommandMenu() {
   const navigate = useRouter()

@@ -3,7 +3,7 @@ import React from 'react'
 import { cn } from '~/lib/utils'
 
 import { Separator } from '~/components/ui/core/separator'
-import { SidebarTrigger } from '../Sidebar/Sidebar'
+import { SidebarTrigger } from '../sidebar/nav-sidebar'
 
 interface HeaderProps extends React.HTMLAttributes<HTMLElement> {
   fixed?: boolean

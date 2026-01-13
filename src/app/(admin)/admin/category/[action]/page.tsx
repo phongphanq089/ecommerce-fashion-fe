@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
-import CategoriesDetail from '~/features/admin/category/components/CategoriesDetail'
-import CategoryTable from '~/features/admin/category/components/CategoriesList/CategoryTable'
+import CategoriesDetail from '~/features/admin/category/components/category-detail'
+import CategoryTable from '~/features/admin/category/components/category-list/category-table'
 
 const PageAction = async ({
   params,
