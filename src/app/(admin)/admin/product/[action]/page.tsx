@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import React from 'react'
-import ProductDetail from '~/features/admin/product/components/ProductDetail'
-import ProductTable from '~/features/admin/product/components/ProductList/product-table'
+import ProductDetail from '~/features/admin/product/components/product-detail'
+import ProductTable from '~/features/admin/product/components/product-list/product-table'
 
 const PageAction = async ({
   params,

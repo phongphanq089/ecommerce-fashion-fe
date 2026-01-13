@@ -20,7 +20,7 @@ import { useUiStore } from '~/store/useUiStore'
 import { _mediaService } from '../media.queries'
 import { FileItem } from '../types'
 import { DEFAULT_FOLDER_MEDIA } from '~/constants'
-import Pagination from '~/components/shared/pagination'
+import Pagination from '~/components/shared/pagination-ui'
 
 const maxSizeMB = 10
 const maxSize = maxSizeMB * 1024 * 1024
