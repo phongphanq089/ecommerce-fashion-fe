@@ -2,7 +2,7 @@
 
 import { ImageIcon } from 'lucide-react'
 import React from 'react'
-import UploadFormMediaUi from '~/components/shared/MediaManagement/UploadFormMediaUi'
+import UploadFormMediaUi from '~/components/shared/MediaManagement/upload-form-media-ui'
 import { Button } from '~/components/ui/core/button'
 import {
   Card,

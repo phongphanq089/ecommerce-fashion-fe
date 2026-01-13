@@ -1,7 +1,8 @@
 import React from 'react'
-import LayoutAdmin from '~/components/layouts/AdminLayout'
-import { AppSidebar } from '~/components/layouts/AdminLayout/Sidebar/AppSidebar'
-import { SidebarProvider } from '~/components/layouts/AdminLayout/Sidebar/Sidebar'
+import LayoutAdmin from '~/components/layouts/admin-layout'
+import { AppSidebar } from '~/components/layouts/admin-layout/sidebar/app-sidebar'
+import { SidebarProvider } from '~/components/layouts/admin-layout/sidebar/nav-sidebar'
+
 import { SearchProvider } from '~/providers/search-context'
 
 const Layout = ({

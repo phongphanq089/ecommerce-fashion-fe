@@ -1,9 +1,10 @@
 import React from 'react'
-import { Header } from '../../layouts/AdminLayout/Header/Header'
-import { SearchBar } from '../../layouts/AdminLayout/Header/SearchBar'
-import ThemeToggle from '../../layouts/AdminLayout/Header/ThemeToggle'
-import { ProfileDropdown } from '../../layouts/AdminLayout/Header/ProfileDropdown'
-import { MainContent } from './MainContent'
+
+import { MainContent } from './main-content'
+import { Header } from './header/header'
+import { SearchBar } from './header/search-bar'
+import ThemeToggle from './header/theme-toggle'
+import { ProfileDropdown } from './header/profile-dropdown'
 
 const LayoutAdmin = ({ children }: { children: React.ReactNode }) => {
   return (

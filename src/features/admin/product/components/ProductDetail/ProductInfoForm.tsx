@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { Card, CardContent, CardHeader } from '~/components/ui/core/card'
 import { Input } from '~/components/ui/core/input'
 import { Label } from '~/components/ui/core/label'
-import { ProductSchemaType } from '../../schema/product.schema'
+import { ProductSchemaType } from '../../product.schema'
 import {
   Select,
   SelectContent,

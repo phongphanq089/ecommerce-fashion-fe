@@ -1,4 +1,3 @@
-import React from 'react'
 import { Rectangle_6 } from '../ui/icon/Rectangle_6'
 
 interface HeadingSectionAdminType {

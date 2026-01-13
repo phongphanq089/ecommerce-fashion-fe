@@ -7,8 +7,8 @@ import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import LoadingData from '~/components/shared/LoadingData'
-import Pagination from '~/components/shared/Pagination'
+import LoadingData from '~/components/shared/loading-data'
+
 // import Pagination from '~/components/shared/Pagination'
 import { AspectRatio } from '~/components/ui/core/aspect-ratio'
 import { Button } from '~/components/ui/core/button'
@@ -17,9 +17,10 @@ import { Progress } from '~/components/ui/core/progress'
 
 import { useFileUpload } from '~/hooks/use-file-upload'
 import { useUiStore } from '~/store/useUiStore'
-import { _mediaService } from '../queries'
+import { _mediaService } from '../media.queries'
 import { FileItem } from '../types'
 import { DEFAULT_FOLDER_MEDIA } from '~/constants'
+import Pagination from '~/components/shared/pagination'
 
 const maxSizeMB = 10
 const maxSize = maxSizeMB * 1024 * 1024

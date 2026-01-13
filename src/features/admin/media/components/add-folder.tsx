@@ -20,10 +20,10 @@ import {
   minLength,
   required,
   useFormValidation,
-} from '~/hooks/useFormValidation'
+} from '~/hooks/use-form-validation'
 
 import { useUiStore } from '~/store/useUiStore'
-import { _mediaService } from '../queries'
+import { _mediaService } from '../media.queries'
 
 const AddFolder = () => {
   const [open, setOpen] = useState(false)
