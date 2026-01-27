@@ -1,8 +1,10 @@
+'use client'
 import { FlagIcon } from 'lucide-react'
-import Link from 'next/link'
-import { buttonVariants } from '~/components/ui/core/button'
+import { Button } from '~/components/ui/core/button'
+import { useRouter } from 'next/navigation'
 
 export default function NotFound() {
+  const router = useRouter()
   return (
     <div className='h-screen mx-auto grid place-items-center text-center px-8'>
       <div>
@@ -17,12 +19,7 @@ export default function NotFound() {
           Don&apos;t worry, our team is already on it.Please try refreshing the
           page or come back later.
         </p>
-        <Link
-          href='/'
-          className={`w-full px-4 md:w-[8rem] ${buttonVariants()} `}
-        >
-          back home
-        </Link>
+        <Button onClick={() => router.back()}>Back Home</Button>
       </div>
     </div>
   )

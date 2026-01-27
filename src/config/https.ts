@@ -1,9 +1,10 @@
 import axios from 'axios'
+import { API_BASE_URL } from '~/lib/api-client'
 
 // import { useAuthStore } from '~/stores/useAuthStore'
 
 const https = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: API_BASE_URL,
   withCredentials: true,
 })
 
@@ -29,7 +30,7 @@ https.interceptors.response.use(
       'Unknown error from server'
 
     return Promise.reject(new Error(message))
-  }
+  },
 )
 
 export default https
