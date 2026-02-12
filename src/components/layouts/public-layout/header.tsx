@@ -1,22 +1,24 @@
 'use client'
 import { Button } from '~/components/ui/core/button'
-import axios from 'axios'
+import { api, logout } from '~/lib/api-client'
 import { useAuthStore } from '~/store/auth-store'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import LogoUi from '~/components/shared/logo-ui'
+import Link from 'next/link'
 const Header = () => {
   const [isLogin, setIsLogin] = useState(false)
 
-  const { isAuthenticated, logout } = useAuthStore()
+  const { isAuthenticated, logout: logoutStore } = useAuthStore()
   const router = useRouter()
   const handleLogout = async () => {
     try {
-      await axios.post('/api/proxy/logout', { withCredentials: true })
-      logout()
-      router.push('/auth/sign-in')
+      await api.post('/auth/logout')
     } catch (error) {
       console.log(error)
+    } finally {
+      logoutStore()
+      logout() // Clear cookies and redirect
     }
   }
   useEffect(() => {
@@ -29,9 +31,12 @@ const Header = () => {
       <nav className='hidden md:flex space-x-12 items-center'>
         <div className='flex items-center gap-2'>
           {isLogin && (
-            <Button variant='default' onClick={handleLogout}>
-              Log out
-            </Button>
+            <div className='flex items-center gap-2'>
+              <Button variant='default' onClick={handleLogout}>
+                Log out
+              </Button>
+              <Link href='/admin/dashboard'>Dashboard</Link>
+            </div>
           )}
           {!isLogin && (
             <Button

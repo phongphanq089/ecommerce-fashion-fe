@@ -1,7 +1,7 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { authApi } from '~/lib/api-client'
+import { api, setAccessToken } from '~/lib/api-client'
 import { useAuthStore } from '~/store/auth-store'
 import BannerImage from './banner-image'
 import Link from 'next/link'
@@ -38,11 +38,24 @@ const SignInForm = () => {
     setIsLoading(true)
 
     try {
-      const res = await authApi.post('/login', data)
+      const res = await api.post('/auth/login', data)
 
       if (res.data.success) {
-        login(res.data.result)
-        router.push('/admin/dashboard')
+        setAccessToken(res.data.result.accessToken)
+        // Only pass the user object to the store, not the full result which includes the token
+        login(res.data.result.user)
+
+        const role = res.data.result.user.role
+
+        // Create flag cookie for middleware (not HttpOnly, just for routing)
+        document.cookie = `isLoggedIn=true; path=/; max-age=31536000` // 1 year
+        document.cookie = `userRole=${role}; path=/; max-age=31536000`
+
+        if (role === 'ADMIN' || role === 'SUPER_ADMIN' || role === 'STAFF') {
+          router.push('/admin/dashboard')
+        } else {
+          router.push('/')
+        }
         router.refresh()
       } else {
         toast.error(res.data.message || 'Login failed')

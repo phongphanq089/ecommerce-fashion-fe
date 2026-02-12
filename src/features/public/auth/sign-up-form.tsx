@@ -1,7 +1,7 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { authApi } from '~/lib/api-client'
+import { api } from '~/lib/api-client'
 import BannerImage from './banner-image'
 import Link from 'next/link'
 import IconGoogle from '~/components/ui/icon/icon-google'
@@ -39,7 +39,7 @@ const SignUpForm = () => {
     setIsLoading(true)
 
     try {
-      const res = await authApi.post('/register', data)
+      const res = await api.post('/register', data)
 
       if (res.data.success) {
         toast.success(res.data.message || 'Login failed')

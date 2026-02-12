@@ -1,14 +1,15 @@
+'use client'
 import Image from 'next/image'
-import Link from 'next/link'
-import React from 'react'
 import { cn } from '~/lib/utils'
+import { useRouter } from 'next/navigation'
 
 const LogoUi = ({ className }: { className?: string }) => {
+  const router = useRouter()
   return (
-    <Link
-      href='/'
+    <div
+      onClick={() => router.push('/')}
       className={cn(
-        'font-extrabold text-xl sm:text-3xl text-primary-color whitespace-nowrap  flex items-center gap-2',
+        'font-extrabold text-xl sm:text-3xl text-primary-color whitespace-nowrap  flex items-center gap-2 cursor-pointer',
         className,
       )}
     >
@@ -20,7 +21,7 @@ const LogoUi = ({ className }: { className?: string }) => {
         className='w-14 h-14 object-cover'
       />
       AKR-SHOP
-    </Link>
+    </div>
   )
 }
 
