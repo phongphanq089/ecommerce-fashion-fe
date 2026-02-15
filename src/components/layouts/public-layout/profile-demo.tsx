@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { ApiResponse } from '~/@types/api'
-import { api } from '~/lib/api-client'
+import { https } from '~/config/https'
 
 interface User {
   id: string
@@ -19,7 +19,7 @@ const ProfileDemo = () => {
   }, [])
   const getAth = async () => {
     try {
-      const res = await api.get<ApiResponse<User>>('/auth/me')
+      const res = await https.get<ApiResponse<User>>('/auth/me')
       if (res.data.success) {
         setData(res.data.result)
       }

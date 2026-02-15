@@ -1,11 +1,12 @@
 'use client'
 import { Button } from '~/components/ui/core/button'
-import { api, logout } from '~/lib/api-client'
+
 import { useAuthStore } from '~/store/auth-store'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import LogoUi from '~/components/shared/logo-ui'
 import Link from 'next/link'
+import { https, logout } from '~/config/https'
 const Header = () => {
   const [isLogin, setIsLogin] = useState(false)
 
@@ -13,7 +14,7 @@ const Header = () => {
   const router = useRouter()
   const handleLogout = async () => {
     try {
-      await api.post('/auth/logout')
+      await https.post('/auth/logout')
     } catch (error) {
       console.log(error)
     } finally {
@@ -36,6 +37,7 @@ const Header = () => {
                 Log out
               </Button>
               <Link href='/admin/dashboard'>Dashboard</Link>
+              <Link href='/profile'>Profile</Link>
             </div>
           )}
           {!isLogin && (

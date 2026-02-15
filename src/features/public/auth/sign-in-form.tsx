@@ -1,10 +1,9 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { api, setAccessToken } from '~/lib/api-client'
 import { useAuthStore } from '~/store/auth-store'
 import BannerImage from './banner-image'
 import Link from 'next/link'
+import GoogleLoginButton from './google-login-button'
 import IconGoogle from '~/components/ui/icon/icon-google'
 import { Button } from '~/components/ui/core/button'
 import { Input } from '~/components/ui/core/input'
@@ -13,10 +12,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { signInSchema, SignInSchemaType } from './auth.validate'
 import { Loader2 } from 'lucide-react'
 import { toast } from 'react-toastify'
+import { https, setAccessToken } from '~/config/https'
+import { AUTH_QUERY } from './auth.query'
+import { useQueryClient } from '@tanstack/react-query'
 
 const SignInForm = () => {
   const { login } = useAuthStore()
-  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
   const form = useForm<SignInSchemaType>({
@@ -33,42 +34,35 @@ const SignInForm = () => {
     formState: { errors },
   } = form
 
+  const queryClient = useQueryClient()
+
+  const { mutate: loginMutation, isPending } = AUTH_QUERY.useLogin(queryClient)
+
   const onSubmit = async (data: SignInSchemaType) => {
-    console.log(data)
-    setIsLoading(true)
-
-    try {
-      const res = await api.post('/auth/login', data)
-
-      if (res.data.success) {
-        setAccessToken(res.data.result.accessToken)
-        // Only pass the user object to the store, not the full result which includes the token
-        login(res.data.result.user)
-
-        const role = res.data.result.user.role
-
-        // Create flag cookie for middleware (not HttpOnly, just for routing)
-        document.cookie = `isLoggedIn=true; path=/; max-age=31536000` // 1 year
+    loginMutation(data, {
+      onSuccess: (data) => {
+        toast.success('Login success')
+        setAccessToken(data.result.accessToken)
+        login(data.result.user)
+        const role = data.result.user.role
+        document.cookie = `isLoggedIn=true; path=/; max-age=31536000`
         document.cookie = `userRole=${role}; path=/; max-age=31536000`
-
         if (role === 'ADMIN' || role === 'SUPER_ADMIN' || role === 'STAFF') {
           router.push('/admin/dashboard')
         } else {
           router.push('/')
         }
         router.refresh()
-      } else {
-        toast.error(res.data.message || 'Login failed')
-      }
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Login failed')
-    } finally {
-      setIsLoading(false)
-    }
+      },
+      onError: (error: any) => {
+        console.log(error, '====>')
+        toast.error(error.response?.data?.message || 'Login failed')
+      },
+    })
   }
 
   return (
-    <div className='grid md:grid-cols-2 gap-4'>
+    <div className='grid lg:grid-cols-2 gap-4'>
       <BannerImage />
       <div className='w-full flex items-center justify-center p-8 sm:p-12 md:p-24 bg-background-light dark:bg-background-dark'>
         <div className='w-full max-w-md'>
@@ -102,13 +96,13 @@ const SignInForm = () => {
             <div className='flex items-center justify-end'>
               <Link
                 className='text-xs font-medium hover:underline text-slate-600 dark:text-gray-400'
-                href='#'
+                href='/auth/forgot-password'
               >
                 Forgot your password?
               </Link>
             </div>
-            <Button className='w-full' type='submit' disabled={isLoading}>
-              {isLoading ? (
+            <Button className='w-full' type='submit' disabled={isPending}>
+              {isPending ? (
                 <Loader2 className='w-4 h-4 animate-spin' />
               ) : (
                 'Sign in'
@@ -125,13 +119,7 @@ const SignInForm = () => {
               </div>
             </div>
             <div className='w-full'>
-              <button
-                className='flex items-center justify-center gap-2 py-3 px-4 border border-slate-200 dark:border-white/10 rounded-lg hover:bg-slate-50 dark:hover:bg-white/5 transition-colors w-full'
-                type='button'
-              >
-                <IconGoogle />
-                <span className='text-sm font-medium'>Google</span>
-              </button>
+              <GoogleLoginButton />
             </div>
             <p className='text-center text-sm text-slate-500 dark:text-gray-400 mt-8'>
               Don't have an account?

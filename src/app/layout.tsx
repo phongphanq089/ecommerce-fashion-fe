@@ -7,6 +7,8 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import ToasterCustom from '~/components/shared/toaster-custom'
 import GlobalLoadingOverlay from '~/components/shared/global-loading-overlay'
 import ProviderReactQuery from '~/providers/provider-react-query'
+import { AuthProvider } from '~/providers/auth-provider'
+import ProviderGoogle from '~/providers/provider-google'
 
 const font = Antonio({
   weight: ['400', '500', '600', '700'],
@@ -38,7 +40,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <NuqsAdapter> {children}</NuqsAdapter>
+            <ProviderGoogle>
+              <NuqsAdapter> {children}</NuqsAdapter>
+            </ProviderGoogle>
           </ThemeProvider>
         </ProviderReactQuery>
       </body>

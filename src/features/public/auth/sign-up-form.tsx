@@ -1,10 +1,9 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { api } from '~/lib/api-client'
 import BannerImage from './banner-image'
 import Link from 'next/link'
-import IconGoogle from '~/components/ui/icon/icon-google'
+import GoogleLoginButton from './google-login-button'
 import { Button } from '~/components/ui/core/button'
 import { Input } from '~/components/ui/core/input'
 import { useForm } from 'react-hook-form'
@@ -12,11 +11,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { signUpSchema, SignUpSchemaType } from './auth.validate'
 import { Loader2 } from 'lucide-react'
 import { toast } from 'react-toastify'
+import { https } from '~/config/https'
+import { SETTING_AUTH } from '~/constants'
+import { AUTH_QUERY } from './auth.query'
+import { useQueryClient } from '@tanstack/react-query'
 
 const SignUpForm = () => {
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
-
   const form = useForm<SignUpSchemaType>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -25,6 +25,7 @@ const SignUpForm = () => {
       name: '',
       phone: '',
       address: '',
+      urlRedirect: SETTING_AUTH.URL_REDIRECT,
     },
   })
 
@@ -32,31 +33,32 @@ const SignUpForm = () => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = form
 
-  const onSubmit = async (data: SignUpSchemaType) => {
-    console.log(data)
-    setIsLoading(true)
+  const queryClient = useQueryClient()
 
-    try {
-      const res = await api.post('/register', data)
+  const {
+    mutate: registerMutation,
+    isPending,
+    isSuccess,
+  } = AUTH_QUERY.useRegister(queryClient)
 
-      if (res.data.success) {
-        toast.success(res.data.message || 'Login failed')
-        router.push('/auth/sign-in')
-        router.refresh()
-      } else {
-        toast.error(res.data.message || 'Login failed')
-      }
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Login failed')
-    } finally {
-      setIsLoading(false)
-    }
+  const onSubmit = (data: SignUpSchemaType) => {
+    registerMutation(data, {
+      onSuccess: () => {
+        toast.success('Register success')
+        reset()
+      },
+      onError: (error: any) => {
+        console.log(error, '====>')
+        toast.error(error.response?.data?.message || 'Register failed')
+      },
+    })
   }
 
   return (
-    <div className='grid md:grid-cols-2 gap-4'>
+    <div className='grid lg:grid-cols-2 gap-4'>
       <BannerImage />
       <div className='w-full flex items-center justify-center p-8 sm:p-12 md:p-24 bg-background-light dark:bg-background-dark'>
         <div className='w-full max-w-xl'>
@@ -67,6 +69,15 @@ const SignUpForm = () => {
             <p className='text-slate-500 dark:text-gray-400 font-light'>
               Please sign up to your account
             </p>
+          </div>
+
+          <div className='mb-2'>
+            {isSuccess && (
+              <p className='text-green-500'>
+                Register success .Please check your email to verify your account
+                before login
+              </p>
+            )}
           </div>
           <form className='space-y-6' onSubmit={handleSubmit(onSubmit)}>
             <div className='space-y-4'>
@@ -114,8 +125,8 @@ const SignUpForm = () => {
                 errorMessage={errors.address?.message}
               />
             </div>
-            <Button className='w-full' type='submit' disabled={isLoading}>
-              {isLoading ? (
+            <Button className='w-full' type='submit' disabled={isPending}>
+              {isPending ? (
                 <Loader2 className='w-4 h-4 animate-spin' />
               ) : (
                 'Sign up'
@@ -132,13 +143,7 @@ const SignUpForm = () => {
               </div>
             </div>
             <div className='w-full'>
-              <button
-                className='flex items-center justify-center gap-2 py-3 px-4 border border-slate-200 dark:border-white/10 rounded-lg hover:bg-slate-50 dark:hover:bg-white/5 transition-colors w-full'
-                type='button'
-              >
-                <IconGoogle />
-                <span className='text-sm font-medium'>Google</span>
-              </button>
+              <GoogleLoginButton />
             </div>
             <p className='text-center text-sm text-slate-500 dark:text-gray-400 mt-8'>
               Already have an account?
