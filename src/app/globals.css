@@ -40,6 +40,7 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --font-heading: var(--font-heading3);
 }
 
 :root {
@@ -120,6 +121,9 @@
   }
   .main-container {
     @apply max-w-[1400px];
+  }
+  .container-layout {
+    @apply px-6 py-4 md:px-12;
   }
 }
 
