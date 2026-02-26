@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { https } from '~/config/https'
-import { ApiResponse } from '~/types/apiConfig'
+
 import {
   FileItem,
   FolderInputType,
@@ -11,6 +11,7 @@ import {
   MediaFileQuery,
   MediaFileQueryResponse,
 } from './types'
+import { ApiResponse } from '~/@types/api'
 
 export const _mediaApi = {
   // ======= MEDIA FOLDER SETTING ====== //
@@ -19,7 +20,7 @@ export const _mediaApi = {
       '/media-folder/folder-getAll',
     )
 
-    return response.data
+    return response
   },
   fetchFolderCreate: async (payload: FolderInputType) => {
     const response: ApiResponse<FolderType> = await https.post(

@@ -1,5 +1,9 @@
-import UnderConstruction from '~/components/layouts/public-layout/under-construction'
+import HeroSection from '~/features/public/home/hero-section'
 
 export default function Home() {
-  return <UnderConstruction />
+  return (
+    <main>
+      <HeroSection />
+    </main>
+  )
 }

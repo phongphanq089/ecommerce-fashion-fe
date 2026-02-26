@@ -1,5 +1,4 @@
-import React from 'react'
-import ProfileDemo from '~/components/layouts/public-layout/profile-demo'
+import ProfileDemo from '~/components/layouts/public-layout/header/profile-demo'
 
 const PageProfile = () => {
   return (

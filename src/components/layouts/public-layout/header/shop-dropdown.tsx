@@ -49,15 +49,15 @@ const SHOP_BY_COLOUR = [
 
 const ShopDropdown = () => {
   return (
-    <div className='w-full bg-white text-black border-t border-neutral-200 py-10 px-8 lg:px-16 shadow-2xl'>
-      <div className='flex max-w-7xl mx-auto'>
+    <div className='w-full bg-black text-white border-t border-b border-white/20 py-10 px-8 lg:px-16 shadow-2xl'>
+      <div className='flex container-layout'>
         {/* Main Links (Left Column) */}
         <div className='w-1/5 flex flex-col space-y-6'>
           {MAIN_LINKS.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className='font-extrabold text-sm hover:text-neutral-500 transition-colors uppercase tracking-wide'
+              className='font-extrabold text-sm hover:text-neutral-300 transition-colors uppercase tracking-wide'
             >
               {link.label}
             </Link>
@@ -75,7 +75,7 @@ const ShopDropdown = () => {
               <Link
                 key={link.label}
                 href={link.href}
-                className='text-sm text-neutral-600 hover:text-black transition-colors'
+                className='text-sm hover:underline transition-colors'
               >
                 {link.label}
               </Link>
@@ -91,7 +91,7 @@ const ShopDropdown = () => {
               <Link
                 key={link.label}
                 href={link.href}
-                className='text-sm text-neutral-600 hover:text-black transition-colors'
+                className='text-sm hover:underline transition-colors'
               >
                 {link.label}
               </Link>
@@ -107,7 +107,7 @@ const ShopDropdown = () => {
               <Link
                 key={link.label}
                 href={link.href}
-                className='text-sm text-neutral-600 hover:text-black transition-colors'
+                className='text-sm hover:underline transition-colors'
               >
                 {link.label}
               </Link>
@@ -124,17 +124,17 @@ const ShopDropdown = () => {
                 <Link
                   key={color.label}
                   href={`/shop/color/${color.label.toLowerCase()}`}
-                  className='flex items-center gap-3 text-sm text-neutral-600 hover:text-black transition-colors group'
+                  className='flex items-center gap-3 text-sm hover:underline transition-colors group '
                 >
                   <span
-                    className={`w-4 h-4 rounded-sm flex-shrink-0 relative overflow-hidden ${
+                    className={`w-4 h-4 rounded-sm flex-shrink-0 relative overflow-hidden border border-neutral-300 ${
                       color.border ? 'border border-neutral-300' : ''
                     }`}
                     style={{ backgroundColor: color.hex }}
                   >
                     {color.split && (
                       <span
-                        className='absolute inset-0 bg-black'
+                        className='absolute inset-0 bg-black  '
                         style={{
                           clipPath: 'polygon(100% 0, 0 100%, 100% 100%)',
                         }}

@@ -14,7 +14,7 @@ const Footer = () => {
   return (
     <div className='flex flex-col w-full'>
       <footer className='w-full bg-black text-white pt-20 border-t border-neutral-800 overflow-hidden flex flex-col'>
-        <div className='container-layout flex-1 mb-8'>
+        <div className='container-layout flex-1 lg:mb-8'>
           {/* Massive Brand Title - Taking up full width */}
           <div className='w-full mb-20 2xl:mb-30'>
             <h1 className='text-[24vw] xl:text-[24vw] 3xl:text-[26vw] leading-[0.8] font-bold text-center uppercase whitespace-nowrap select-none text-primary'>
@@ -23,7 +23,7 @@ const Footer = () => {
           </div>
 
           {/* Info Grid - Matching Reference Layout */}
-          <div className='grid grid-cols-1 md:grid-cols-12 gap-8 mb-32 text-sm text-neutral-400 font-medium'>
+          <div className='grid grid-cols-1 md:grid-cols-12 gap-8 mb-8 lg:mb-32 text-lg  lg:text-sm text-neutral-400 font-medium'>
             {/* Col 1: Contact Info (Left) - Span 3 */}
             <div className='md:col-span-3 flex flex-col gap-2'>
               <div

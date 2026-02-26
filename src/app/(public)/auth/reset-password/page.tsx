@@ -1,5 +1,10 @@
 import ResetPasswordForm from '~/features/public/auth/reset-password-form'
+import { Suspense } from 'react'
 
 export default function ResetPasswordPage() {
-  return <ResetPasswordForm />
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordForm />
+    </Suspense>
+  )
 }
