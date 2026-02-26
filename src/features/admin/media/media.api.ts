@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import https from '~/config/https'
-import { ApiResponse } from '~/types/apiConfig'
+import { https } from '~/config/https'
+
 import {
   FileItem,
   FolderInputType,
@@ -11,33 +11,34 @@ import {
   MediaFileQuery,
   MediaFileQueryResponse,
 } from './types'
+import { ApiResponse } from '~/@types/api'
 
 export const _mediaApi = {
   // ======= MEDIA FOLDER SETTING ====== //
   fetchFolderMedia: async () => {
     const response: ApiResponse<FolderType[]> = await https.get(
-      '/media-folder/folder-getAll'
+      '/media-folder/folder-getAll',
     )
 
-    return response.data
+    return response
   },
   fetchFolderCreate: async (payload: FolderInputType) => {
     const response: ApiResponse<FolderType> = await https.post(
       '/media-folder/create',
-      payload
+      payload,
     )
     return response
   },
   fetchFolderUpdate: async (payload: FolderUpdateType) => {
     const response: ApiResponse<FolderType> = await https.put(
       '/media-folder/folder-update',
-      payload
+      payload,
     )
     return response
   },
   fetchFolderDelete: async (id: string) => {
     const response: ApiResponse<any> = await https.delete(
-      `/media-folder/delete/${id}`
+      `/media-folder/delete/${id}`,
     )
     return response
   },
@@ -52,14 +53,14 @@ export const _mediaApi = {
           page,
           limit,
         },
-      }
+      },
     )
     return response
   },
   fetchMediaUpload: async (
     files: FileItem[],
     folderId: string | undefined,
-    onProgress?: (fileId: string, percent: number) => void
+    onProgress?: (fileId: string, percent: number) => void,
   ) => {
     const formData = new FormData()
 
@@ -80,21 +81,21 @@ export const _mediaApi = {
           }
         },
         headers: { 'Content-Type': 'multipart/form-data' },
-      }
+      },
     )
 
     return response
   },
   fetchMediaDeleteSingle: async (id: string) => {
     const response: ApiResponse<FolderType> = await https.delete(
-      `/media-file/media-delete-single/${id}`
+      `/media-file/media-delete-single/${id}`,
     )
     return response
   },
   fetchMediaDeleteMutiple: async (payload: MediaFileDelete) => {
     const response: ApiResponse<FolderType> = await https.post(
       '/media-file/media-delete-multiple',
-      payload
+      payload,
     )
     return response
   },

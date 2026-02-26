@@ -125,7 +125,7 @@ const ListFolderUi = () => {
               <Label htmlFor='all-folder'>All</Label>
             </div>
 
-            {mediaFolderData?.result.map((item) => (
+            {mediaFolderData?.result.map((item: any) => (
               <div
                 key={`${item.id}-${item.name}`}
                 className='border-input has-data-[state=checked]:border-primary/50 relative flex flex-col gap-4 rounded-md border p-4 shadow-xs outline-none cursor-pointer min-w-[130px] sm:min-w-[150px]'
