@@ -78,10 +78,10 @@ const MediaList = () => {
   })
 
   const metadata = {
-    total: mediaList?.data.result.total as number,
-    page: mediaList?.data.result.page as number,
-    limit: mediaList?.data.result.limit as number,
-    totalPages: mediaList?.data.result.totalPages as number,
+    total: mediaList?.result.total as number,
+    page: mediaList?.result.page as number,
+    limit: mediaList?.result.limit as number,
+    totalPages: mediaList?.result.totalPages as number,
   }
 
   const { mutate: uploadFiles } = _mediaService.useMediaUploadFiles()
@@ -123,7 +123,7 @@ const MediaList = () => {
           clearFiles()
           clearUploadProgress()
         },
-      }
+      },
     )
   }
 
@@ -169,7 +169,7 @@ const MediaList = () => {
       url: file.preview,
       id: file.id,
     })),
-    ...(mediaList?.data.result.items ?? []).map((u) => ({
+    ...(mediaList?.result.items ?? []).map((u: any) => ({
       clientId: '',
       preview: u.url,
       fileId: u.fileId ?? u.id ?? '',
@@ -280,7 +280,7 @@ const MediaList = () => {
                                     <Checkbox
                                       className='sr-only after:absolute after:inset-0'
                                       checked={selectMedia.includes(
-                                        item.id as string
+                                        item.id as string,
                                       )}
                                       onCheckedChange={() =>
                                         handleSelectMedia(item.id as string)
