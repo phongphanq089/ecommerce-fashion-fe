@@ -13,3 +13,16 @@ export const LoadingUiFolder = () => {
     </div>
   )
 }
+
+export const LoadingUiMediaList = ({ count }: { count: number }) => {
+  return (
+    <div className='grid grid-cols-2 w-full sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
+      {Array.from({ length: count }).map((_, index) => (
+        <Skeleton
+          key={index}
+          className='h-[200px] min-w-[120px] w-full rounded-xl'
+        />
+      ))}
+    </div>
+  )
+}

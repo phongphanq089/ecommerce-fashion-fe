@@ -24,12 +24,6 @@ export interface MediaFileQuery {
   limit?: number
 }
 
-export interface MediaFileQuery {
-  folderId?: string
-  page?: number
-  limit?: number
-}
-
 export interface MediaItem {
   id: string
   fileName: string
@@ -41,6 +35,11 @@ export interface MediaItem {
   updatedAt: string
   folderId: string
   fileId: string
+  folder: {
+    id: string
+    name: string
+    parentId: string | null
+  }
 }
 
 export interface MediaFileQueryResponse {
@@ -58,5 +57,7 @@ export type FileItem = {
 }
 
 export interface MediaFileDelete {
-  Ids: string[]
+  ids: string[]
 }
+
+export const FILE_TYPE = ['IMAGE', 'VIDEO', 'DOCUMENT', 'OTHER'] as const

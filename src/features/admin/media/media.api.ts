@@ -17,36 +17,34 @@ export const _mediaApi = {
   // ======= MEDIA FOLDER SETTING ====== //
   fetchFolderMedia: async () => {
     const response: ApiResponse<FolderType[]> = await https.get(
-      '/media-folder/folder-getAll',
+      '/media/folder-getAll',
     )
 
-    return response
+    return response.data
   },
   fetchFolderCreate: async (payload: FolderInputType) => {
     const response: ApiResponse<FolderType> = await https.post(
-      '/media-folder/create',
+      '/media/create',
       payload,
     )
     return response
   },
   fetchFolderUpdate: async (payload: FolderUpdateType) => {
     const response: ApiResponse<FolderType> = await https.put(
-      '/media-folder/folder-update',
+      '/media/folder-update',
       payload,
     )
     return response
   },
   fetchFolderDelete: async (id: string) => {
-    const response: ApiResponse<any> = await https.delete(
-      `/media-folder/delete/${id}`,
-    )
+    const response: ApiResponse<any> = await https.delete(`/media/delete/${id}`)
     return response
   },
   // ======= MEDIA ITEM SETTING ====== //
   fetchMediFileList: async (params?: MediaFileQuery) => {
     const { folderId, page = 1, limit = 20 } = params || {}
     const response: ApiResponse<MediaFileQueryResponse> = await https.get(
-      `/media-file/getMedia`,
+      `/media/get-media`,
       {
         params: {
           ...(folderId ? { folderId } : {}),
@@ -55,7 +53,7 @@ export const _mediaApi = {
         },
       },
     )
-    return response
+    return response.data
   },
   fetchMediaUpload: async (
     files: FileItem[],
@@ -64,18 +62,18 @@ export const _mediaApi = {
   ) => {
     const formData = new FormData()
 
-    files.map((file) => {
+    files.forEach((file) => {
       formData.append('files', file.file)
     })
     const response: ApiResponse<any> = await https.post(
-      '/media-file/uploads',
+      '/media/upload-multiple',
       formData,
       {
         params: { ...(folderId ? { folderId } : {}) },
         onUploadProgress: (event: any) => {
           const percent = Math.round((event.loaded * 100) / event.total)
           if (onProgress) {
-            files.map((file) => {
+            files.forEach((file) => {
               onProgress(file.id, percent)
             })
           }
@@ -87,14 +85,15 @@ export const _mediaApi = {
     return response
   },
   fetchMediaDeleteSingle: async (id: string) => {
-    const response: ApiResponse<FolderType> = await https.delete(
-      `/media-file/media-delete-single/${id}`,
+    const response: ApiResponse<any> = await https.post(
+      `/media/delete-single`,
+      { id: id },
     )
     return response
   },
   fetchMediaDeleteMutiple: async (payload: MediaFileDelete) => {
-    const response: ApiResponse<FolderType> = await https.post(
-      '/media-file/media-delete-multiple',
+    const response: ApiResponse<any> = await https.post(
+      '/media/delete-multiple',
       payload,
     )
     return response

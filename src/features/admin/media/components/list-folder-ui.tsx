@@ -1,22 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 import { Edit, FolderClosed } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Label } from '~/components/ui/core/label'
 import { RadioGroup, RadioGroupItem } from '~/components/ui/core/radio-group'
 import { ScrollArea, ScrollBar } from '~/components/ui/core/scroll-area'
-
 import { useQueryState } from 'nuqs'
-
 import { toast } from 'react-toastify'
-import { useUiStore } from '~/store/useUiStore'
-
 import AddFolder from './add-folder'
-
 import UpdateFolder from './update-folder'
 import { _mediaService } from '../media.queries'
 import { DEFAULT_FOLDER_MEDIA } from '~/constants'
-import { LoadingUiFolder } from './loading-ui-folder'
+import { LoadingUiFolder } from './loading-ui-list'
 
 const ListFolderUi = () => {
   const [selectedFolder, setSelectedFolder] = useState<{
@@ -29,8 +24,6 @@ const ListFolderUi = () => {
   const [folderMedia, setFolderMedia] = useQueryState('folderMedia')
 
   const { data: mediaFolderData, isLoading } = _mediaService.useMediaFolder()
-
-  const { setLoading } = useUiStore()
 
   const { mutate: updateFolder } = _mediaService.useMediaFolderUpdate()
 
@@ -51,33 +44,24 @@ const ListFolderUi = () => {
       id: id,
       name: value,
     }
-    setLoading(true)
+
     updateFolder(payload, {
       onSuccess: () => {
-        toast.success(`Update folder ${value} successfuly`)
         setOpen(false)
       },
       onError: (error) => {
         toast.error(error.message)
-      },
-      onSettled: () => {
-        setLoading(false)
       },
     })
   }
 
   const handleDeleteFolder = (id: string) => {
-    setLoading(true)
     deleteFolder(id, {
       onSuccess: () => {
-        toast.success(`Delete successfuly`)
         setOpen(false)
       },
       onError: (error) => {
         toast.error(error.message)
-      },
-      onSettled: () => {
-        setLoading(false)
       },
     })
   }
@@ -140,16 +124,14 @@ const ListFolderUi = () => {
                 </div>
                 <Label htmlFor={`${item.id}-${item.name}`}>{item.name}</Label>
                 <div className='absolute bottom-3 right-2'>
-                  <div className='absolute bottom-3 right-2'>
-                    <Edit
-                      className='text-red-500 cursor-pointer'
-                      size={18}
-                      onClick={() => {
-                        setSelectedFolder(item)
-                        setOpen(true)
-                      }}
-                    />
-                  </div>
+                  <Edit
+                    className='text-red-500 cursor-pointer'
+                    size={18}
+                    onClick={() => {
+                      setSelectedFolder(item)
+                      setOpen(true)
+                    }}
+                  />
                 </div>
               </div>
             ))}

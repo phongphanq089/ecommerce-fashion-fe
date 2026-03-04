@@ -1,11 +1,20 @@
 'use client'
 
 import { IconFileUploadFilled } from '@tabler/icons-react'
-import { CheckIcon, ImageIcon, Trash, UploadIcon, X, XIcon } from 'lucide-react'
+import {
+  CheckIcon,
+  FileIcon,
+  FileText,
+  Film,
+  ImageIcon,
+  Trash,
+  UploadIcon,
+  X,
+  XIcon,
+} from 'lucide-react'
 
-import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import LoadingData from '~/components/shared/loading-data'
 
@@ -21,6 +30,7 @@ import { _mediaService } from '../media.queries'
 import { FileItem } from '../types'
 import { DEFAULT_FOLDER_MEDIA } from '~/constants'
 import Pagination from '~/components/shared/pagination-ui'
+import { LoadingUiMediaList } from './loading-ui-list'
 
 const maxSizeMB = 10
 const maxSize = maxSizeMB * 1024 * 1024
@@ -33,6 +43,7 @@ type DisplayItem = {
   altText: string
   url?: string
   id?: string
+  mediaType?: string
 }
 
 const MediaList = () => {
@@ -84,7 +95,8 @@ const MediaList = () => {
     totalPages: mediaList?.result.totalPages as number,
   }
 
-  const { mutate: uploadFiles } = _mediaService.useMediaUploadFiles()
+  const { mutate: uploadFiles, isPending: isPendingUploadFiles } =
+    _mediaService.useMediaUploadFiles()
 
   const { mutate: deleteFileSingle } = _mediaService.useMediaDeleteSingle()
 
@@ -130,7 +142,7 @@ const MediaList = () => {
   const handleDeleteFileMutiple = async () => {
     setLoading(true)
     const payload = {
-      Ids: selectMedia,
+      ids: selectMedia,
     }
     deleteFiles(payload, {
       onSuccess: () => {
@@ -146,16 +158,16 @@ const MediaList = () => {
   }
 
   const handleDeleteFileSingle = async (id: string) => {
-    setLoading(true)
+    // setLoading(true)
     deleteFileSingle(id, {
       onSuccess: () => {
         if (!isLoading) {
           refetch()
         }
       },
-      onSettled: () => {
-        setLoading(false)
-      },
+      // onSettled: () => {
+      //   setLoading(false)
+      // },
     })
   }
 
@@ -176,6 +188,7 @@ const MediaList = () => {
       altText: (u.altText ?? '') as string,
       url: u.url,
       id: u.id,
+      mediaType: u.fileType,
     })),
   ]
 
@@ -235,9 +248,11 @@ const MediaList = () => {
                 <Button
                   variant='default'
                   onClick={handleUploadMedia}
-                  disabled={files.length === 0}
+                  disabled={files.length === 0 || isPendingUploadFiles}
                 >
-                  Upload Selected Files
+                  {isPendingUploadFiles
+                    ? 'Uploading...'
+                    : 'Upload Selected Files'}
                   <UploadIcon />
                 </Button>
                 <Button
@@ -258,12 +273,7 @@ const MediaList = () => {
             {displayItems.length > 0 && (
               <div className='my-4'>
                 {isLoading ? (
-                  <LoadingData
-                    size='small'
-                    message='Loading Media'
-                    submessage='Retrieving data from server...'
-                    fullscreen={false}
-                  />
+                  <LoadingUiMediaList count={12} />
                 ) : (
                   <>
                     <div className='grid grid-cols-2 md:grid-cols-3 gap-4 lg:grid-cols-4 xl:grid-cols-5 mt-2'>
@@ -311,13 +321,40 @@ const MediaList = () => {
                                   <XIcon className='size-3.5' />
                                 </Button>
                               </div>
-                              <Image
-                                src={item.preview || item.url || ''}
-                                alt={item.altText || item.fileId}
-                                className='size-full rounded-[inherit] object-cover'
-                                width={500}
-                                height={500}
-                              />
+
+                              {item.mediaType === 'IMAGE' ? (
+                                <img
+                                  src={item.preview || item.url || ''}
+                                  alt={item.altText || item.fileId}
+                                  className='size-full rounded-[inherit] object-cover'
+                                />
+                              ) : item.mediaType === 'VIDEO' ? (
+                                <div className='size-full rounded-[inherit] object-cover flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 break-all text-center p-2'>
+                                  <Film className='size-10 text-gray-500 mb-1' />
+                                  <span
+                                    className='text-[10px] text-gray-500 font-medium line-clamp-2'
+                                    title={item.altText || item.fileId}
+                                  >
+                                    {item.altText || item.fileId}
+                                  </span>
+                                </div>
+                              ) : item.mediaType === 'DOCUMENT' ? (
+                                <div className='size-full rounded-[inherit] object-cover flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 break-all text-center p-2'>
+                                  <FileText className='size-10 text-blue-500 mb-1' />
+                                  <span
+                                    className='text-[10px] text-gray-500 font-medium line-clamp-2'
+                                    title={item.altText || item.fileId}
+                                  >
+                                    {item.altText || item.fileId}
+                                  </span>
+                                </div>
+                              ) : (
+                                <img
+                                  src={item.preview || item.url || ''}
+                                  alt={item.altText || item.fileId}
+                                  className='size-full rounded-[inherit] object-cover'
+                                />
+                              )}
 
                               {uploadProgress[item.fileId] && (
                                 <div className='absolute inset-0 bg-black/50 z-0 rounded-md flex items-end justify-center'>
@@ -348,12 +385,7 @@ const MediaList = () => {
         ) : (
           <>
             {isLoading ? (
-              <LoadingData
-                size='small'
-                message='Loading Media'
-                submessage='Retrieving data from server...'
-                fullscreen={false}
-              />
+              <LoadingUiMediaList count={12} />
             ) : (
               <div className='flex flex-col items-center justify-center px-4 py-3 text-center'>
                 <div
