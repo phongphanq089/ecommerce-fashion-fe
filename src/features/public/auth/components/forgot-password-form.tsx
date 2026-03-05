@@ -5,11 +5,14 @@ import { Button } from '~/components/ui/core/button'
 import { Input } from '~/components/ui/core/input'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { forgotPasswordSchema, ForgotPasswordSchemaType } from './auth.validate'
+import {
+  forgotPasswordSchema,
+  ForgotPasswordSchemaType,
+} from '../auth.validate'
 import { Loader2, ArrowLeft } from 'lucide-react'
 import { toast } from 'react-toastify'
 import { SETTING_AUTH } from '~/constants'
-import { AUTH_QUERY } from './auth.query'
+import { AUTH_QUERY } from '../auth.query'
 import BannerImage from './banner-image'
 
 const ForgotPasswordForm = () => {

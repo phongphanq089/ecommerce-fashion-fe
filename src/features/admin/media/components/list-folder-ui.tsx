@@ -9,7 +9,7 @@ import { useQueryState } from 'nuqs'
 import { toast } from 'react-toastify'
 import AddFolder from './add-folder'
 import UpdateFolder from './update-folder'
-import { _mediaService } from '../media.queries'
+import { _mediaService } from '../media.query'
 import { DEFAULT_FOLDER_MEDIA } from '~/constants'
 import { LoadingUiFolder } from './loading-ui-list'
 

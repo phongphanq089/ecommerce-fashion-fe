@@ -9,11 +9,11 @@ import { Button } from '~/components/ui/core/button'
 import { Input } from '~/components/ui/core/input'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { signInSchema, SignInSchemaType } from './auth.validate'
+import { signInSchema, SignInSchemaType } from '../auth.validate'
 import { Loader2 } from 'lucide-react'
 import { toast } from 'react-toastify'
 import { https, setAccessToken } from '~/config/https'
-import { AUTH_QUERY } from './auth.query'
+import { AUTH_QUERY } from '../auth.query'
 import { useQueryClient } from '@tanstack/react-query'
 
 const SignInForm = () => {

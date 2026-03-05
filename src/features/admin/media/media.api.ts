@@ -16,7 +16,7 @@ import { ApiResponse } from '~/@types/api'
 export const _mediaApi = {
   // ======= MEDIA FOLDER SETTING ====== //
   fetchFolderMedia: async () => {
-    const response: ApiResponse<FolderType[]> = await https.get(
+    const response = await https.get<ApiResponse<FolderType[]>>(
       '/media/folder-getAll',
     )
 
@@ -43,7 +43,7 @@ export const _mediaApi = {
   // ======= MEDIA ITEM SETTING ====== //
   fetchMediFileList: async (params?: MediaFileQuery) => {
     const { folderId, page = 1, limit = 20 } = params || {}
-    const response: ApiResponse<MediaFileQueryResponse> = await https.get(
+    const response = await https.get<ApiResponse<MediaFileQueryResponse>>(
       `/media/get-media`,
       {
         params: {

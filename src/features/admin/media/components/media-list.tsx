@@ -1,9 +1,7 @@
 'use client'
-
 import { IconFileUploadFilled } from '@tabler/icons-react'
 import {
   CheckIcon,
-  FileIcon,
   FileText,
   Film,
   ImageIcon,
@@ -12,22 +10,17 @@ import {
   X,
   XIcon,
 } from 'lucide-react'
-
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import LoadingData from '~/components/shared/loading-data'
-
-// import Pagination from '~/components/shared/Pagination'
 import { AspectRatio } from '~/components/ui/core/aspect-ratio'
 import { Button } from '~/components/ui/core/button'
 import { Checkbox } from '~/components/ui/core/checkbox'
 import { Progress } from '~/components/ui/core/progress'
-
 import { useFileUpload } from '~/hooks/use-file-upload'
 import { useUiStore } from '~/store/useUiStore'
-import { _mediaService } from '../media.queries'
-import { FileItem } from '../types'
+import { _mediaService } from '../media.query'
+import { FileItem, FileType } from '../types'
 import { DEFAULT_FOLDER_MEDIA } from '~/constants'
 import Pagination from '~/components/shared/pagination-ui'
 import { LoadingUiMediaList } from './loading-ui-list'
@@ -43,7 +36,7 @@ type DisplayItem = {
   altText: string
   url?: string
   id?: string
-  mediaType?: string
+  mediaType?: FileType
 }
 
 const MediaList = () => {
@@ -158,16 +151,12 @@ const MediaList = () => {
   }
 
   const handleDeleteFileSingle = async (id: string) => {
-    // setLoading(true)
     deleteFileSingle(id, {
       onSuccess: () => {
         if (!isLoading) {
           refetch()
         }
       },
-      // onSettled: () => {
-      //   setLoading(false)
-      // },
     })
   }
 
@@ -256,7 +245,6 @@ const MediaList = () => {
                   <UploadIcon />
                 </Button>
                 <Button
-                  size='sm'
                   onClick={openFileDialog}
                   disabled={files.length >= maxFiles}
                 >
@@ -373,7 +361,7 @@ const MediaList = () => {
                     {!isLoading && (
                       <Pagination
                         meta={metadata}
-                        className='justify-center fixed bottom-3 left-1/2 min-md:left-[55%] -translate-x-1/2'
+                        className='justify-center fixed bottom-0 left-1/2 min-md:left-[55%] -translate-x-1/2 z-50 bg-accent p-2 rounded-md w-full'
                         variant='numbers'
                       />
                     )}

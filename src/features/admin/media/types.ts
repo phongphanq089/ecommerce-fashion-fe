@@ -28,7 +28,7 @@ export interface MediaItem {
   id: string
   fileName: string
   url: string
-  fileType: string
+  fileType: FileType
   size: string
   altText: string
   createdAt: string
@@ -61,3 +61,4 @@ export interface MediaFileDelete {
 }
 
 export const FILE_TYPE = ['IMAGE', 'VIDEO', 'DOCUMENT', 'OTHER'] as const
+export type FileType = (typeof FILE_TYPE)[number]
