@@ -62,3 +62,13 @@ export interface MediaFileDelete {
 
 export const FILE_TYPE = ['IMAGE', 'VIDEO', 'DOCUMENT', 'OTHER'] as const
 export type FileType = (typeof FILE_TYPE)[number]
+
+export type DisplayItem = {
+  clientId?: string
+  preview?: string
+  fileId: string
+  altText: string
+  url?: string
+  id?: string
+  mediaType?: FileType
+}

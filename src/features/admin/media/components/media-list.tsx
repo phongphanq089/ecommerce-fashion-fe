@@ -1,43 +1,22 @@
 'use client'
 import { IconFileUploadFilled } from '@tabler/icons-react'
-import {
-  CheckIcon,
-  FileText,
-  Film,
-  ImageIcon,
-  Trash,
-  UploadIcon,
-  X,
-  XIcon,
-} from 'lucide-react'
+import { ImageIcon, Trash, UploadIcon, X } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import { AspectRatio } from '~/components/ui/core/aspect-ratio'
 import { Button } from '~/components/ui/core/button'
-import { Checkbox } from '~/components/ui/core/checkbox'
-import { Progress } from '~/components/ui/core/progress'
 import { useFileUpload } from '~/hooks/use-file-upload'
 import { useUiStore } from '~/store/useUiStore'
 import { _mediaService } from '../media.query'
-import { FileItem, FileType } from '../types'
+import { DisplayItem, FileItem, FileType } from '../types'
 import { DEFAULT_FOLDER_MEDIA } from '~/constants'
 import Pagination from '~/components/shared/pagination-ui'
 import { LoadingUiMediaList } from './loading-ui-list'
+import { MediaGrid } from './media-grid'
 
 const maxSizeMB = 10
 const maxSize = maxSizeMB * 1024 * 1024
 const maxFiles = 6
-
-type DisplayItem = {
-  clientId?: string
-  preview?: string
-  fileId: string
-  altText: string
-  url?: string
-  id?: string
-  mediaType?: FileType
-}
 
 const MediaList = () => {
   const [
@@ -123,8 +102,10 @@ const MediaList = () => {
         },
       },
       {
-        onSuccess: () => {
-          refetch()
+        onSuccess: async () => {
+          // Wait for the query to finish refetching the updated media list
+          // before clearing the local files to prevent UI flickering.
+          await refetch()
           clearFiles()
           clearUploadProgress()
         },
@@ -264,104 +245,24 @@ const MediaList = () => {
                   <LoadingUiMediaList count={12} />
                 ) : (
                   <>
-                    <div className='grid grid-cols-2 md:grid-cols-3 gap-4 lg:grid-cols-4 xl:grid-cols-5 mt-2'>
-                      {displayItems.map((item, index) => {
-                        return (
-                          <div key={index}>
-                            <AspectRatio
-                              ratio={1}
-                              className='bg-accent relative  rounded-md mb-5'
-                            >
-                              <div className='absolute z-10 -top-2 right-0 p-1 rounded-md flex items-center gap-3 bg-white shadow-2xl border'>
-                                {!item.clientId ? (
-                                  <label className='border-gray-800 bg-gray-200 text-gray-700 has-data-[state=checked]:border-primary-color has-data-[state=checked]:bg-primary has-data-[state=checked]:text-white has-focus-visible:border-ring has-focus-visible:ring-ring/50 flex size-5 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border text-center shadow-xs transition-[color,box-shadow] outline-none has-focus-visible:ring-[3px] has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50'>
-                                    <Checkbox
-                                      className='sr-only after:absolute after:inset-0'
-                                      checked={selectMedia.includes(
-                                        item.id as string,
-                                      )}
-                                      onCheckedChange={() =>
-                                        handleSelectMedia(item.id as string)
-                                      }
-                                    />
-                                    <span
-                                      aria-hidden='true'
-                                      className='text-sm font-medium'
-                                    >
-                                      <CheckIcon className='size-3' />
-                                    </span>
-                                  </label>
-                                ) : (
-                                  ''
-                                )}
-                                <Button
-                                  onClick={() => {
-                                    if (item.clientId) {
-                                      removeFile(item.clientId)
-                                    } else {
-                                      handleDeleteFileSingle(item.id as string)
-                                    }
-                                  }}
-                                  size='icon'
-                                  className='focus-visible:border-background  size-6 rounded-full border-2 shadow-none'
-                                  aria-label='Remove image'
-                                >
-                                  <XIcon className='size-3.5' />
-                                </Button>
-                              </div>
-
-                              {item.mediaType === 'IMAGE' ? (
-                                <img
-                                  src={item.preview || item.url || ''}
-                                  alt={item.altText || item.fileId}
-                                  className='size-full rounded-[inherit] object-cover'
-                                />
-                              ) : item.mediaType === 'VIDEO' ? (
-                                <div className='size-full rounded-[inherit] object-cover flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 break-all text-center p-2'>
-                                  <Film className='size-10 text-gray-500 mb-1' />
-                                  <span
-                                    className='text-[10px] text-gray-500 font-medium line-clamp-2'
-                                    title={item.altText || item.fileId}
-                                  >
-                                    {item.altText || item.fileId}
-                                  </span>
-                                </div>
-                              ) : item.mediaType === 'DOCUMENT' ? (
-                                <div className='size-full rounded-[inherit] object-cover flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 break-all text-center p-2'>
-                                  <FileText className='size-10 text-blue-500 mb-1' />
-                                  <span
-                                    className='text-[10px] text-gray-500 font-medium line-clamp-2'
-                                    title={item.altText || item.fileId}
-                                  >
-                                    {item.altText || item.fileId}
-                                  </span>
-                                </div>
-                              ) : (
-                                <img
-                                  src={item.preview || item.url || ''}
-                                  alt={item.altText || item.fileId}
-                                  className='size-full rounded-[inherit] object-cover'
-                                />
-                              )}
-
-                              {uploadProgress[item.fileId] && (
-                                <div className='absolute inset-0 bg-black/50 z-0 rounded-md flex items-end justify-center'>
-                                  <Progress
-                                    value={uploadProgress[item.fileId]}
-                                    className='w-full'
-                                  />
-                                </div>
-                              )}
-                            </AspectRatio>
-                          </div>
-                        )
-                      })}
-                    </div>
+                    <MediaGrid
+                      items={displayItems}
+                      selectedIds={selectMedia}
+                      uploadProgress={uploadProgress}
+                      onSelect={(id) => handleSelectMedia(id)}
+                      onRemove={(id, isClientId) => {
+                        if (isClientId) {
+                          removeFile(id)
+                        } else {
+                          handleDeleteFileSingle(id)
+                        }
+                      }}
+                    />
 
                     {!isLoading && (
                       <Pagination
                         meta={metadata}
-                        className='justify-center fixed bottom-0 left-1/2 min-md:left-[55%] -translate-x-1/2 z-50 bg-accent p-2 rounded-md w-full'
+                        className='justify-center fixed bottom-0 left-1/2 min-md:left-[55%] -translate-x-1/2 z-50 bg-accent p-2 rounded-md main-container w-full'
                         variant='numbers'
                       />
                     )}
