@@ -35,9 +35,9 @@ const ListFolderUi = () => {
       folderMedia === null ||
       folderMedia === ''
     ) {
-      setFolderMedia(DEFAULT_FOLDER_MEDIA)
+      setFolderMedia(mediaFolderData?.result?.[0]?.id ?? '')
     }
-  }, [folderMedia])
+  }, [folderMedia, mediaFolderData])
 
   const handleUpdateValue = (id: string, value: string) => {
     const payload = {
@@ -95,20 +95,6 @@ const ListFolderUi = () => {
             value={folderMedia ?? ''}
             onValueChange={handleFolderChange}
           >
-            <div
-              key='all-folder'
-              className='border-input has-data-[state=checked]:border-primary/50 relative flex flex-col gap-4 rounded-md border p-4 shadow-xs outline-none cursor-pointer min-w-[130px] sm:min-w-[150px]'
-            >
-              <div className='flex justify-between gap-2 cursor-pointer'>
-                <RadioGroupItem
-                  value={DEFAULT_FOLDER_MEDIA}
-                  className='order-1 after:absolute after:inset-0 cursor-pointer'
-                />
-                <FolderClosed />
-              </div>
-              <Label htmlFor='all-folder'>All</Label>
-            </div>
-
             {mediaFolderData?.result.map((item: any) => (
               <div
                 key={`${item.id}-${item.name}`}
