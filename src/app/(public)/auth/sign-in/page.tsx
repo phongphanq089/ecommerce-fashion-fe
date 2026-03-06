@@ -1,4 +1,4 @@
-import SignInForm from '~/features/public/auth/sign-in-form'
+import SignInForm from '~/features/public/auth/components/sign-in-form'
 
 const SignIn = () => {
   return (
