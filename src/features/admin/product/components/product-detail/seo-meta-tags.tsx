@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from '~/components/ui/core/card'
 import { Input } from '~/components/ui/core/input'
 import { Label } from '~/components/ui/core/label'
 import { Textarea } from '~/components/ui/core/textarea'
-import { MediaPickerModal, MediaItem } from '~/features/admin/media'
+import { MediaPickerModal, MediaItem } from '~/features/admin/media/components'
 import { cn } from '~/lib/utils'
 
 const SeoMetaTags = () => {
