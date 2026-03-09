@@ -1,4 +1,4 @@
-import VerifyEmailForm from '~/features/public/auth/verify-email-form'
+import VerifyEmailForm from '~/features/public/auth/components/verify-email-form'
 import { Suspense } from 'react'
 
 export default function VerifyEmailPage() {

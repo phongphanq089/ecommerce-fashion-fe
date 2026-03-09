@@ -5,7 +5,7 @@ import BannerImage from './banner-image'
 import Link from 'next/link'
 import { Button } from '~/components/ui/core/button'
 import { Loader2, CheckCircle2, XCircle } from 'lucide-react'
-import { AUTH_QUERY } from './auth.query'
+import { AUTH_QUERY } from '../auth.query'
 
 const VerifyEmailForm = () => {
   const router = useRouter()
