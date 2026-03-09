@@ -1,20 +1,18 @@
 'use client'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import BannerImage from './banner-image'
+
 import Link from 'next/link'
-import GoogleLoginButton from './google-login-button'
 import { Button } from '~/components/ui/core/button'
 import { Input } from '~/components/ui/core/input'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { signUpSchema, SignUpSchemaType } from './auth.validate'
 import { Loader2 } from 'lucide-react'
 import { toast } from 'react-toastify'
-import { https } from '~/config/https'
 import { SETTING_AUTH } from '~/constants'
-import { AUTH_QUERY } from './auth.query'
 import { useQueryClient } from '@tanstack/react-query'
+import { signUpSchema, SignUpSchemaType } from '../auth.validate'
+import { AUTH_QUERY } from '../auth.query'
+import BannerImage from './banner-image'
+import GoogleLoginButton from './google-login-button'
 
 const SignUpForm = () => {
   const form = useForm<SignUpSchemaType>({

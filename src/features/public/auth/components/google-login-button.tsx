@@ -2,7 +2,7 @@
 
 import { useGoogleLogin } from '@react-oauth/google'
 import { useQueryClient } from '@tanstack/react-query'
-import { AUTH_QUERY } from './auth.query'
+import { AUTH_QUERY } from '../auth.query'
 import { toast } from 'react-toastify'
 import { setAccessToken } from '~/config/https'
 import { useAuthStore } from '~/store/auth-store'
