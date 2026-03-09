@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
-import React from 'react'
-import ProductDetail from '~/features/admin/product/components/product-detail'
-import ProductTable from '~/features/admin/product/components/product-list/product-table'
+
+import ProductTable from '~/features/admin/product/product-table'
+import ProductFormAction from '~/features/admin/product/product-form-action'
 
 const PageAction = async ({
   params,
@@ -12,7 +12,7 @@ const PageAction = async ({
 
   switch (action) {
     case 'create':
-      return <ProductDetail />
+      return <ProductFormAction />
     case 'list':
       return <ProductTable />
     default:

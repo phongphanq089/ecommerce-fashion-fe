@@ -1,24 +1,25 @@
 'use client'
-import React from 'react'
 import { FormProvider, useFormContext } from 'react-hook-form'
-import ProductInfoForm from './ProductInfoForm'
 import HeadingSectionAdmin from '~/components/shared/heading-section-admin'
 import { Card, CardContent, CardHeader } from '~/components/ui/core/card'
-import { useProductHookForm } from '../../use-product-hook-form'
 import { Button } from '~/components/ui/core/button'
-import ProductVariantForm from './ProductVariantForm'
-import ShippingConfiguration from './ShippingConfiguration'
-import ProductDiscount from './ProductDiscount'
-import ProductDescription from './ProductDescription'
-import ProductImages from './ProductImages'
-import SeoMetaTags from './SeoMetaTags'
-import ProductFeatured from './ProductFeatured'
-import ProductRefundable from './ProductRefundable'
-import ProductWarranty from './ProductWarranty'
-import ProductStockQuantity from './ProductStockQuantity'
-import ProductCollections from './ProductCollections'
+import {
+  ProductCollections,
+  ProductDescription,
+  ProductDiscount,
+  ProductFeatured,
+  ProductImages,
+  ProductInfoForm,
+  ProductRefundable,
+  ProductStockQuantity,
+  ProductVariantForm,
+  ProductWarranty,
+  SeoMetaTags,
+  ShippingConfiguration,
+} from './components'
+import { useProductHookForm } from './use-product-hook-form'
 
-const ProductDetail = () => {
+const ProductFormAction = () => {
   const form = useProductHookForm()
   return (
     <FormProvider {...form}>
@@ -52,7 +53,7 @@ const ProductDetail = () => {
   )
 }
 
-export default ProductDetail
+export default ProductFormAction
 
 const ActionForm = () => {
   const { handleSubmit } = useFormContext()
