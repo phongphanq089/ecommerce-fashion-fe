@@ -1,24 +1,25 @@
 'use client'
-import React from 'react'
 import { FormProvider, useFormContext } from 'react-hook-form'
-import ProductInfoForm from './ProductInfoForm'
 import HeadingSectionAdmin from '~/components/shared/heading-section-admin'
 import { Card, CardContent, CardHeader } from '~/components/ui/core/card'
-import { useProductHookForm } from '../../use-product-hook-form'
 import { Button } from '~/components/ui/core/button'
-import ProductVariantForm from './ProductVariantForm'
-import ShippingConfiguration from './ShippingConfiguration'
-import ProductDiscount from './ProductDiscount'
-import ProductDescription from './ProductDescription'
-import ProductImages from './ProductImages'
-import SeoMetaTags from './SeoMetaTags'
-import ProductFeatured from './ProductFeatured'
-import ProductRefundable from './ProductRefundable'
-import ProductWarranty from './ProductWarranty'
-import ProductStockQuantity from './ProductStockQuantity'
-import ProductCollections from './ProductCollections'
+import {
+  ProductCollections,
+  ProductDescription,
+  ProductDiscount,
+  ProductFeatured,
+  ProductImages,
+  ProductInfoForm,
+  ProductRefundable,
+  ProductStockQuantity,
+  ProductVariantForm,
+  ProductWarranty,
+  SeoMetaTags,
+  ShippingConfiguration,
+} from './components'
+import { useProductHookForm } from './use-product-hook-form'
 
-const ProductDetail = () => {
+const ProductFormAction = () => {
   const form = useProductHookForm()
   return (
     <FormProvider {...form}>
@@ -52,16 +53,32 @@ const ProductDetail = () => {
   )
 }
 
-export default ProductDetail
+export default ProductFormAction
 
 const ActionForm = () => {
-  const { handleSubmit } = useFormContext()
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useFormContext()
 
-  const onClickSubmit = () => {
-    handleSubmit((data) => {
-      console.log('Submit data:', data)
-    })()
+  const handleSubmitData = () => {
+    handleSubmit(
+      (data) => {
+        const payload = {
+          ...data,
+          slug: 'demo-demo',
+          variants:
+            data.type === 'SINGLE' ? (data.variants = []) : data.variants,
+        }
+
+        console.log('Dữ liệu hợp lệ để gửi API:', payload)
+      },
+      (errors) => {
+        console.log('Form có lỗi validation:', errors)
+      },
+    )()
   }
+
   return (
     <div className='w-full flex justify-end custom-gradient dark:custom-gradient-dark'>
       <div className='flex gap-2 items-center w-fit'>
@@ -69,7 +86,9 @@ const ActionForm = () => {
           <Button variant={'outline'} className='bg-muted'>
             CANCLE
           </Button>
-          <Button onClick={onClickSubmit}>SAVE</Button>
+          <Button onClick={handleSubmitData} disabled={isSubmitting}>
+            {isSubmitting ? 'SAVING...' : 'SAVE'}
+          </Button>
         </div>
       </div>
     </div>

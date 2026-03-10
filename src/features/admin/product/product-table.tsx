@@ -9,16 +9,14 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table'
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ScrollArea, ScrollBar } from '~/components/ui/core/scroll-area'
-
-import { columns } from './columns'
-
+import { columns } from './components'
 import { ArrowDown, ArrowUp, ChevronsUpDown } from 'lucide-react'
 import { Button } from '~/components/ui/core/button'
-import { Product, TableMeta } from '../../types'
-import { TableToolbar } from './table-toolbar'
+import { Product, TableMeta } from './types'
 import { productData } from '~/mock/mock-data'
+import { TableToolbar } from './components'
 
 // NEW: Giả lập một hàm gọi API từ server
 const fetchProductsFromServer = async (options: {
@@ -65,7 +63,7 @@ const ProductTable = () => {
   // Điều này giúp useEffect không bị gọi lại một cách không cần thiết
   const pagination = useMemo(
     () => ({ pageIndex, pageSize }),
-    [pageIndex, pageSize]
+    [pageIndex, pageSize],
   )
 
   // NEW: useEffect để gọi API mỗi khi `pagination` thay đổi
@@ -83,7 +81,7 @@ const ProductTable = () => {
   const updateProductStatus = (
     productId: string,
     columnId: 'isActive' | 'isFeatured',
-    value: boolean
+    value: boolean,
   ) => {
     setData((oldData) =>
       oldData.map((product) => {
@@ -91,7 +89,7 @@ const ProductTable = () => {
           return { ...product, [columnId]: value }
         }
         return product
-      })
+      }),
     )
   }
 
@@ -173,13 +171,13 @@ const ProductTable = () => {
                           header.column.getIsSorted() === 'desc'
                             ? 'Sorted descending'
                             : header.column.getIsSorted() === 'asc'
-                            ? 'Sorted ascending'
-                            : 'Sort'
+                              ? 'Sorted ascending'
+                              : 'Sort'
                         }
                       >
                         {flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
 
                         {header.column.getCanSort() && (
@@ -222,7 +220,7 @@ const ProductTable = () => {
                     <td key={cell.id} className='p-3 align-middle'>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </td>
                   ))}

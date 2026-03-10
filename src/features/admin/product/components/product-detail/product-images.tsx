@@ -1,16 +1,31 @@
 'use client'
 
 import { Trash, UploadCloud } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { Button } from '~/components/ui/core/button'
 import { Card, CardContent, CardHeader } from '~/components/ui/core/card'
 import { Label } from '~/components/ui/core/label'
-import { MediaPickerModal, MediaItem } from '~/features/admin/media'
+import { MediaPickerModal } from '~/features/admin/media/components'
+import { MediaItem } from '~/features/admin/media/types'
 import { cn } from '~/lib/utils'
+import { ProductSchemaType } from '../../product.validate'
 
 const ProductImages = () => {
-  const [thumbnailImage, setThumbnailImage] = useState<MediaItem[] | []>([])
-  const [galleryImages, setGalleryImages] = useState<MediaItem[] | []>([])
+  const { setValue, watch } = useFormContext<ProductSchemaType>()
+  const [thumbnailImage, setThumbnailImage] = useState<MediaItem[]>([])
+  const [galleryImages, setGalleryImages] = useState<MediaItem[]>([])
+
+  useEffect(() => {
+    setValue('thumbnailId', thumbnailImage[0]?.id || null)
+  }, [thumbnailImage, setValue])
+
+  useEffect(() => {
+    setValue(
+      'mediaIds',
+      galleryImages.map((item) => item.id),
+    )
+  }, [galleryImages, setValue])
   const handleSelectThumbnailImage = (items: MediaItem[]) => {
     console.log('Selected Gallery Items:', items)
     setThumbnailImage(items)
