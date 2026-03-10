@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useFormContext } from 'react-hook-form'
 import {
   Card,
   CardContent,
@@ -8,21 +9,32 @@ import {
   CardTitle,
 } from '~/components/ui/core/card'
 import { Label } from '~/components/ui/core/label'
+import { Textarea } from '~/components/ui/core/textarea'
+import { ProductSchemaType } from '../../product.validate'
 
 const ProductDescription = () => {
+  const { register } = useFormContext<ProductSchemaType>()
   return (
-    <Card className='bg-muted shadow-none'>
+    <Card className='bg-muted shadow-none' id='product-description'>
       <CardHeader>
         <CardTitle>Product Description</CardTitle>
       </CardHeader>
       <CardContent className='space-y-5'>
         <div className='flex flex-col gap-3'>
           <Label>Summary</Label>
-          <div className='min-h-[200px] rounded-xl border'></div>
+          <Textarea
+            {...register('summary')}
+            placeholder='Tóm tắt ngắn gọn về sản phẩm'
+            className='min-h-[100px] bg-white'
+          />
         </div>
         <div className='flex flex-col gap-3'>
           <Label>Description</Label>
-          <div className='min-h-[200px] rounded-xl border'></div>
+          <Textarea
+            {...register('description')}
+            placeholder='Mô tả chi tiết sản phẩm'
+            className='min-h-[200px] bg-white'
+          />
         </div>
       </CardContent>
     </Card>

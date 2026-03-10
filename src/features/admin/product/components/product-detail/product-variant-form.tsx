@@ -1,6 +1,6 @@
-'use client'
 import { Trash2 } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
+import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
 import { Button } from '~/components/ui/core/button'
 import {
   Card,
@@ -20,6 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/core/table'
+import { ProductSchemaType } from '../../product.validate'
 
 interface Variation {
   id: number
@@ -52,7 +53,7 @@ const INITIAL_ATTRIBUTE_OPTIONS: Record<string, Option[]> = {
 // Hàm tạo tổ hợp chéo (Cartesian Product)
 const getCombinations = (
   arrays: Option[][],
-  optionNames: string[]
+  optionNames: string[],
 ): string[] => {
   if (
     !arrays ||
@@ -75,12 +76,24 @@ const getCombinations = (
 
   // Format the output string
   return result.map((combo) =>
-    combo.map((value, index) => `${optionNames[index]}:${value}`).join(' | ')
+    combo.map((value, index) => `${optionNames[index]}:${value}`).join(' | '),
   )
 }
 
 const ProductVariantForm = () => {
-  const [productType, setProductType] = useState<'single' | 'variant'>('single')
+  const { control, register, watch, setValue } =
+    useFormContext<ProductSchemaType>()
+  const {
+    fields: variants,
+    append,
+    remove,
+    replace,
+  } = useFieldArray({
+    control,
+    name: 'variants',
+  })
+
+  const productType = watch('type')
 
   const [attributeOptions, setAttributeOptions] = useState<
     Record<string, Option[]>
@@ -90,35 +103,49 @@ const ProductVariantForm = () => {
     { id: 1, name: 'Colors', values: [] },
   ])
 
-  const [generatedVariants, setGeneratedVariants] = useState<
-    GeneratedVariant[]
-  >([])
-
   useEffect(() => {
-    if (productType === 'variant') {
+    if (productType === 'VARIANT') {
       const optionValues = variations.map((v) => v.values)
       const optionNames = variations.map((v) => v.name)
 
       const combinations = getCombinations(optionValues, optionNames)
 
-      const newVariants = combinations.map((combo) => {
-        // Tạo SKU tự động từ các biến thể
-        const skuSuffix = combo
-          .split(' | ')
-          .map((part) => part.split(':')[1])
-          .join('-')
+      if (combinations.length > 0) {
+        const newVariants = combinations.map((combo) => {
+          const skuSuffix = combo
+            .split(' | ')
+            .map((part) => part.split(':')[1])
+            .join('-')
 
-        return {
-          combination: combo,
-          purchasePrice: '0',
-          unitPrice: '0',
-          sku: `-${skuSuffix}`,
-          quantity: '0',
-        }
-      })
-      setGeneratedVariants(newVariants)
+          const attributes = combo.split(' | ').map((part) => {
+            const [name, value] = part.split(':')
+            return { name, value }
+          })
+
+          return {
+            sku: `-${skuSuffix}`,
+            price: 0,
+            stock: 0,
+            purchasePrice: 0,
+            lowStockQuantity: 0,
+            attributes,
+          }
+        })
+        replace(newVariants)
+      }
+    } else if (productType === 'SINGLE' && variants.length === 0) {
+      replace([
+        {
+          sku: '',
+          price: 0,
+          stock: 0,
+          purchasePrice: 0,
+          lowStockQuantity: 0,
+          attributes: [],
+        },
+      ])
     }
-  }, [variations, productType])
+  }, [variations, productType, replace, variants.length])
 
   const addVariation = () => {
     setVariations([...variations, { id: Date.now(), name: '', values: [] }])
@@ -130,7 +157,7 @@ const ProductVariantForm = () => {
 
   const handleVariationNameChange = (id: number, newName: string) => {
     setVariations(
-      variations.map((v) => (v.id === id ? { ...v, name: newName } : v))
+      variations.map((v) => (v.id === id ? { ...v, name: newName } : v)),
     )
   }
 
@@ -145,7 +172,7 @@ const ProductVariantForm = () => {
           return { ...v, values: newValues }
         }
         return v
-      })
+      }),
     )
 
     // 2. Cập nhật "danh sách có sẵn" (attributeOptions)
@@ -177,27 +204,31 @@ const ProductVariantForm = () => {
       <Card className='bg-muted shadow-none '>
         <CardHeader className='border-b font-bold'>Product Type</CardHeader>
         <CardContent>
-          <RadioGroup
-            defaultValue='single'
-            onValueChange={(value: 'single' | 'variant') =>
-              setProductType(value)
-            }
-            className='flex items-center gap-8'
-          >
-            <div className='flex items-center space-x-2'>
-              <RadioGroupItem value='single' id='r1' />
-              <Label htmlFor='r1'>Single Product</Label>
-            </div>
-            <div className='flex items-center space-x-2'>
-              <RadioGroupItem value='variant' id='r2' />
-              <Label htmlFor='r2'>Variant Product</Label>
-            </div>
-          </RadioGroup>
+          <Controller
+            control={control}
+            name='type'
+            render={({ field }) => (
+              <RadioGroup
+                value={field.value}
+                onValueChange={field.onChange}
+                className='flex items-center gap-8'
+              >
+                <div className='flex items-center space-x-2'>
+                  <RadioGroupItem value='SINGLE' id='r1' />
+                  <Label htmlFor='r1'>Single Product</Label>
+                </div>
+                <div className='flex items-center space-x-2'>
+                  <RadioGroupItem value='VARIANT' id='r2' />
+                  <Label htmlFor='r2'>Variant Product</Label>
+                </div>
+              </RadioGroup>
+            )}
+          />
         </CardContent>
       </Card>
 
       {/* --- Form for Single Product --- */}
-      {productType === 'single' && (
+      {productType === 'SINGLE' && variants[0] && (
         <Card className='bg-muted shadow-none '>
           <CardHeader>
             <CardTitle>Product Price And Stock</CardTitle>
@@ -205,25 +236,43 @@ const ProductVariantForm = () => {
           <CardContent className='space-y-4'>
             <div className='grid grid-cols-[150px_1fr] items-center gap-4'>
               <Label>Purchase Price</Label>
-              <Input type='number' defaultValue='0.00' className='bg-white' />
+              <Input
+                type='number'
+                {...register(`variants.${0}.purchasePrice`, {
+                  valueAsNumber: true,
+                })}
+                className='bg-white'
+              />
             </div>
             <div className='grid grid-cols-[150px_1fr] items-center gap-4'>
               <Label>Unit Price</Label>
-              <Input type='number' defaultValue='0.00' className='bg-white' />
+              <Input
+                type='number'
+                {...register(`variants.${0}.price`, { valueAsNumber: true })}
+                className='bg-white'
+              />
             </div>
             <div className='grid grid-cols-[150px_1fr] items-center gap-4'>
               <Label>Quantity</Label>
-              <Input type='number' defaultValue='00' className='bg-white' />
+              <Input
+                type='number'
+                {...register(`variants.${0}.stock`, { valueAsNumber: true })}
+                className='bg-white'
+              />
             </div>
             <div className='grid grid-cols-[150px_1fr] items-center gap-4'>
               <Label>Sku</Label>
-              <Input placeholder='Type product sku' className='bg-white' />
+              <Input
+                {...register(`variants.${0}.sku`)}
+                placeholder='Type product sku'
+                className='bg-white'
+              />
             </div>
           </CardContent>
         </Card>
       )}
       {/* --- Form for Variant Product --- */}
-      {productType === 'variant' && (
+      {productType === 'VARIANT' && (
         <>
           <Card className='bg-muted shadow-none'>
             <CardHeader>
@@ -275,7 +324,7 @@ const ProductVariantForm = () => {
       )}
 
       {/* --- Bảng biến thể được tạo tự động --- */}
-      {generatedVariants.length > 0 && productType === 'variant' && (
+      {variants.length > 0 && productType === 'VARIANT' && (
         <Card className='bg-muted shadow-none'>
           <CardHeader>
             <CardTitle>Product Price And Stock</CardTitle>
@@ -292,37 +341,51 @@ const ProductVariantForm = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {generatedVariants.map((variant) => (
-                  <TableRow key={variant.combination}>
-                    <TableCell className='font-medium'>
-                      {variant.combination}
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        type='number'
-                        defaultValue={variant.purchasePrice}
-                        className='bg-white'
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        type='number'
-                        defaultValue={variant.unitPrice}
-                        className='bg-white'
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input defaultValue={variant.sku} className='bg-white' />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        type='number'
-                        defaultValue={variant.quantity}
-                        className='bg-white'
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {variants.map((field, index) => {
+                  const combination = field.attributes
+                    ?.map((attr) => `${attr.name}:${attr.value}`)
+                    .join(' | ')
+                  return (
+                    <TableRow key={field.id}>
+                      <TableCell className='font-medium'>
+                        {combination}
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type='number'
+                          {...register(`variants.${index}.purchasePrice`, {
+                            valueAsNumber: true,
+                          })}
+                          className='bg-white'
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type='number'
+                          {...register(`variants.${index}.price`, {
+                            valueAsNumber: true,
+                          })}
+                          className='bg-white'
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          {...register(`variants.${index}.sku`)}
+                          className='bg-white'
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type='number'
+                          {...register(`variants.${index}.stock`, {
+                            valueAsNumber: true,
+                          })}
+                          className='bg-white'
+                        />
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
               </TableBody>
             </Table>
           </CardContent>

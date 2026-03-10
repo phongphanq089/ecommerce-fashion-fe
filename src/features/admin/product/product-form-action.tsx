@@ -56,13 +56,29 @@ const ProductFormAction = () => {
 export default ProductFormAction
 
 const ActionForm = () => {
-  const { handleSubmit } = useFormContext()
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useFormContext()
 
-  const onClickSubmit = () => {
-    handleSubmit((data) => {
-      console.log('Submit data:', data)
-    })()
+  const handleSubmitData = () => {
+    handleSubmit(
+      (data) => {
+        const payload = {
+          ...data,
+          slug: 'demo-demo',
+          variants:
+            data.type === 'SINGLE' ? (data.variants = []) : data.variants,
+        }
+
+        console.log('Dữ liệu hợp lệ để gửi API:', payload)
+      },
+      (errors) => {
+        console.log('Form có lỗi validation:', errors)
+      },
+    )()
   }
+
   return (
     <div className='w-full flex justify-end custom-gradient dark:custom-gradient-dark'>
       <div className='flex gap-2 items-center w-fit'>
@@ -70,7 +86,9 @@ const ActionForm = () => {
           <Button variant={'outline'} className='bg-muted'>
             CANCLE
           </Button>
-          <Button onClick={onClickSubmit}>SAVE</Button>
+          <Button onClick={handleSubmitData} disabled={isSubmitting}>
+            {isSubmitting ? 'SAVING...' : 'SAVE'}
+          </Button>
         </div>
       </div>
     </div>

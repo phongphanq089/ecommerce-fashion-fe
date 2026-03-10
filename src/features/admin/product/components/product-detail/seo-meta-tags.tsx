@@ -1,16 +1,23 @@
 'use client'
+import { useFormContext } from 'react-hook-form'
 import { UploadCloud } from 'lucide-react'
 import { Button } from '~/components/ui/core/button'
 import { Card, CardContent, CardHeader } from '~/components/ui/core/card'
 import { Input } from '~/components/ui/core/input'
 import { Label } from '~/components/ui/core/label'
 import { Textarea } from '~/components/ui/core/textarea'
-import { MediaPickerModal, MediaItem } from '~/features/admin/media/components'
+import { MediaPickerModal } from '~/features/admin/media/components'
+import { MediaItem } from '~/features/admin/media/types'
 import { cn } from '~/lib/utils'
+import { ProductSchemaType } from '../../product.validate'
 
 const SeoMetaTags = () => {
+  const { register, setValue } = useFormContext<ProductSchemaType>()
+
   const handleSelectMultipleMedia = (items: MediaItem[]) => {
-    console.log('Selected Gallery Items:', items)
+    if (items.length > 0) {
+      setValue('metaImageId', items[0].id)
+    }
   }
   return (
     <Card className='bg-muted shadow-none '>
@@ -21,9 +28,9 @@ const SeoMetaTags = () => {
             <Label>Meta Title</Label>
           </div>
           <Input
+            {...register('metaTitle')}
             placeholder='Meta Title'
             type='text'
-            required
             className='bg-white'
           />
         </div>
@@ -32,7 +39,11 @@ const SeoMetaTags = () => {
             <Label>Meta Description</Label>
           </div>
 
-          <Textarea placeholder='Meta Description' className='bg-white' />
+          <Textarea
+            {...register('metaDescription')}
+            placeholder='Meta Description'
+            className='bg-white'
+          />
         </div>
 
         <div className='flex flex-col gap-3'>
