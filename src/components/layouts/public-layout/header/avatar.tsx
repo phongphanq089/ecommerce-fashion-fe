@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import {
   Avatar,
   AvatarFallback,
@@ -18,6 +17,7 @@ import {
 import { useAuthStore } from '~/store/auth-store'
 import { useRole } from '~/hooks/use-role'
 import { LayoutDashboard, LogOut, Settings, User } from 'lucide-react'
+import { Link } from 'next-view-transitions'
 
 interface Props {
   handleLogout: () => void

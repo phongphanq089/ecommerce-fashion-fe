@@ -1,6 +1,5 @@
 'use client'
 
-import React from 'react'
 import { AUTH_QUERY } from '~/features/public/auth/auth.query'
 
 interface User {

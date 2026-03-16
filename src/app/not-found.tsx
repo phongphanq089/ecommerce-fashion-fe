@@ -1,12 +1,10 @@
 'use client'
 
-import Link from 'next/link'
-
-import { useRouter } from 'next/navigation'
 import { Button } from '~/components/ui/core/button'
+import { useTransitionRouter } from 'next-view-transitions'
 
 export default function NotFound() {
-  const router = useRouter()
+  const router = useTransitionRouter()
   return (
     <div className='h-screen w-full bg-primary text-black relative flex flex-col items-center justify-center overflow-hidden font-heading'>
       {/* Top Left Navigation Area */}

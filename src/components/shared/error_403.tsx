@@ -1,9 +1,9 @@
 'use client'
 import { UserLock } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useTransitionRouter } from 'next-view-transitions'
 
 const Error403 = () => {
-  const router = useRouter()
+  const router = useTransitionRouter()
   return (
     <div className='flex-1 flex flex-col items-center justify-center px-4 py-12'>
       <div className='container flex flex-col max-w-[600px] w-full items-center text-center'>

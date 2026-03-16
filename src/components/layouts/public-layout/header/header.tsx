@@ -2,7 +2,6 @@
 import { useAuthStore } from '~/store/auth-store'
 import { useEffect, useState } from 'react'
 import { motion, useScroll, useMotionValueEvent } from 'motion/react'
-import Link from 'next/link'
 import { https, logout } from '~/config/https'
 import TopBar from './top-bar'
 import { Search, ChevronDown, ShoppingBag, Menu, X } from 'lucide-react'
@@ -10,6 +9,7 @@ import ShopDropdown from './shop-dropdown'
 import LogoUi from '~/components/shared/logo-ui'
 import MobileNavbar from './mobile-navbar'
 import { AvatarDropdown } from './avatar'
+import { Link } from 'next-view-transitions'
 
 const Header = () => {
   const [isLogin, setIsLogin] = useState(false)
