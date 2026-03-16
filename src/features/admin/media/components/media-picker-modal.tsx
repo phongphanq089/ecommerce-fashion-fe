@@ -23,10 +23,7 @@ export type MediaPickerModalProps = {
   trigger?: React.ReactNode
 }
 
-export const MediaPickerModal = ({
-  onSelect,
-  trigger,
-}: MediaPickerModalProps) => {
+const MediaPickerModal = ({ onSelect, trigger }: MediaPickerModalProps) => {
   const [open, setOpen] = useState(false)
   const [folderMedia] = useQueryState('folderMedia')
   const [selectedItems, setSelectedItems] = useState<MediaItem[]>([])
@@ -141,3 +138,5 @@ export const MediaPickerModal = ({
     </Dialog>
   )
 }
+
+export default MediaPickerModal

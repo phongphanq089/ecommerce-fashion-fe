@@ -1,10 +1,10 @@
 'use client'
 import Image from 'next/image'
 import { cn } from '~/lib/utils'
-import { useRouter } from 'next/navigation'
+import { useTransitionRouter } from 'next-view-transitions'
 
 const LogoUi = ({ className }: { className?: string }) => {
-  const router = useRouter()
+  const router = useTransitionRouter()
   return (
     <div
       onClick={() => router.push('/')}

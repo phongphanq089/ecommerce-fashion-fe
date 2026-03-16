@@ -81,30 +81,12 @@ export const sidebarData: SidebarData = {
         {
           title: 'Categories',
           icon: IconPackages,
-          items: [
-            {
-              title: 'Category List',
-              url: '/admin/category/list',
-            },
-            {
-              title: 'Create Category',
-              url: '/admin/category/create',
-            },
-          ],
+          url: '/admin/category',
         },
         {
           title: 'Brands',
           icon: IconBrandAdobe,
-          items: [
-            {
-              title: 'Brands List',
-              url: '/admin/brand',
-            },
-            {
-              title: 'Create Brands',
-              url: '/admin/brand/create',
-            },
-          ],
+          url: '/admin/brand',
         },
         {
           title: 'Custommers',

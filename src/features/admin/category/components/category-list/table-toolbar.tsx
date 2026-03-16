@@ -30,34 +30,34 @@ export function TableToolbar({
   selectedRows,
   onDelete,
 }: TableToolbarProps) {
-  const [status, setStatus] = useState('all')
-
-  const handleStatusChange = (newStatus: string) => {
-    setStatus(newStatus)
-    setFilter(
-      'isActive',
-      newStatus === 'all' ? undefined : newStatus === 'active'
-    )
-  }
+  const [sort, setSort] = useState('newest')
 
   return (
     <div className='flex items-center justify-between flex-wrap mb-4 gap-4'>
       <div className='flex gap-2 items-center '>
         <Input
-          placeholder='Search categpry name...'
+          placeholder='Search category...'
           value={filterValue || ''}
-          onChange={(e) => setFilter('name', e.target.value)}
+          onChange={(e) => setFilter('search', e.target.value)}
+          className='min-w-[250px]'
         />
 
-        <Select value={status} onValueChange={handleStatusChange}>
-          <SelectTrigger className='w-[180px]'>
-            <SelectValue placeholder='Select a fruit' />
+        <Select
+          value={sort}
+          onValueChange={(value) => {
+            setSort(value)
+            setFilter('sort', value)
+          }}
+        >
+          <SelectTrigger className='w-[150px]'>
+            <SelectValue placeholder='Sort by' />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectItem value='all'>All</SelectItem>
-              <SelectItem value='active'>Active</SelectItem>
-              <SelectItem value='inactive'>Inactive</SelectItem>
+              <SelectItem value='newest'>Newest</SelectItem>
+              <SelectItem value='oldest'>Oldest</SelectItem>
+              <SelectItem value='price_asc'>Price: Low to High</SelectItem>
+              <SelectItem value='price_desc'>Price: High to Low</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -71,9 +71,6 @@ export function TableToolbar({
         >
           <Trash2 /> Delete ({selectedRows.length})
         </Button>
-        <Link href={'/admin/category/create'} className={`${buttonVariants()}`}>
-          <Plus /> Add Products
-        </Link>
       </div>
     </div>
   )
