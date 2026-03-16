@@ -8,6 +8,7 @@ import ToasterCustom from '~/components/shared/toaster-custom'
 import GlobalLoadingOverlay from '~/components/shared/global-loading-overlay'
 import ProviderReactQuery from '~/providers/provider-react-query'
 import ProviderGoogle from '~/providers/provider-google'
+import AuthProvider from '~/providers/provider-auth'
 
 const font = Antonio({
   weight: ['400', '500', '600', '700'],
@@ -40,7 +41,9 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <ProviderGoogle>
-              <NuqsAdapter> {children}</NuqsAdapter>
+              <AuthProvider>
+                <NuqsAdapter>{children}</NuqsAdapter>
+              </AuthProvider>
             </ProviderGoogle>
           </ThemeProvider>
         </ProviderReactQuery>
