@@ -50,7 +50,7 @@ export function AvatarDropdown({ handleLogout }: Props) {
           {isManagement && (
             <DropdownMenuItem asChild>
               <Link
-                href='/admin'
+                href='/admin/dashboard'
                 className='cursor-pointer w-full flex items-center gap-2'
               >
                 <LayoutDashboard className='size-4' />

@@ -1,4 +1,5 @@
 'use client'
+
 import {
   ColumnFiltersState,
   flexRender,
@@ -9,19 +10,19 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { ScrollArea, ScrollBar } from '~/components/ui/core/scroll-area'
 import { columns } from './columns'
 import { ArrowDown, ArrowUp, ChevronsUpDown } from 'lucide-react'
 import { Button } from '~/components/ui/core/button'
-import { Category, TableMeta } from '../../types'
+import { Brand, TableMeta } from '../../types'
 import { TableToolbar } from './table-toolbar'
 import { TableSkeletonLoading } from '~/components/shared/table-skeleton-loading'
-import { _categoryService } from '../../category.query'
-import CategoryForm from '../category-form'
+import { _brandService } from '../../brand.query'
+import BrandForm from '../brand-form'
 import { useDebounce } from '~/hooks/use-debounce'
 
-const CategoryTable = () => {
+const BrandTable = () => {
   const [globalFilter, setGlobalFilter] = useState('')
   const debouncedSearch = useDebounce(globalFilter, 500)
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -32,50 +33,42 @@ const CategoryTable = () => {
     pageSize: 10,
   })
 
-  // Use the categoryService to fetch real data
-  const { data: categoryResponse, isLoading } = _categoryService.useCategories({
+  const { data: brandResponse, isLoading } = _brandService.useBrands({
     page: pageIndex + 1,
     limit: pageSize,
     search: debouncedSearch || null,
-    sort: (columnFilters.find((f) => f.id === 'sort')?.value as any) || 'newest',
+    sort:
+      (columnFilters.find((f) => f.id === 'sort')?.value as any) || 'newest',
   })
 
-  const deleteCategoryMutation = _categoryService.useCategoryDelete()
-  const deleteCategoriesMutation = _categoryService.useCategoriesDelete()
+  const deleteBrandMutation = _brandService.useBrandDelete()
+  const deleteBrandsMutation = _brandService.useBrandsDelete()
 
-  const data = categoryResponse?.result?.data || []
-  const pageCount = categoryResponse?.result?.meta?.totalPages || 0
+  const data = brandResponse?.result?.data || []
+  const pageCount = brandResponse?.result?.meta?.totalPages || 0
 
   const pagination = useMemo(
     () => ({ pageIndex, pageSize }),
     [pageIndex, pageSize],
   )
 
-  const updateProductStatus = (
-    productId: string,
-    columnId: 'isActive' | 'isFeatured',
-    value: boolean,
-  ) => {
-    // In a real app, this would be an API call
-    console.log('Update status', productId, columnId, value)
-  }
-
   const [editId, setEditId] = useState<string | null>(null)
 
-  const table = useReactTable<Category>({
+  const table = useReactTable<Brand>({
     data,
     columns,
     pageCount,
     meta: {
-      updateProductStatus,
-      onEdit: (id: string) => {
+      onEdit: (id) => {
         setEditId(id)
       },
-      onDelete: async (id: string) => {
-        try {
-          await deleteCategoryMutation.mutateAsync(id)
-        } catch (error) {
-          console.error('Failed to delete category', error)
+      onDelete: async (id) => {
+        if (confirm('Are you sure you want to delete this brand?')) {
+          try {
+            await deleteBrandMutation.mutateAsync(id)
+          } catch (error) {
+            console.error('Failed to delete brand', error)
+          }
         }
       },
     } as TableMeta,
@@ -103,21 +96,25 @@ const CategoryTable = () => {
     const idsToDelete = selectedRows.map((row) => row.original.id)
     if (idsToDelete.length === 0) return
 
-    try {
-      if (idsToDelete.length === 1) {
-        await deleteCategoryMutation.mutateAsync(idsToDelete[0])
-      } else {
-        await deleteCategoriesMutation.mutateAsync(idsToDelete)
+    if (
+      confirm(`Are you sure you want to delete ${idsToDelete.length} brands?`)
+    ) {
+      try {
+        if (idsToDelete.length === 1) {
+          await deleteBrandMutation.mutateAsync(idsToDelete[0])
+        } else {
+          await deleteBrandsMutation.mutateAsync(idsToDelete)
+        }
+        table.resetRowSelection()
+      } catch (error) {
+        console.error('Failed to delete brands', error)
       }
-      table.resetRowSelection()
-    } catch (error) {
-      console.error('Failed to delete categories', error)
     }
   }
 
   return (
     <div className='w-full bg-accent p-6 min-h-screen rounded-2xl'>
-      <h1 className='text-3xl font-bold mb-5'>Categories</h1>
+      <h1 className='text-3xl font-bold mb-5'>Brands</h1>
       <div className='grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6'>
         <div className='space-y-4'>
           <TableToolbar
@@ -152,13 +149,6 @@ const CategoryTable = () => {
                                 : ''
                             }
                             onClick={header.column.getToggleSortingHandler()}
-                            title={
-                              header.column.getIsSorted() === 'desc'
-                                ? 'Sorted descending'
-                                : header.column.getIsSorted() === 'asc'
-                                  ? 'Sorted ascending'
-                                  : 'Sort'
-                            }
                           >
                             {flexRender(
                               header.column.columnDef.header,
@@ -174,7 +164,7 @@ const CategoryTable = () => {
                                   <ArrowDown className='h-4 w-4' />
                                 )}
                                 {header.column.getIsSorted() === false && (
-                                  <ChevronsUpDown className='h-4 w-4 text-muted-foreground' />
+                                  <ChevronsUpDown className='h-4 w-4 text-muted-foreground/50' />
                                 )}
                               </>
                             )}
@@ -185,7 +175,7 @@ const CategoryTable = () => {
                   )
                 })}
               </thead>
-              <tbody>
+              <tbody className=''>
                 {isLoading ? (
                   <TableSkeletonLoading
                     rowCount={pageSize}
@@ -193,13 +183,16 @@ const CategoryTable = () => {
                   />
                 ) : table.getRowModel().rows.length === 0 ? (
                   <tr>
-                    <td colSpan={columns.length} className='text-center p-4'>
-                      No categories found.
+                    <td
+                      colSpan={columns.length}
+                      className='text-center p-8 text-muted-foreground'
+                    >
+                      No brands found.
                     </td>
                   </tr>
                 ) : (
                   table.getRowModel().rows.map((row) => (
-                    <tr key={row.id} className='border-t'>
+                    <tr key={row.id} className='border-t transition-colors'>
                       {row.getVisibleCells().map((cell) => (
                         <td key={cell.id} className='p-3 align-middle'>
                           {flexRender(
@@ -241,8 +234,8 @@ const CategoryTable = () => {
           </div>
         </div>
         <div>
-          <CategoryForm
-            categoryId={editId}
+          <BrandForm
+            brandId={editId}
             onSuccess={() => setEditId(null)}
             onCancel={() => setEditId(null)}
           />
@@ -252,4 +245,4 @@ const CategoryTable = () => {
   )
 }
 
-export default CategoryTable
+export default BrandTable

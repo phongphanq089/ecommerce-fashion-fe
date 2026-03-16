@@ -3,6 +3,7 @@ import { FormProvider, useFormContext } from 'react-hook-form'
 import HeadingSectionAdmin from '~/components/shared/heading-section-admin'
 import { Card, CardContent, CardHeader } from '~/components/ui/core/card'
 import { Button } from '~/components/ui/core/button'
+import { useEffect } from 'react'
 import {
   ProductCollections,
   ProductDescription,
@@ -18,18 +19,52 @@ import {
   ShippingConfiguration,
 } from './components'
 import { useProductHookForm } from './use-product-hook-form'
+import { _productService } from './product.query'
 
-const ProductFormAction = () => {
+interface ProductFormActionProps {
+  productId?: string | null
+  onSuccess?: () => void
+  onCancel?: () => void
+}
+
+const ProductFormAction = ({ productId, onSuccess, onCancel }: ProductFormActionProps) => {
+  const { data: productDetail, isLoading } = _productService.useProduct(productId || '')
   const form = useProductHookForm()
+
+  useEffect(() => {
+    if (productDetail?.result) {
+      form.reset(productDetail.result as any)
+    } else if (!productId) {
+      form.reset({
+        type: 'SINGLE',
+        isFeatured: false,
+        isRefunded: false,
+        hasWarranty: false,
+        disableShipping: false,
+        collectionIds: [],
+        mediaIds: [],
+        tags: [],
+      })
+    }
+  }, [productDetail, productId, form])
+
+  if (productId && isLoading) {
+    return (
+      <div className='flex items-center justify-center h-64'>
+        <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary'></div>
+      </div>
+    )
+  }
+
   return (
     <FormProvider {...form}>
-      <Card>
-        <CardHeader>
-          <HeadingSectionAdmin title='Add New Product' />
+      <Card className='border-none shadow-none bg-transparent'>
+        <CardHeader className='px-6 pt-6 pb-2'>
+          <HeadingSectionAdmin title={productId ? `Edit Product: ${productDetail?.result?.name || ''}` : 'Add New Product'} />
         </CardHeader>
-        <CardContent className='max-sm:p-2'>
-          <div className='flex flex-col xl:grid grid-cols-12 gap-5'>
-            <div className='col-span-7 space-y-10'>
+        <CardContent className='px-6 py-4'>
+          <div className='flex flex-col xl:grid grid-cols-12 gap-6'>
+            <div className='col-span-12 lg:col-span-8 space-y-8'>
               <ProductInfoForm />
               <ProductVariantForm />
               <ProductDiscount />
@@ -37,14 +72,14 @@ const ProductFormAction = () => {
               <ProductImages />
               <SeoMetaTags />
             </div>
-            <div className='col-span-5 space-y-10 sticky top-20 right-0 h-fit w-full'>
+            <div className='col-span-12 lg:col-span-4 space-y-8 h-fit lg:sticky lg:top-4'>
               <ShippingConfiguration />
               <ProductFeatured />
               <ProductRefundable />
               <ProductWarranty />
               <ProductStockQuantity />
               <ProductCollections />
-              <ActionForm />
+              <ActionForm onCancel={onCancel} productId={productId} onSuccess={onSuccess} />
             </div>
           </div>
         </CardContent>
@@ -55,41 +90,44 @@ const ProductFormAction = () => {
 
 export default ProductFormAction
 
-const ActionForm = () => {
+const ActionForm = ({ onCancel, productId, onSuccess }: { onCancel?: () => void; productId?: string | null; onSuccess?: () => void }) => {
   const {
     handleSubmit,
     formState: { isSubmitting },
   } = useFormContext()
 
-  const handleSubmitData = () => {
-    handleSubmit(
-      (data) => {
-        const payload = {
-          ...data,
-          slug: 'demo-demo',
-          variants:
-            data.type === 'SINGLE' ? (data.variants = []) : data.variants,
-        }
+  const createMutation = _productService.useCreateProduct()
+  const updateMutation = _productService.useUpdateProduct()
 
-        console.log('Dữ liệu hợp lệ để gửi API:', payload)
+  const handleSubmitData = async () => {
+    handleSubmit(
+      async (data) => {
+        try {
+          if (productId) {
+            await updateMutation.mutateAsync({ id: productId, data })
+          } else {
+            await createMutation.mutateAsync(data as any)
+          }
+          onSuccess?.()
+        } catch (error) {
+          console.error('Form submission failed:', error)
+        }
       },
       (errors) => {
-        console.log('Form có lỗi validation:', errors)
+        console.log('Form validation errors:', errors)
       },
     )()
   }
 
   return (
-    <div className='w-full flex justify-end custom-gradient dark:custom-gradient-dark'>
-      <div className='flex gap-2 items-center w-fit'>
-        <div className='flex items-center justify-center gap-3'>
-          <Button variant={'outline'} className='bg-muted'>
-            CANCLE
-          </Button>
-          <Button onClick={handleSubmitData} disabled={isSubmitting}>
-            {isSubmitting ? 'SAVING...' : 'SAVE'}
-          </Button>
-        </div>
+    <div className='w-full p-6 bg-white dark:bg-slate-900 rounded-xl border shadow-sm'>
+      <div className='flex gap-3 justify-end'>
+        <Button variant='outline' onClick={onCancel} type='button'>
+          CANCEL
+        </Button>
+        <Button onClick={handleSubmitData} disabled={isSubmitting} className='min-w-[100px]'>
+          {isSubmitting ? 'SAVING...' : 'SAVE'}
+        </Button>
       </div>
     </div>
   )

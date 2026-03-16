@@ -70,7 +70,9 @@ export const columns: ColumnDef<Product>[] = [
   {
     header: 'Price',
     cell: ({ row }) => {
-      const prices = row.original.variants.map((v: Variant) => v.price)
+      const prices = row.original.variants?.map((v: Variant) => v.price) || []
+      if (prices.length === 0) return 'N/A'
+      
       const min = Math.min(...prices)
       const max = Math.max(...prices)
       const formatter = new Intl.NumberFormat('en-US', {
@@ -117,17 +119,26 @@ export const columns: ColumnDef<Product>[] = [
     },
   },
   {
-    accessorKey: 'Action',
+    id: 'actions',
     header: 'Action',
-    cell: () => (
-      <div className='flex items-center gap-3'>
-        <div className='border border-red-500 text-red-500 p-2 rounded-xl cursor-pointer'>
-          <IconTrash />
+    cell: ({ row, table }) => {
+      const meta = table.options.meta as TableMeta
+      return (
+        <div className='flex items-center gap-3'>
+          <div 
+            className='border border-red-500 text-red-500 p-2 rounded-xl cursor-pointer hover:bg-red-50'
+            onClick={() => meta.onDelete(row.original.id)}
+          >
+            <IconTrash size={18} />
+          </div>
+          <div 
+            className='border bg-primary p-2 text-white rounded-xl cursor-pointer hover:opacity-90'
+            onClick={() => meta.onEdit(row.original.id)}
+          >
+            <IconEdit size={18} />
+          </div>
         </div>
-        <div className='border bg-primary p-2 text-white rounded-xl cursor-pointer'>
-          <IconEdit />
-        </div>
-      </div>
-    ),
+      )
+    },
   },
 ]

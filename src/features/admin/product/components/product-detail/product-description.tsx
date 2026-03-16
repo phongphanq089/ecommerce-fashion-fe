@@ -13,7 +13,10 @@ import { Textarea } from '~/components/ui/core/textarea'
 import { ProductSchemaType } from '../../product.validate'
 
 const ProductDescription = () => {
-  const { register } = useFormContext<ProductSchemaType>()
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<ProductSchemaType>()
   return (
     <Card className='bg-muted shadow-none' id='product-description'>
       <CardHeader>
@@ -34,7 +37,11 @@ const ProductDescription = () => {
             {...register('description')}
             placeholder='Mô tả chi tiết sản phẩm'
             className='min-h-[200px] bg-white'
+            aria-invalid={!!errors.description}
           />
+          {errors.description && (
+            <p className='text-red-500 text-sm'>{errors.description.message}</p>
+          )}
         </div>
       </CardContent>
     </Card>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import { Card, CardContent, CardHeader } from '~/components/ui/core/card'
 import { Input } from '~/components/ui/core/input'
@@ -15,28 +15,41 @@ import {
 } from '~/components/ui/core/select'
 import MultipleSelector, { Option } from '~/components/ui/core/multiselect'
 import { FieldError } from '~/components/ui/core/field'
+import { generateSlug } from '~/lib/utils'
+import { Button } from '~/components/ui/core/button'
+import { _categoryService } from '~/features/admin/category/category.query'
+import AddCategoryModal from '~/features/admin/category/components/add-category'
+import { _brandService } from '~/features/admin/brand/brand.query'
+import AddBrandModal from '~/features/admin/brand/components/add-brand'
 
 const ProductInfoForm = () => {
+  const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] =
+    React.useState(false)
+  const [isAddBrandModalOpen, setIsAddBrandModalOpen] = React.useState(false)
   const {
     register,
     control,
     watch,
+    setValue,
     formState: { errors },
   } = useFormContext<ProductSchemaType>()
 
-  const categories = [
-    { value: 'xpmgpi1qi05nl2d0ygir8zsj', label: 'Electronics' },
-    { value: 'clothing', label: 'Clothing' },
-    { value: 'furniture', label: 'Furniture' },
-    { value: 'books', label: 'Books' },
-  ]
+  const name = watch('name')
 
-  const brands = [
-    { value: 'apple', label: 'Apple' },
-    { value: 'samsung', label: 'Samsung' },
-    { value: 'ikea', label: 'IKEA' },
-    { value: 'nike', label: 'Nike' },
-  ]
+  useEffect(() => {
+    if (name) {
+      setValue('slug', generateSlug(name), { shouldValidate: true })
+    }
+  }, [name, setValue])
+
+  const { data: categoriesData, isLoading: isLoadingCategories } =
+    _categoryService.useCategories()
+
+  const { data: brandsData, isLoading: isLoadingBrands } =
+    _brandService.useBrands()
+
+  const categories = categoriesData?.result || []
+  const brands = brandsData?.result || []
 
   const frameworks: Option[] = [
     {
@@ -56,7 +69,6 @@ const ProductInfoForm = () => {
       label: 'Limited',
     },
   ]
-
   return (
     <Card className='bg-muted shadow-none '>
       <CardHeader className='border-b font-bold'>
@@ -83,43 +95,85 @@ const ProductInfoForm = () => {
         <div className='grid grid-cols-1 md:grid-cols-[150px_1fr] items-center gap-4'>
           <div className='*:not-first:mt-2'>
             <Label>
+              Slug <span className='text-destructive'>*</span>
+            </Label>
+          </div>
+          <Input
+            {...register('slug')}
+            placeholder='product-slug'
+            type='text'
+            required
+            className='bg-white'
+            aria-invalid={errors.slug && errors.slug.message ? true : false}
+            errorMessage={errors.slug?.message}
+          />
+        </div>
+
+        <div className='grid grid-cols-1 md:grid-cols-[150px_1fr] items-center gap-4'>
+          <div className='*:not-first:mt-2'>
+            <Label>
               Categories <span className='text-destructive'>*</span>
             </Label>
           </div>
-          <div className='flex flex-col gap-2'>
-            <Controller
-              control={control}
-              name='categoryId'
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger
-                    className='w-full bg-white'
-                    aria-invalid={
-                      errors.categoryId && errors.categoryId.message
-                        ? true
-                        : false
-                    }
+          <div className='flex item-center  gap-2'>
+            <div className='flex flex-col gap-2 flex-1'>
+              <Controller
+                control={control}
+                name='categoryId'
+                render={({ field }) => (
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={isLoadingCategories}
                   >
-                    <SelectValue placeholder='Select Categories' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Categories</SelectLabel>
-                      {categories.map((category) => (
-                        <SelectItem key={category.value} value={category.value}>
-                          {category.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            <FieldError className='pl-2'>
-              {errors.categoryId?.message}
-            </FieldError>
+                    <SelectTrigger
+                      className='w-full bg-white'
+                      aria-invalid={
+                        errors.categoryId && errors.categoryId.message
+                          ? true
+                          : false
+                      }
+                    >
+                      <SelectValue
+                        placeholder={
+                          isLoadingCategories
+                            ? 'Loading categories...'
+                            : 'Select Categories'
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Categories</SelectLabel>
+                        {categories?.data?.map((category: any) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              <FieldError className='pl-2'>
+                {errors.categoryId?.message}
+              </FieldError>
+            </div>
+            <Button
+              type='button'
+              variant='outline'
+              className='h-fit'
+              onClick={() => setIsAddCategoryModalOpen(true)}
+            >
+              Add Category
+            </Button>
           </div>
         </div>
+
+        <AddCategoryModal
+          open={isAddCategoryModalOpen}
+          onOpenChange={setIsAddCategoryModalOpen}
+        />
 
         <div className='grid grid-cols-1 md:grid-cols-[150px_1fr] items-center gap-4'>
           <div className='*:not-first:mt-2'>
@@ -127,36 +181,64 @@ const ProductInfoForm = () => {
               Brand <span className='text-destructive'>*</span>
             </Label>
           </div>
-          <div className='flex flex-col gap-2'>
-            <Controller
-              control={control}
-              name='brandId'
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger
-                    className='w-full bg-white'
-                    aria-invalid={
-                      errors.brandId && errors.brandId.message ? true : false
-                    }
+
+          <div className='flex item-center  gap-2'>
+            <div className='flex flex-col gap-2 flex-1'>
+              <Controller
+                control={control}
+                name='brandId'
+                render={({ field }) => (
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={isLoadingBrands}
                   >
-                    <SelectValue placeholder='Select Brands' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Brands</SelectLabel>
-                      {brands.map((brand) => (
-                        <SelectItem key={brand.value} value={brand.value}>
-                          {brand.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            <FieldError className='pl-2'>{errors.brandId?.message}</FieldError>
+                    <SelectTrigger
+                      className='w-full bg-white'
+                      aria-invalid={
+                        errors.brandId && errors.brandId.message ? true : false
+                      }
+                    >
+                      <SelectValue
+                        placeholder={
+                          isLoadingBrands
+                            ? 'Loading brands...'
+                            : 'Select Brand'
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Brands</SelectLabel>
+                        {brands?.data?.map((brand: any) => (
+                          <SelectItem key={brand.id} value={brand.id}>
+                            {brand.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              <FieldError className='pl-2'>
+                {errors.brandId?.message}
+              </FieldError>
+            </div>
+            <Button
+              type='button'
+              variant='outline'
+              className='h-fit'
+              onClick={() => setIsAddBrandModalOpen(true)}
+            >
+              Add Brand
+            </Button>
           </div>
         </div>
+
+        <AddBrandModal
+          open={isAddBrandModalOpen}
+          onOpenChange={setIsAddBrandModalOpen}
+        />
 
         <div className='grid grid-cols-1 md:grid-cols-[150px_1fr] items-center gap-4'>
           <div className='*:not-first:mt-2'>

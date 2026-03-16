@@ -4,8 +4,15 @@ export const ProductValidate = z.object({
   name: z.string().min(2, {
     message: 'Product name must be at least 2 characters.',
   }),
-  description: z.string().optional(),
-  slug: z.string().optional(),
+  description: z
+    .string()
+    .min(10, {
+      message: 'Description must be at least 10 characters.',
+    })
+    .optional(),
+  slug: z.string().refine((value) => value !== '', {
+    message: 'Slug is required',
+  }),
   categoryId: z.string().refine((value) => value !== '', {
     message: 'Category is required',
   }),
@@ -15,7 +22,7 @@ export const ProductValidate = z.object({
   type: z.enum(['SINGLE', 'VARIANT']).default('SINGLE'),
   summary: z.string().optional(),
   tags: z.array(z.string()).optional(),
-  thumbnailId: z.cuid().nullable().optional(),
+  thumbnailId: z.string().nullable().optional(),
   isFeatured: z.boolean().default(false),
   isRefunded: z.boolean().default(false),
   hasWarranty: z.boolean().default(false),
@@ -23,7 +30,7 @@ export const ProductValidate = z.object({
   lowStockQuantity: z.number().optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
-  metaImageId: z.cuid().nullable().optional(),
+  metaImageId: z.string().nullable().optional(),
   discountType: z.enum(['PERCENTAGE', 'FLAT']).default('PERCENTAGE'),
   discountValue: z.number().default(0).optional(),
   // .refine((value) => value > 0, {

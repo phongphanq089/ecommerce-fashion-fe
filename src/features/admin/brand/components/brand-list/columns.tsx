@@ -1,10 +1,9 @@
 import { IconEdit, IconTrash } from '@tabler/icons-react'
 import { ColumnDef } from '@tanstack/react-table'
 import { Checkbox } from '~/components/ui/core/checkbox'
-import { Category, TableMeta } from '../../types'
-import { Switch } from '~/components/ui/core/switch'
+import { Brand, TableMeta } from '../../types'
 
-export const columns: ColumnDef<Category>[] = [
+export const columns: ColumnDef<Brand, any>[] = [
   {
     id: 'select',
     header: ({ table }) => {
@@ -14,8 +13,8 @@ export const columns: ColumnDef<Category>[] = [
             table.getIsAllRowsSelected()
               ? true
               : table.getIsSomePageRowsSelected()
-              ? 'indeterminate'
-              : false
+                ? 'indeterminate'
+                : false
           }
           onCheckedChange={(val) => table.toggleAllRowsSelected(!!val)}
           aria-label='Select all'
@@ -33,6 +32,24 @@ export const columns: ColumnDef<Category>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: 'logoUrl',
+    header: 'Logo',
+    cell: ({ row }) => {
+      const logo = row.original.logoUrl
+      return logo ? (
+        <img
+          src={logo}
+          alt={row.original.name}
+          className='h-10 w-10 rounded object-contain bg-white border'
+        />
+      ) : (
+        <div className='h-10 w-10 rounded bg-muted flex items-center justify-center text-[10px] text-muted-foreground'>
+          No Logo
+        </div>
+      )
+    },
+  },
+  {
     accessorKey: 'name',
     header: 'Name',
   },
@@ -41,9 +58,15 @@ export const columns: ColumnDef<Category>[] = [
     header: 'Slug',
   },
   {
-    accessorKey: 'parent.name',
-    header: 'Parent',
-    cell: ({ row }) => row.original.parent?.name || 'Root',
+    accessorKey: 'isActive',
+    header: 'Status',
+    cell: ({ row }) => (
+      <div
+        className={`px-2 py-1 rounded-full text-xs w-fit ${row.original.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
+      >
+        {row.original.isActive ? 'Active' : 'Inactive'}
+      </div>
+    ),
   },
   {
     accessorKey: 'Action',
@@ -53,16 +76,16 @@ export const columns: ColumnDef<Category>[] = [
       return (
         <div className='flex items-center gap-3'>
           <div
-            className='border border-red-500 text-red-500 p-2 rounded-xl cursor-pointer'
+            className='border border-red-500 text-red-500 p-2 rounded-xl cursor-pointer hover:bg-red-50 transition-colors'
             onClick={() => meta.onDelete(row.original.id)}
           >
-            <IconTrash />
+            <IconTrash size={18} />
           </div>
           <div
-            className='border bg-primary p-2 text-white rounded-xl cursor-pointer'
+            className='border bg-primary p-2 text-white rounded-xl cursor-pointer hover:opacity-90 transition-opacity'
             onClick={() => meta.onEdit(row.original.id)}
           >
-            <IconEdit />
+            <IconEdit size={18} />
           </div>
         </div>
       )
