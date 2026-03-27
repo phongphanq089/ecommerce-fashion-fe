@@ -10,6 +10,8 @@ import { useRouter } from 'next/navigation'
 import { SETTING_AUTH } from '~/constants'
 import IconGoogle from '~/components/ui/icon/icon-google'
 
+import { ROLES } from '~/lib/auth-utils'
+
 export default function GoogleLoginButton() {
   const queryClient = useQueryClient()
   const { login } = useAuthStore()
@@ -29,15 +31,13 @@ export default function GoogleLoginButton() {
         {
           onSuccess: (data) => {
             toast.success('Login success')
-            setAccessToken(data.result.accessToken)
-            login(data.result.user)
-            const role = data.result.user.role
-            document.cookie = `isLoggedIn=true; path=/; max-age=31536000`
-            document.cookie = `userRole=${role}; path=/; max-age=31536000`
+            const { accessToken, user } = data.result
+            login(user, accessToken)
+            const role = user.role
             if (
-              role === 'ADMIN' ||
-              role === 'SUPER_ADMIN' ||
-              role === 'STAFF'
+              role === ROLES.ADMIN ||
+              role === ROLES.SUPER_ADMIN ||
+              role === ROLES.STAFF
             ) {
               router.push('/admin/dashboard')
             } else {

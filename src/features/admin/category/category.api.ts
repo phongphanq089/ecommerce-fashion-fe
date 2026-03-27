@@ -15,40 +15,40 @@ export type CategoryParams = {
 
 export const _categoryApi = {
   fetchCategories: async (params?: CategoryParams) => {
-    const response = await https.get<ApiResponse<any>>('/product/categories', {
+    const response = await https.get<ApiResponse<any>>('/products/categories', {
       params,
     })
     return response.data
   },
   fetchCategoryById: async (id: string) => {
     const response = await https.get<ApiResponse<any>>(
-      `/product/category/${id}`,
+      `/products/categories/${id}`,
     )
     return response.data
   },
   createCategory: async (payload: CategorySchemaType) => {
     const response = await https.post<ApiResponse<any>>(
-      '/product/create-category',
+      '/products/categories',
       payload,
     )
     return response.data
   },
   updateCategory: async (id: string, payload: CategorySchemaType) => {
     const response = await https.put<ApiResponse<any>>(
-      `/product/update-category/${id}`,
+      `/products/categories/${id}`,
       payload,
     )
     return response.data
   },
   deleteCategory: async (id: string) => {
     const response = await https.delete<ApiResponse<any>>(
-      `/product/delete-category/${id}`,
+      `/products/categories/${id}`,
     )
     return response.data
   },
   deleteCategories: async (ids: string[]) => {
     const response = await https.post<ApiResponse<any>>(
-      '/product/delete-categories',
+      '/products/categories/delete-many',
       {
         ids,
       },

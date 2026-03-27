@@ -33,7 +33,10 @@ const ProductFormAction = ({ productId, onSuccess, onCancel }: ProductFormAction
 
   useEffect(() => {
     if (productDetail?.result) {
-      form.reset(productDetail.result as any)
+      form.reset({
+        ...productDetail.result,
+        variants: (productDetail.result as any).variants || [],
+      } as any)
     } else if (!productId) {
       form.reset({
         type: 'SINGLE',
@@ -44,6 +47,7 @@ const ProductFormAction = ({ productId, onSuccess, onCancel }: ProductFormAction
         collectionIds: [],
         mediaIds: [],
         tags: [],
+        variants: [],
       })
     }
   }, [productDetail, productId, form])
@@ -103,10 +107,17 @@ const ActionForm = ({ onCancel, productId, onSuccess }: { onCancel?: () => void;
     handleSubmit(
       async (data) => {
         try {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { thumbnail, media, metaImage, ...submitData } = data as any
+          
+          if (!submitData.variants) {
+            submitData.variants = []
+          }
+
           if (productId) {
-            await updateMutation.mutateAsync({ id: productId, data })
+            await updateMutation.mutateAsync({ id: productId, data: submitData })
           } else {
-            await createMutation.mutateAsync(data as any)
+            await createMutation.mutateAsync(submitData as any)
           }
           onSuccess?.()
         } catch (error) {

@@ -12,12 +12,26 @@ import { cn } from '~/lib/utils'
 import { ProductSchemaType } from '../../product.validate'
 
 const ProductImages = () => {
-  const { setValue, watch } = useFormContext<ProductSchemaType>()
+  const { setValue, watch, getValues } = useFormContext<ProductSchemaType>()
   const [thumbnailImage, setThumbnailImage] = useState<MediaItem[]>([])
   const [galleryImages, setGalleryImages] = useState<MediaItem[]>([])
 
+  const watchThumbnail = watch('thumbnailId')
+  const watchMediaIds = watch('mediaIds')
+
+  useEffect(() => {
+    const values = getValues() as any
+    if (values.thumbnail && thumbnailImage.length === 0) {
+      setThumbnailImage([values.thumbnail])
+    }
+    if (values.media && galleryImages.length === 0) {
+      setGalleryImages(values.media)
+    }
+  }, [watchThumbnail, watchMediaIds, getValues])
+
   useEffect(() => {
     setValue('thumbnailId', thumbnailImage[0]?.id || null)
+    setValue('thumbnail', thumbnailImage[0] || null)
   }, [thumbnailImage, setValue])
 
   useEffect(() => {
@@ -25,6 +39,7 @@ const ProductImages = () => {
       'mediaIds',
       galleryImages.map((item) => item.id),
     )
+    setValue('media', galleryImages)
   }, [galleryImages, setValue])
   const handleSelectThumbnailImage = (items: MediaItem[]) => {
     console.log('Selected Gallery Items:', items)

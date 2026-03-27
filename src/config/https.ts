@@ -118,15 +118,11 @@
  *
  * ================================================================
  */
-import axios from 'axios'
+import axios, { isAxiosError } from 'axios'
 import { API_BASE_URL } from '~/constants'
 
 /**
  * Access token stored in memory.
- * We intentionally avoid localStorage/sessionStorage to reduce XSS risks.
- *
- * This token will be attached to the Authorization header
- * for every outgoing API request.
  */
 let accessToken: string | null = null
 
@@ -329,10 +325,18 @@ export const refreshAccessToken = async (): Promise<string> => {
     /**
      * If refresh fails:
      * - reject all queued requests
-     * - log the user out
+     * - log the user out ONLY if it's a client/auth error
      */
     processQueue(err, null)
-    logout()
+
+    if (isAxiosError(err)) {
+      const status = err.response?.status
+      // Only logout on 401 (Unauthorized), 403 (Forbidden), or 400 (Bad Request)
+      if (status && [400, 401, 403].includes(status)) {
+        logout()
+      }
+    }
+
     throw err
   } finally {
     isRefreshing = false
@@ -347,15 +351,18 @@ export const refreshAccessToken = async (): Promise<string> => {
  * Logs the user out by:
  * - clearing the in-memory access token
  * - clearing auth-related cookies
+ * - clearing persisted auth store from localStorage
  * - redirecting to the login page
  */
 export const logout = () => {
   accessToken = null
 
-  document.cookie = 'isLoggedIn=; Max-Age=0; path=/;'
-  document.cookie = 'userRole=; Max-Age=0; path=/;'
-
-  window.location.href = '/auth/sign-in'
+  if (typeof document !== 'undefined') {
+    document.cookie = 'isLoggedIn=; Max-Age=0; path=/;'
+    document.cookie = 'userRole=; Max-Age=0; path=/;'
+    localStorage.removeItem('auth')
+    window.location.href = '/auth/sign-in'
+  }
 }
 
 // ─────────────────────────────────────────────────────────────

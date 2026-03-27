@@ -40,6 +40,18 @@ export const ProductValidate = z.object({
   discountEndDate: z.string().nullable().optional(),
   mediaIds: z.array(z.string()).optional(),
   collectionIds: z.array(z.string()).optional(),
+  // UI ONLY
+  options: z
+    .array(
+      z.object({
+        name: z.string(),
+        values: z.array(z.string()),
+      }),
+    )
+    .optional(),
+  thumbnail: z.any().optional(),
+  media: z.array(z.any()).optional(),
+  metaImage: z.any().optional(),
   variants: z
     .array(
       z.object({

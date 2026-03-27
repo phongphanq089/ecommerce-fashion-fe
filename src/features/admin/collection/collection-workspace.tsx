@@ -48,9 +48,9 @@ export default function CollectionWorkspace() {
 
   const handleRemoveProduct = async (productId: string) => {
     if (collection && confirm('Remove this product from collection?')) {
-      const remainingIds = collection.products
-        .filter((p) => p.id !== productId)
-        .map((p) => p.id)
+      const remainingIds = (collection as any).products
+        .filter((p: any) => p.id !== productId)
+        .map((p: any) => p.id)
 
       await updateMutation.mutateAsync({
         id: collection.id,
@@ -60,8 +60,8 @@ export default function CollectionWorkspace() {
   }
 
   return (
-    <div className='flex h-[calc(100vh-theme(spacing.20))] overflow-hidden bg-slate-50 rounded-2xl border shadow-xl'>
-      <div className='w-80 flex-shrink-0 flex flex-col'>
+    <div className='flex h-[calc(100vh-theme(spacing.20))] overflow-hidden bg-slate-950 rounded-3xl border border-slate-800 shadow-2xl text-slate-200'>
+      <div className='w-80 flex-shrink-0 flex flex-col border-r border-slate-800'>
         <CollectionList
           selectedId={selectedId}
           onSelect={(id) => {
@@ -75,63 +75,80 @@ export default function CollectionWorkspace() {
         />
       </div>
 
-      <div className='flex-1 overflow-y-auto p-8'>
+      <div className='flex-1 overflow-y-auto p-8 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950'>
         {isAdding ? (
           <div className='max-w-4xl mx-auto space-y-6'>
-            <div className='flex justify-between items-center bg-white p-6 rounded-2xl border shadow-sm'>
-              <h1 className='text-3xl font-extrabold text-slate-800 italic'>
+            <div className='flex justify-between items-center bg-slate-900/50 p-6 rounded-2xl border border-slate-800 backdrop-blur-xl'>
+              <h1 className='text-3xl font-black text-white italic tracking-tighter'>
                 NEW COLLECTION
               </h1>
-              <Button variant='ghost' onClick={() => setIsAdding(false)}>
+              <Button 
+                variant='ghost' 
+                onClick={() => setIsAdding(false)}
+                className='text-slate-400 hover:text-white hover:bg-slate-800'
+              >
                 CANCEL
               </Button>
             </div>
-            <CollectionDetailForm onSuccess={() => setIsAdding(false)} />
+            <div className='bg-slate-900/50 p-8 rounded-3xl border border-slate-800 backdrop-blur-xl'>
+              <CollectionDetailForm onSuccess={() => setIsAdding(false)} />
+            </div>
           </div>
         ) : selectedId === null ? (
-          <div className='h-full flex flex-col items-center justify-center text-slate-400 space-y-4'>
-            <div className='h-24 w-24 rounded-full bg-slate-100 flex items-center justify-center'>
-              <Package size={48} className='text-slate-300' />
+          <div className='h-full flex flex-col items-center justify-center text-slate-500 space-y-6'>
+            <div className='h-32 w-32 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center shadow-2xl relative'>
+              <Package size={56} className='text-slate-700' />
+              <div className='absolute -top-1 -right-1 h-6 w-6 bg-primary rounded-full animate-pulse' />
             </div>
-            <div className='text-center'>
-              <p className='text-xl font-bold text-slate-500'>
-                Select a collection
+            <div className='text-center space-y-2'>
+              <p className='text-2xl font-black text-white tracking-tight'>
+                SELECT A COLLECTION
               </p>
-              <p className='text-sm'>
-                or create a new one to start managing products.
+              <p className='text-slate-500 max-w-[250px] mx-auto'>
+                Choose from the list or create a new masterpiece.
               </p>
             </div>
             <Button
               onClick={() => setIsAdding(true)}
-              variant='outline'
-              className='mt-4 rounded-full px-8'
+              className='mt-4 rounded-full px-10 h-12 font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-transform'
             >
               + CREATE NEW
             </Button>
           </div>
         ) : isLoading ? (
           <div className='h-full flex items-center justify-center'>
-            <Loader2 className='animate-spin h-10 w-10 text-primary' />
+            <div className='relative'>
+               <Loader2 className='animate-spin h-12 w-12 text-primary' />
+               <div className='absolute inset-0 blur-xl bg-primary/20' />
+            </div>
           </div>
         ) : collection ? (
           <div className='max-w-6xl mx-auto space-y-8'>
-            <div className='flex justify-between items-end gap-6 bg-white p-8 rounded-3xl border shadow-md border-b-4 border-b-primary/20 relative overflow-hidden'>
+            <div className='flex justify-between items-end gap-6 bg-slate-900/40 p-10 rounded-[2.5rem] border border-slate-800 backdrop-blur-xl relative overflow-hidden group'>
               <div className='relative z-10'>
-                <p className='text-primary font-bold text-xs uppercase tracking-[0.2em] mb-2'>
-                  Editing Collection
-                </p>
-                <h1 className='text-5xl font-black text-slate-800 leading-tight'>
+                <div className='flex items-center gap-2 mb-3'>
+                   <div className='h-2 w-2 bg-primary rounded-full animate-pulse' />
+                   <p className='text-primary font-black text-xs uppercase tracking-[0.3em]'>
+                    COLLECTION WORKSPACE
+                  </p>
+                </div>
+                <h1 className='text-6xl font-black text-white leading-none tracking-tighter'>
                   {collection.name}
                 </h1>
-                <p className='text-slate-400 mt-2 font-mono text-sm uppercase'>
-                  ID: {collection.id}
-                </p>
+                <div className='flex items-center gap-4 mt-4'>
+                  <p className='text-slate-500 font-mono text-xs bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700/50'>
+                    ID: {collection.id}
+                  </p>
+                  <p className='text-slate-500 font-mono text-xs bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700/50'>
+                    SLUG: {collection.slug}
+                  </p>
+                </div>
               </div>
 
               <div className='flex gap-3 relative z-10'>
                 <Button
                   variant='outline'
-                  className='border-red-500/20 text-red-500 hover:bg-red-50 rounded-2xl h-14 w-14'
+                  className='border-slate-700 text-slate-400 hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/50 rounded-2xl h-14 w-14 transition-all'
                   size='icon'
                   onClick={handleDelete}
                 >
@@ -139,60 +156,61 @@ export default function CollectionWorkspace() {
                 </Button>
               </div>
 
-              {/* Decorative background element */}
-              <div className='absolute right-[-20px] bottom-[-20px] opacity-[0.03] rotate-12'>
-                <Package size={200} />
+              <div className='absolute right-[-40px] top-[-40px] opacity-[0.05] group-hover:opacity-[0.08] transition-opacity -rotate-12'>
+                <Package size={300} />
               </div>
             </div>
 
             <Tabs defaultValue='settings' className='w-full'>
-              <TabsList className='bg-white p-1 rounded-2xl border shadow-sm h-16 w-fit mb-8'>
+              <TabsList className='bg-slate-900/50 p-1.5 rounded-2xl border border-slate-800 h-16 w-fit mb-8 backdrop-blur-md'>
                 <TabsTrigger
                   value='settings'
-                  className='px-8 h-12 rounded-xl text-sm font-bold data-[state=active]:bg-primary data-[state=active]:text-white transition-all'
+                  className='px-8 h-12 rounded-xl text-xs font-black tracking-widest data-[state=active]:bg-primary data-[state=active]:text-white transition-all uppercase'
                 >
-                  <Settings size={18} className='mr-2' /> SETTINGS
+                  <Settings size={16} className='mr-2' /> SETTINGS
                 </TabsTrigger>
                 <TabsTrigger
                   value='products'
-                  className='px-8 h-12 rounded-xl text-sm font-bold data-[state=active]:bg-primary data-[state=active]:text-white transition-all'
+                  className='px-8 h-12 rounded-xl text-xs font-black tracking-widest data-[state=active]:bg-primary data-[state=active]:text-white transition-all uppercase'
                 >
-                  <Package size={18} className='mr-2' /> PRODUCTS (
-                  {collection.products.length})
+                  <Package size={16} className='mr-2' /> PRODUCTS (
+                  {(collection as any).products?.length || 0})
                 </TabsTrigger>
                 <TabsTrigger
                   value='add'
-                  className='px-8 h-12 rounded-xl text-sm font-bold data-[state=active]:bg-primary data-[state=active]:text-white transition-all'
+                  className='px-8 h-12 rounded-xl text-xs font-black tracking-widest data-[state=active]:bg-primary data-[state=active]:text-white transition-all uppercase'
                 >
-                  <PlusSquare size={18} className='mr-2' /> EXPLORE & ADD
+                  <PlusSquare size={16} className='mr-2' /> EXPLORE & ADD
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value='settings' className='focus:outline-none'>
-                <CollectionDetailForm
-                  collection={collection}
-                  onSuccess={refetch}
-                />
+              <TabsContent value='settings' className='focus:outline-none animate-in fade-in slide-in-from-bottom-4 duration-500'>
+                <div className='bg-slate-900/50 p-8 rounded-3xl border border-slate-800 backdrop-blur-xl'>
+                   <CollectionDetailForm
+                    collection={collection}
+                    onSuccess={refetch}
+                  />
+                </div>
               </TabsContent>
 
-              <TabsContent value='products' className='focus:outline-none'>
+              <TabsContent value='products' className='focus:outline-none animate-in fade-in slide-in-from-bottom-4 duration-500'>
                 <CollectionProducts
-                  products={collection.products}
+                  products={(collection as any).products || []}
                   onRemove={handleRemoveProduct}
                 />
               </TabsContent>
 
-              <TabsContent value='add' className='focus:outline-none'>
+              <TabsContent value='add' className='focus:outline-none animate-in fade-in slide-in-from-bottom-4 duration-500'>
                 <AddProductToCollection
                   collectionId={collection.id}
-                  existingProductIds={collection.products.map((p) => p.id)}
+                  existingProductIds={(collection as any).products?.map((p: any) => p.id) || []}
                   onSuccess={refetch}
                 />
               </TabsContent>
             </Tabs>
           </div>
         ) : (
-          <Alert variant='destructive'>
+          <Alert variant='destructive' className='bg-red-500/10 border-red-500/50 text-red-500'>
             <AlertCircle className='h-4 w-4' />
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>

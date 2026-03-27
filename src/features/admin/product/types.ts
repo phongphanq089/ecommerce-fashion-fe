@@ -10,6 +10,19 @@ export type Variant = {
   }[]
 }
 
+export type ProductAttribute = {
+  id: string
+  name: string
+  values: string[]
+  createdAt: string
+  updatedAt: string
+}
+
+export type ProductAttributeInput = {
+  name: string
+  values: string[]
+}
+
 export type Product = {
   id: string
   name: string

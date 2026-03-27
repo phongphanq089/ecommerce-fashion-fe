@@ -15,6 +15,8 @@ import { https, setAccessToken } from '~/config/https'
 import { AUTH_QUERY } from '../auth.query'
 import { useQueryClient } from '@tanstack/react-query'
 
+import { ROLES } from '~/lib/auth-utils'
+
 const SignInForm = () => {
   const { login } = useAuthStore()
   const router = useRouter()
@@ -41,12 +43,14 @@ const SignInForm = () => {
     loginMutation(data, {
       onSuccess: (data) => {
         toast.success('Login success')
-        setAccessToken(data.result.accessToken)
-        login(data.result.user)
-        const role = data.result.user.role
-        document.cookie = `isLoggedIn=true; path=/; max-age=31536000`
-        document.cookie = `userRole=${role}; path=/; max-age=31536000`
-        if (role === 'ADMIN' || role === 'SUPER_ADMIN' || role === 'STAFF') {
+        const { accessToken, user } = data.result
+        login(user, accessToken)
+        const role = user.role
+        if (
+          role === ROLES.ADMIN ||
+          role === ROLES.SUPER_ADMIN ||
+          role === ROLES.STAFF
+        ) {
           router.push('/admin/dashboard')
         } else {
           router.push('/')

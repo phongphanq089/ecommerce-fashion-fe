@@ -14,6 +14,7 @@ export function useProductHookForm(defaultValues?: Partial<ProductSchemaType>) {
       collectionIds: [],
       mediaIds: [],
       tags: [],
+      variants: [],
       ...defaultValues,
     },
   })
