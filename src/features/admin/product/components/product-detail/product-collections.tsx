@@ -1,7 +1,7 @@
 'use client'
 
 import { Plus, Loader2 } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import { Button } from '~/components/ui/core/button'
 import {
@@ -33,13 +33,23 @@ const ProductCollections = () => {
   const [newCollectionName, setNewCollectionName] = useState('')
 
   // 1. Lấy danh sách collection từ API
-  const { data: collectionsRes, isLoading, refetch } = _collectionService.useCollections({ limit: 100 })
+  const {
+    data: collectionsRes,
+    isLoading,
+    refetch,
+  } = _collectionService.useCollections({ page: 1, limit: 100 })
   const createCollectionMutation = _collectionService.useCreateCollection()
 
-  const collectionOptions: Option[] = (collectionsRes?.result as any)?.data?.map((c: any) => ({
-    label: c.name,
-    value: c.id,
-  })) || []
+  const [collectionOptions, setCollectionOptions] = useState<Option[]>([])
+
+  useEffect(() => {
+    const collectionOptions: Option[] =
+      (collectionsRes?.result as any)?.data?.map((c: any) => ({
+        label: c.name,
+        value: c.id,
+      })) || []
+    setCollectionOptions(collectionOptions)
+  }, [collectionsRes])
 
   // 2. Logic tạo nhanh collection
   const handleQuickAdd = async () => {
@@ -55,7 +65,7 @@ const ProductCollections = () => {
         description: '',
         isActive: true,
       } as any)
-      
+
       setNewCollectionName('')
       setIsDialogOpen(false)
       refetch() // Reload danh sách để hiện collection mới
@@ -65,17 +75,17 @@ const ProductCollections = () => {
   }
 
   return (
-    <Card className='bg-muted shadow-none border-slate-200 dark:border-slate-800'>
-      <CardHeader className='border-b border-slate-200 dark:border-slate-800 flex flex-row items-center justify-between space-y-0'>
-        <CardTitle className='text-lg font-black text-slate-800 dark:text-slate-100 uppercase tracking-tighter italic'>
+    <Card className='bg-muted shadow-none '>
+      <CardHeader className='border-b flex flex-row items-center justify-between space-y-0'>
+        <CardTitle className='text-lg font-black uppercase tracking-tighter'>
           Collections
         </CardTitle>
-        
+
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button 
-              variant='ghost' 
-              size='icon' 
+            <Button
+              variant='ghost'
+              size='icon'
               className='h-8 w-8 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all'
             >
               <Plus size={18} />
@@ -83,14 +93,18 @@ const ProductCollections = () => {
           </DialogTrigger>
           <DialogContent className='sm:max-w-[425px] bg-white dark:bg-slate-950'>
             <DialogHeader>
-              <DialogTitle className='font-black tracking-tighter italic uppercase'>Quick Add Collection</DialogTitle>
+              <DialogTitle className='font-black tracking-tighter italic uppercase'>
+                Quick Add Collection
+              </DialogTitle>
               <DialogDescription className='text-slate-500'>
                 Create a new collection on the fly. You can add details later.
               </DialogDescription>
             </DialogHeader>
             <div className='grid gap-4 py-4'>
               <div className='grid gap-2'>
-                <Label htmlFor='name' className='font-bold'>Collection Name</Label>
+                <Label htmlFor='name' className='font-bold'>
+                  Collection Name
+                </Label>
                 <Input
                   id='name'
                   placeholder='e.g. Summer Collection'
@@ -101,14 +115,16 @@ const ProductCollections = () => {
               </div>
             </div>
             <DialogFooter>
-              <Button 
-                onClick={handleQuickAdd} 
+              <Button
+                onClick={handleQuickAdd}
                 disabled={createCollectionMutation.isPending}
                 className='w-full font-black'
               >
                 {createCollectionMutation.isPending ? (
                   <Loader2 className='animate-spin mr-2' size={18} />
-                ) : 'CREATE COLLECTION'}
+                ) : (
+                  'CREATE COLLECTION'
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -117,20 +133,28 @@ const ProductCollections = () => {
 
       <CardContent className='p-6'>
         <div className='space-y-4'>
-          <Label className='text-xs font-black uppercase tracking-widest text-slate-500'>Select Target Collections</Label>
+          <Label className='text-xs font-black uppercase tracking-widest text-slate-500'>
+            Select Target Collections
+          </Label>
           <Controller
             control={control}
             name='collectionIds'
             render={({ field }) => (
               <MultipleSelector
                 {...field}
-                value={collectionOptions.filter(opt => field.value?.includes(opt.value))}
+                value={collectionOptions.filter((opt) =>
+                  field.value?.includes(opt.value),
+                )}
                 onChange={(options) => {
-                  field.onChange(options.map(opt => opt.value))
+                  field.onChange(options.map((opt) => opt.value))
                 }}
-                defaultOptions={collectionOptions}
-                placeholder={isLoading ? 'Loading collections...' : 'Search or select collections...'}
-                className='bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+                options={collectionOptions}
+                placeholder={
+                  isLoading
+                    ? 'Loading collections...'
+                    : 'Search or select collections...'
+                }
+                className='bg-muted border-gray-500'
                 emptyIndicator={
                   <p className='text-center text-sm text-slate-500 py-2'>
                     {isLoading ? 'Fetching data...' : 'No collections found.'}
@@ -142,9 +166,10 @@ const ProductCollections = () => {
         </div>
       </CardContent>
 
-      <CardFooter className='border-t border-slate-200 dark:border-slate-800 px-6 py-4'>
+      <CardFooter className='border-t px-6 py-4'>
         <p className='text-[10px] text-slate-500 leading-relaxed italic'>
-          Add this product to multiple collections to increase visibility across categories.
+          Add this product to multiple collections to increase visibility across
+          categories.
         </p>
       </CardFooter>
     </Card>

@@ -70,10 +70,7 @@ const getCombinations = (
 const ProductVariantForm = () => {
   const { control, register, watch, setValue } =
     useFormContext<ProductSchemaType>()
-  const {
-    fields: variants,
-    replace,
-  } = useFieldArray({
+  const { fields: variants, replace } = useFieldArray({
     control,
     name: 'variants',
   })
@@ -81,8 +78,10 @@ const ProductVariantForm = () => {
   const productType = watch('type')
 
   // API Integration
-  const { data: attributesData, isLoading: isLoadingAttributes } = _attributeService.useAllAttributes()
-  
+  const { data: attributesData, isLoading: isLoadingAttributes } =
+    _attributeService.useAllAttributes()
+
+  console.log(attributesData, '####=>')
   const [variations, setVariations] = useState<Variation[]>([
     { id: Date.now(), name: '', values: [] },
   ])
@@ -91,19 +90,24 @@ const ProductVariantForm = () => {
   const attributeOptionsMap = useMemo(() => {
     const map: Record<string, Option[]> = {}
     attributesData?.result?.forEach((attr) => {
-      map[attr.name] = attr.values.map((v) => ({ label: v, value: v }))
+      map[attr.name] = attr.values.map((v) => ({
+        label: v.value,
+        value: v.value,
+      }))
     })
     return map
   }, [attributesData])
 
   useEffect(() => {
     if (productType === 'VARIANT') {
-      const activeVariations = variations.filter(v => v.name && v.values.length > 0)
-      
+      const activeVariations = variations.filter(
+        (v) => v.name && v.values.length > 0,
+      )
+
       // Đẩy dữ liệu vào trường options
-      const optionsData = activeVariations.map(v => ({
+      const optionsData = activeVariations.map((v) => ({
         name: v.name,
-        values: v.values.map(val => val.label)
+        values: v.values.map((val) => val.label),
       }))
       setValue('options', optionsData)
 
@@ -125,7 +129,7 @@ const ProductVariantForm = () => {
           })
 
           return {
-            sku: `-${skuSuffix}`,
+            sku: `${skuSuffix}`,
             price: 0,
             stock: 0,
             purchasePrice: 0,
@@ -139,7 +143,12 @@ const ProductVariantForm = () => {
       }
     } else if (productType === 'SINGLE') {
       const currentVariants = watch('variants')
-      if (!currentVariants || currentVariants.length === 0 || (currentVariants[0]?.attributes && currentVariants[0].attributes.length > 0)) {
+      if (
+        !currentVariants ||
+        currentVariants.length === 0 ||
+        (currentVariants[0]?.attributes &&
+          currentVariants[0].attributes.length > 0)
+      ) {
         replace([
           {
             sku: '',
@@ -164,11 +173,16 @@ const ProductVariantForm = () => {
 
   const handleVariationNameChange = (id: string | number, newName: string) => {
     setVariations(
-      variations.map((v) => (v.id === id ? { ...v, name: newName, values: [] } : v)),
+      variations.map((v) =>
+        v.id === id ? { ...v, name: newName, values: [] } : v,
+      ),
     )
   }
 
-  const handleVariationValuesChange = (id: string | number, newValues: Option[]) => {
+  const handleVariationValuesChange = (
+    id: string | number,
+    newValues: Option[],
+  ) => {
     setVariations(
       variations.map((v) => (v.id === id ? { ...v, values: newValues } : v)),
     )
@@ -253,9 +267,9 @@ const ProductVariantForm = () => {
           <Card className='bg-muted shadow-none'>
             <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-4 border-b'>
               <CardTitle>Product Variation</CardTitle>
-              <Button 
-                variant='outline' 
-                size='sm' 
+              <Button
+                variant='outline'
+                size='sm'
                 onClick={addVariation}
                 className='bg-white'
               >
@@ -267,15 +281,17 @@ const ProductVariantForm = () => {
               {variations.map((variation) => (
                 <div
                   key={variation.id}
-                  className='grid grid-cols-1 md:grid-cols-[200px_1fr_auto] items-start gap-4 p-4 rounded-lg bg-white/50 border'
+                  className='grid grid-cols-1 md:grid-cols-[200px_1fr_auto] items-start gap-4 p-4 rounded-lg  border'
                 >
                   <div className='space-y-2'>
                     <Label>Attribute Name</Label>
                     <Select
                       value={variation.name}
-                      onValueChange={(value) => handleVariationNameChange(variation.id, value)}
+                      onValueChange={(value) =>
+                        handleVariationNameChange(variation.id, value)
+                      }
                     >
-                      <SelectTrigger className='bg-white'>
+                      <SelectTrigger className='bg-muted'>
                         <SelectValue placeholder='Select Attribute' />
                       </SelectTrigger>
                       <SelectContent>
@@ -297,12 +313,12 @@ const ProductVariantForm = () => {
                   <div className='space-y-2'>
                     <Label>Attribute Values</Label>
                     <MultipleSelector
-                      className='bg-white'
+                      className='bg-muted'
                       value={variation.values}
                       onChange={(options) =>
                         handleVariationValuesChange(variation.id, options)
                       }
-                      defaultOptions={attributeOptionsMap[variation.name] || []}
+                      options={attributeOptionsMap[variation.name] || []}
                       placeholder='Select or insert options...'
                       creatable
                       emptyIndicator={
@@ -338,7 +354,7 @@ const ProductVariantForm = () => {
           <CardContent className='p-0'>
             <Table>
               <TableHeader>
-                <TableRow className='bg-white/50'>
+                <TableRow className='bg-transparent'>
                   <TableHead className='w-[250px] font-bold'>Variant</TableHead>
                   <TableHead className='font-bold'>Purchase Price</TableHead>
                   <TableHead className='font-bold'>Unit Price</TableHead>
@@ -352,7 +368,7 @@ const ProductVariantForm = () => {
                     ?.map((attr) => `${attr.name}:${attr.value}`)
                     .join(' | ')
                   return (
-                    <TableRow key={field.id} className='bg-white/30'>
+                    <TableRow key={field.id} className='bg-transparent'>
                       <TableCell className='font-medium text-primary'>
                         {combination}
                       </TableCell>

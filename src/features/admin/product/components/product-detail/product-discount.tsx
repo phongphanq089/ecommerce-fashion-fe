@@ -29,19 +29,19 @@ const ProductDiscount = () => {
     <Card className='bg-muted shadow-none '>
       <CardHeader className='border-b font-bold'>Product Discount</CardHeader>
       <CardContent>
-        <div className='grid grid-cols-1 md:grid-cols-[150px_1fr] items-center gap-4'>
-          <div className='*:not-first:mt-2'>
-            <Label>Name</Label>
-          </div>
+        <div className='grid grid-cols-1 items-center gap-4'>
           <div className='flex flex-col gap-2 space-y-2'>
-            <Input
-              {...register('discountValue', { valueAsNumber: true })}
-              placeholder='0.00'
-              type='number'
-              className='bg-white'
-              aria-invalid={errors.discountValue ? true : false}
-              errorMessage={errors.discountValue?.message}
-            />
+            <div className='*:not-first:mt-2'>
+              <Label>Price</Label>
+              <Input
+                {...register('discountValue', { valueAsNumber: true })}
+                placeholder='0.00'
+                type='number'
+                className='bg-white'
+                aria-invalid={errors.discountValue ? true : false}
+                errorMessage={errors.discountValue?.message}
+              />
+            </div>
 
             <Controller
               control={control}

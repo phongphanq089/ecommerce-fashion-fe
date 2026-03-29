@@ -27,9 +27,16 @@ interface ProductFormActionProps {
   onCancel?: () => void
 }
 
-const ProductFormAction = ({ productId, onSuccess, onCancel }: ProductFormActionProps) => {
-  const { data: productDetail, isLoading } = _productService.useProduct(productId || '')
+const ProductFormAction = ({
+  productId,
+  onSuccess,
+  onCancel,
+}: ProductFormActionProps) => {
+  const { data: productDetail, isLoading } = _productService.useProduct(
+    productId || '',
+  )
   const form = useProductHookForm()
+  const resetForm = form.reset
 
   useEffect(() => {
     if (productDetail?.result) {
@@ -62,9 +69,15 @@ const ProductFormAction = ({ productId, onSuccess, onCancel }: ProductFormAction
 
   return (
     <FormProvider {...form}>
-      <Card className='border-none shadow-none bg-transparent'>
-        <CardHeader className='px-6 pt-6 pb-2'>
-          <HeadingSectionAdmin title={productId ? `Edit Product: ${productDetail?.result?.name || ''}` : 'Add New Product'} />
+      <Card className='border-none shadow-none bg-transparent pt-0 gap-2'>
+        <CardHeader className='px-6 pb-2'>
+          <HeadingSectionAdmin
+            title={
+              productId
+                ? `Edit Product: ${productDetail?.result?.name || ''}`
+                : 'Add New Product'
+            }
+          />
         </CardHeader>
         <CardContent className='px-6 py-4'>
           <div className='flex flex-col xl:grid grid-cols-12 gap-6'>
@@ -76,14 +89,23 @@ const ProductFormAction = ({ productId, onSuccess, onCancel }: ProductFormAction
               <ProductImages />
               <SeoMetaTags />
             </div>
-            <div className='col-span-12 lg:col-span-4 space-y-8 h-fit lg:sticky lg:top-4'>
+            <div className='col-span-12 lg:col-span-4 space-y-8 h-fit lg:sticky lg:top-20'>
+              <ActionForm
+                onCancel={resetForm}
+                productId={productId}
+                onSuccess={onSuccess}
+              />
               <ShippingConfiguration />
               <ProductFeatured />
               <ProductRefundable />
               <ProductWarranty />
               <ProductStockQuantity />
               <ProductCollections />
-              <ActionForm onCancel={onCancel} productId={productId} onSuccess={onSuccess} />
+              <ActionForm
+                onCancel={resetForm}
+                productId={productId}
+                onSuccess={onSuccess}
+              />
             </div>
           </div>
         </CardContent>
@@ -94,7 +116,15 @@ const ProductFormAction = ({ productId, onSuccess, onCancel }: ProductFormAction
 
 export default ProductFormAction
 
-const ActionForm = ({ onCancel, productId, onSuccess }: { onCancel?: () => void; productId?: string | null; onSuccess?: () => void }) => {
+const ActionForm = ({
+  onCancel,
+  productId,
+  onSuccess,
+}: {
+  onCancel?: () => void
+  productId?: string | null
+  onSuccess?: () => void
+}) => {
   const {
     handleSubmit,
     formState: { isSubmitting },
@@ -109,13 +139,16 @@ const ActionForm = ({ onCancel, productId, onSuccess }: { onCancel?: () => void;
         try {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { thumbnail, media, metaImage, ...submitData } = data as any
-          
+
           if (!submitData.variants) {
             submitData.variants = []
           }
 
           if (productId) {
-            await updateMutation.mutateAsync({ id: productId, data: submitData })
+            await updateMutation.mutateAsync({
+              id: productId,
+              data: submitData,
+            })
           } else {
             await createMutation.mutateAsync(submitData as any)
           }
@@ -131,12 +164,21 @@ const ActionForm = ({ onCancel, productId, onSuccess }: { onCancel?: () => void;
   }
 
   return (
-    <div className='w-full p-6 bg-white dark:bg-slate-900 rounded-xl border shadow-sm'>
+    <div className='w-full p-6 bg-muted rounded-xl border shadow-sm'>
       <div className='flex gap-3 justify-end'>
-        <Button variant='outline' onClick={onCancel} type='button'>
+        <Button
+          variant='outline'
+          onClick={onCancel}
+          type='button'
+          className='w-full flex-1'
+        >
           CANCEL
         </Button>
-        <Button onClick={handleSubmitData} disabled={isSubmitting} className='min-w-[100px]'>
+        <Button
+          onClick={handleSubmitData}
+          disabled={isSubmitting}
+          className='w-full flex-1'
+        >
           {isSubmitting ? 'SAVING...' : 'SAVE'}
         </Button>
       </div>

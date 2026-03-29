@@ -13,7 +13,7 @@ import { ProductSchemaType } from '../../product.validate'
 
 const ProductImages = () => {
   const { setValue, watch, getValues } = useFormContext<ProductSchemaType>()
-  const [thumbnailImage, setThumbnailImage] = useState<MediaItem[]>([])
+  const [thumbnailImage, setThumbnailImage] = useState<MediaItem | null>(null)
   const [galleryImages, setGalleryImages] = useState<MediaItem[]>([])
 
   const watchThumbnail = watch('thumbnailId')
@@ -21,8 +21,8 @@ const ProductImages = () => {
 
   useEffect(() => {
     const values = getValues() as any
-    if (values.thumbnail && thumbnailImage.length === 0) {
-      setThumbnailImage([values.thumbnail])
+    if (values.thumbnail && thumbnailImage === null) {
+      setThumbnailImage(values.thumbnail)
     }
     if (values.media && galleryImages.length === 0) {
       setGalleryImages(values.media)
@@ -30,8 +30,8 @@ const ProductImages = () => {
   }, [watchThumbnail, watchMediaIds, getValues])
 
   useEffect(() => {
-    setValue('thumbnailId', thumbnailImage[0]?.id || null)
-    setValue('thumbnail', thumbnailImage[0] || null)
+    setValue('thumbnailId', thumbnailImage?.id || null)
+    setValue('thumbnail', thumbnailImage || null)
   }, [thumbnailImage, setValue])
 
   useEffect(() => {
@@ -43,7 +43,10 @@ const ProductImages = () => {
   }, [galleryImages, setValue])
   const handleSelectThumbnailImage = (items: MediaItem[]) => {
     console.log('Selected Gallery Items:', items)
-    setThumbnailImage(items)
+
+    if (items.length > 0) {
+      setThumbnailImage(items[0])
+    }
   }
   const handleSelectThumbnailGallary = (items: MediaItem[]) => {
     console.log('Selected Gallery Items:', items)
@@ -51,7 +54,7 @@ const ProductImages = () => {
   }
 
   const handleRemoveThumbnailImageItem = (id: string) => {
-    setThumbnailImage(thumbnailImage?.filter((item) => item.id !== id) || null)
+    setThumbnailImage(null)
   }
   const handleRemoveGalleryImageItem = (id: string) => {
     setGalleryImages(galleryImages?.filter((item) => item.id !== id) || null)
@@ -72,33 +75,29 @@ const ProductImages = () => {
             </div>
 
             <div className='flex flex-col items-start gap-3'>
-              {thumbnailImage?.length > 0 ? (
-                <div className='grid grid-cols-4 gap-3 p-3 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 text-gray-500 transition-colors hover:border-primary dark:bg-muted dark:hover:border-primary'>
-                  {thumbnailImage.map((item) => {
-                    return (
-                      <div key={item.id} className='aspect-square  relative'>
-                        <img
-                          src={item.url}
-                          alt={item.url}
-                          className='w-full object-cover h-full rounded-lg'
-                        />
-                        <Button
-                          variant={'ghost'}
-                          className='text-base font-medium text-primary transition-colors mx-auto absolute bottom-0 right-0 '
-                          onClick={() =>
-                            handleRemoveThumbnailImageItem(item.id)
-                          }
-                        >
-                          <Trash />
-                        </Button>
-                      </div>
-                    )
-                  })}
+              {thumbnailImage ? (
+                <div className='relative w-full aspect-video rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 overflow-hidden'>
+                  <img
+                    src={thumbnailImage.url}
+                    alt={thumbnailImage.altText || 'Meta Image'}
+                    className='w-full h-full object-cover'
+                  />
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    className='absolute top-2 right-2 bg-white text-red-500 rounded-full'
+                    onClick={() =>
+                      handleRemoveThumbnailImageItem(thumbnailImage.id)
+                    }
+                  >
+                    <Trash className='h-4 w-4' />
+                  </Button>
                 </div>
               ) : (
                 <EnhancedImagePlaceholder
                   text='Choose Thumbnail'
                   icon={<UploadCloud className='h-8 w-8 text-gray-400' />}
+                  className='h-72'
                 />
               )}
 
@@ -109,7 +108,7 @@ const ProductImages = () => {
                     variant={'ghost'}
                     className='text-base font-medium text-primary transition-colors mx-auto'
                   >
-                    Choose File
+                    {thumbnailImage ? 'Change Image' : 'Choose File'}
                   </Button>
                 }
               />
@@ -131,7 +130,7 @@ const ProductImages = () => {
                 <div className='grid grid-cols-4 gap-3 p-3 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 text-gray-500 transition-colors hover:border-primary dark:bg-muted dark:hover:border-primary'>
                   {galleryImages.map((item) => {
                     return (
-                      <div key={item.id} className='aspect-square '>
+                      <div key={item.id} className='aspect-square relative'>
                         <img
                           src={item.url}
                           alt={item.url}
@@ -139,7 +138,7 @@ const ProductImages = () => {
                         />
                         <Button
                           variant={'ghost'}
-                          className='text-base font-medium text-primary transition-colors mx-auto absolute bottom-0 right-0 '
+                          className='text-base font-medium text-primary transition-colors mx-auto absolute bottom-0 right-0 bg-white '
                           onClick={() => handleRemoveGalleryImageItem(item.id)}
                         >
                           <Trash />

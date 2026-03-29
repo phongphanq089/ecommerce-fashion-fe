@@ -13,7 +13,8 @@ import { cn } from '~/lib/utils'
 import { ProductSchemaType } from '../../product.validate'
 
 const SeoMetaTags = () => {
-  const { register, setValue, watch, getValues } = useFormContext<ProductSchemaType>()
+  const { register, setValue, watch, getValues } =
+    useFormContext<ProductSchemaType>()
   const [metaImage, setMetaImage] = useState<MediaItem | null>(null)
 
   const watchMetaImageId = watch('metaImageId')
@@ -78,7 +79,7 @@ const SeoMetaTags = () => {
 
           <div className='flex flex-col items-start gap-3 w-full'>
             {metaImage ? (
-              <div className='relative w-full aspect-[1200/630] max-h-[200px] rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 overflow-hidden'>
+              <div className='relative w-full aspect-video rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 overflow-hidden'>
                 <img
                   src={metaImage.url}
                   alt={metaImage.altText || 'Meta Image'}
@@ -96,7 +97,7 @@ const SeoMetaTags = () => {
             ) : (
               <div
                 className={cn(
-                  'flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 text-gray-500 transition-colors hover:border-primary dark:bg-muted dark:hover:border-primary h-36 w-full',
+                  'flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 text-gray-500 transition-colors hover:border-primary dark:bg-muted dark:hover:border-primary h-72 w-full',
                 )}
               >
                 <UploadCloud className='h-8 w-8 text-gray-400' />
