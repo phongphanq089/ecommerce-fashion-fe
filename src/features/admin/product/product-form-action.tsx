@@ -1,4 +1,5 @@
 'use client'
+
 import { FormProvider, useFormContext } from 'react-hook-form'
 import HeadingSectionAdmin from '~/components/shared/heading-section-admin'
 import { Card, CardContent, CardHeader } from '~/components/ui/core/card'
@@ -20,17 +21,32 @@ import {
 } from './components'
 import { useProductHookForm } from './use-product-hook-form'
 import { _productService } from './product.query'
+import { ProductSchemaType } from './product.validate'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '~/components/ui/core/dialog'
+import { cn } from '~/lib/utils'
 
 interface ProductFormActionProps {
   productId?: string | null
   onSuccess?: () => void
   onCancel?: () => void
+  isModal?: boolean
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 const ProductFormAction = ({
   productId,
   onSuccess,
   onCancel,
+  isModal = true,
+  open,
+  onOpenChange,
 }: ProductFormActionProps) => {
   const { data: productDetail, isLoading } = _productService.useProduct(
     productId || '',
@@ -40,10 +56,36 @@ const ProductFormAction = ({
 
   useEffect(() => {
     if (productDetail?.result) {
-      form.reset({
-        ...productDetail.result,
-        variants: (productDetail.result as any).variants || [],
-      } as any)
+      const product = productDetail.result
+      // Map API data to ProductSchemaType
+      const mappedData: Partial<ProductSchemaType> = {
+        ...product,
+        categoryId: product.categoryId || '',
+        brandId: product.brandId || '',
+        discountType: (product.discountType as any) || 'FIXED',
+        discountValue: product.discountValue ?? 0,
+        collectionIds:
+          product.collections?.map((c: any) => c.collectionId) || [],
+        mediaIds: product.images?.map((img: any) => img.mediaId) || [],
+        media: product.images?.map((img: any) => img.media) || [],
+        options: product.options || [],
+        tags: product.tags || [],
+        stock: product.stock || 0,
+        variants:
+          product.variants?.map((v: any) => ({
+            id: v.id,
+            sku: v.sku,
+            price: v.price || 0,
+            stock: v.stockQuantity || 0,
+            purchasePrice: v.purchasePrice || 0,
+            attributes:
+              v.attributes?.map((attr: any) => ({
+                name: attr.attributeValue?.attribute?.name || '',
+                value: attr.value || '',
+              })) || [],
+          })) || [],
+      }
+      form.reset(mappedData as any)
     } else if (!productId) {
       form.reset({
         type: 'SINGLE',
@@ -55,11 +97,12 @@ const ProductFormAction = ({
         mediaIds: [],
         tags: [],
         variants: [],
+        options: [],
       })
     }
   }, [productDetail, productId, form])
 
-  if (productId && isLoading) {
+  if (productId && isLoading && !productDetail) {
     return (
       <div className='flex items-center justify-center h-64'>
         <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary'></div>
@@ -67,51 +110,88 @@ const ProductFormAction = ({
     )
   }
 
-  return (
+  const title = productId
+    ? `Edit Product: ${productDetail?.result?.name || ''}`
+    : 'Add New Product'
+
+  const renderForm = () => (
+    <div className='flex flex-col xl:grid grid-cols-12 gap-6'>
+      <div className='col-span-12 lg:col-span-8 space-y-8'>
+        <div id='general'>
+          <ProductInfoForm />
+        </div>
+        <div id='description'>
+          <ProductDescription />
+        </div>
+        <div id='images'>
+          <ProductImages />
+        </div>
+        <div id='variants'>
+          <ProductVariantForm />
+        </div>
+        <div id='discount'>
+          <ProductDiscount />
+        </div>
+        <div id='seo'>
+          <SeoMetaTags />
+        </div>
+      </div>
+      <div className='col-span-12 lg:col-span-4 space-y-8 h-fit lg:sticky lg:top-20'>
+        <ActionForm
+          onCancel={onCancel || resetForm}
+          productId={productId}
+          onSuccess={onSuccess}
+          className={cn(isModal && 'hidden')}
+        />
+        <ShippingConfiguration />
+        <ProductFeatured />
+        <ProductRefundable />
+        <ProductWarranty />
+        <ProductStockQuantity />
+        <ProductCollections />
+        <ActionForm
+          onCancel={onCancel || resetForm}
+          productId={productId}
+          onSuccess={onSuccess}
+          className={cn(isModal && 'hidden')}
+        />
+      </div>
+    </div>
+  )
+
+  const content = (
     <FormProvider {...form}>
-      <Card className='border-none shadow-none bg-transparent pt-0 gap-2'>
-        <CardHeader className='px-6 pb-2'>
-          <HeadingSectionAdmin
-            title={
-              productId
-                ? `Edit Product: ${productDetail?.result?.name || ''}`
-                : 'Add New Product'
-            }
-          />
-        </CardHeader>
-        <CardContent className='px-6 py-4'>
-          <div className='flex flex-col xl:grid grid-cols-12 gap-6'>
-            <div className='col-span-12 lg:col-span-8 space-y-8'>
-              <ProductInfoForm />
-              <ProductVariantForm />
-              <ProductDiscount />
-              <ProductDescription />
-              <ProductImages />
-              <SeoMetaTags />
+      {isModal ? (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+          <DialogContent className='sm:max-w-full lg:max-w-[85%] xl:max-w-[80%] max-h-[90vh] overflow-y-auto  p-0 border shadow-2xl rounded-2xl flex flex-col'>
+            <DialogHeader className='px-6 py-4 border-b sticky top-0 bg-background z-10'>
+              <DialogTitle className='text-xl font-bold'>{title}</DialogTitle>
+            </DialogHeader>
+            <div className='flex-1 overflow-y-auto px-6 py-6 custom-scrollbar '>
+              {renderForm()}
             </div>
-            <div className='col-span-12 lg:col-span-4 space-y-8 h-fit lg:sticky lg:top-20'>
+            <DialogFooter className='px-6 py-4 border-t sticky bottom-0 bg-background z-10 h-20 items-center'>
               <ActionForm
-                onCancel={resetForm}
+                onCancel={onCancel || resetForm}
                 productId={productId}
                 onSuccess={onSuccess}
+                isFooter
               />
-              <ShippingConfiguration />
-              <ProductFeatured />
-              <ProductRefundable />
-              <ProductWarranty />
-              <ProductStockQuantity />
-              <ProductCollections />
-              <ActionForm
-                onCancel={resetForm}
-                productId={productId}
-                onSuccess={onSuccess}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      ) : (
+        <Card className='border-none shadow-none bg-transparent pt-0 gap-2 uppercase'>
+          <CardHeader className='px-6 pb-2'>
+            <HeadingSectionAdmin title={title} />
+          </CardHeader>
+          <CardContent className='px-6 py-4'>{renderForm()}</CardContent>
+        </Card>
+      )}
     </FormProvider>
   )
+
+  return content
 }
 
 export default ProductFormAction
@@ -120,10 +200,14 @@ const ActionForm = ({
   onCancel,
   productId,
   onSuccess,
+  isFooter,
+  className,
 }: {
   onCancel?: () => void
   productId?: string | null
   onSuccess?: () => void
+  isFooter?: boolean
+  className?: string
 }) => {
   const {
     handleSubmit,
@@ -164,20 +248,28 @@ const ActionForm = ({
   }
 
   return (
-    <div className='w-full p-6 bg-muted rounded-xl border shadow-sm'>
-      <div className='flex gap-3 justify-end'>
+    <div
+      className={cn(
+        !isFooter && 'p-6 bg-muted rounded-xl border shadow-sm',
+        'w-full',
+        className,
+      )}
+    >
+      <div
+        className={cn('flex gap-3', isFooter ? 'justify-end' : 'justify-end')}
+      >
         <Button
           variant='outline'
           onClick={onCancel}
           type='button'
-          className='w-full flex-1'
+          className={cn(!isFooter ? 'w-full flex-1' : 'w-32')}
         >
           CANCEL
         </Button>
         <Button
           onClick={handleSubmitData}
           disabled={isSubmitting}
-          className='w-full flex-1'
+          className={cn(!isFooter ? 'w-full flex-1' : 'w-32')}
         >
           {isSubmitting ? 'SAVING...' : 'SAVE'}
         </Button>

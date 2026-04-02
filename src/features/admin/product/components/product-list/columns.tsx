@@ -1,7 +1,7 @@
 import { IconEdit, IconTrash } from '@tabler/icons-react'
 import { ColumnDef } from '@tanstack/react-table'
 import { Checkbox } from '~/components/ui/core/checkbox'
-import { Product, TableMeta, Variant } from '../../types'
+import { CollectionItem, Product, TableMeta, Variant } from '../../types'
 import { Switch } from '~/components/ui/core/switch'
 
 export const columns: ColumnDef<Product>[] = [
@@ -19,8 +19,8 @@ export const columns: ColumnDef<Product>[] = [
             table.getIsAllRowsSelected()
               ? true
               : table.getIsSomePageRowsSelected()
-              ? 'indeterminate'
-              : false
+                ? 'indeterminate'
+                : false
           }
           onCheckedChange={(val) => table.toggleAllRowsSelected(!!val)}
           aria-label='Select all'
@@ -38,22 +38,35 @@ export const columns: ColumnDef<Product>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'imageUrl',
+    accessorKey: 'thumbnail.url',
     header: 'Image',
     enableSorting: false,
     cell: ({ row }) => {
       return (
-        <img
-          src={row.original.imageUrl}
-          alt={row.original.name}
-          className='h-12 w-12 rounded object-cover'
-        />
+        <>
+          {row.original?.thumbnail?.url ? (
+            <img
+              src={row.original.thumbnail.url}
+              alt={row.original.name}
+              className='h-12 w-12 rounded object-cover'
+            />
+          ) : (
+            <div className='h-12 w-12 rounded bg-muted flex items-center justify-center p-2 text-center'>
+              <span className='text-muted-foreground text-[10px]'>
+                No image
+              </span>
+            </div>
+          )}
+        </>
       )
     },
   },
   {
     accessorKey: 'name',
     header: 'Product Name',
+    cell: ({ row }) => {
+      return <div className='max-w-[300px] truncate'>{row.original.name}</div>
+    },
   },
   {
     accessorKey: 'category.name',
@@ -64,15 +77,23 @@ export const columns: ColumnDef<Product>[] = [
     header: 'Brand',
   },
   {
-    accessorKey: 'stock',
-    header: 'Stock',
+    accessorKey: 'collections.name',
+    header: 'Collection',
+    cell: ({ row }) => {
+      const collections = row.original.collections || []
+
+      if (collections.length === 0) return 'No collection'
+      return collections
+        .map((c: CollectionItem) => c.collection.name)
+        .join(', ')
+    },
   },
   {
     header: 'Price',
     cell: ({ row }) => {
       const prices = row.original.variants?.map((v: Variant) => v.price) || []
       if (prices.length === 0) return 'N/A'
-      
+
       const min = Math.min(...prices)
       const max = Math.max(...prices)
       const formatter = new Intl.NumberFormat('en-US', {
@@ -119,19 +140,19 @@ export const columns: ColumnDef<Product>[] = [
     },
   },
   {
-    id: 'actions',
+    accessorKey: 'actions',
     header: 'Action',
     cell: ({ row, table }) => {
       const meta = table.options.meta as TableMeta
       return (
         <div className='flex items-center gap-3'>
-          <div 
+          <div
             className='border border-red-500 text-red-500 p-2 rounded-xl cursor-pointer hover:bg-red-50'
             onClick={() => meta.onDelete(row.original.id)}
           >
             <IconTrash size={18} />
           </div>
-          <div 
+          <div
             className='border bg-primary p-2 text-white rounded-xl cursor-pointer hover:opacity-90'
             onClick={() => meta.onEdit(row.original.id)}
           >

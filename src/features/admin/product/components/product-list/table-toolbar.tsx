@@ -1,7 +1,7 @@
 import { Row } from '@tanstack/react-table'
 import { Plus, Trash2, Search, FilterX } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Button } from '~/components/ui/core/button'
+import { Button, buttonVariants } from '~/components/ui/core/button'
 import { Input } from '~/components/ui/core/input'
 import {
   Select,
@@ -15,6 +15,7 @@ import {
 import { Product } from '../../types'
 import { _categoryService } from '~/features/admin/category/category.query'
 import { _brandService } from '~/features/admin/brand/brand.query'
+import Link from 'next/link'
 
 interface TableToolbarProps {
   filterValue: string
@@ -66,14 +67,21 @@ export function TableToolbar({
           >
             <Trash2 className='h-4 w-4' /> Delete ({selectedRows.length})
           </Button>
-          <Button onClick={onAdd} className='gap-2'>
+          <Link
+            className={buttonVariants({ variant: 'default' })}
+            href={'/admin/product/create'}
+          >
             <Plus className='h-4 w-4' /> Add Product
-          </Button>
+          </Link>
         </div>
       </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-3'>
-        <Select onValueChange={(val) => setFilter('categoryId', val === 'all' ? null : val)}>
+      <div className='flex items-center gap-3 flex-wrap'>
+        <Select
+          onValueChange={(val) =>
+            setFilter('categoryId', val === 'all' ? null : val)
+          }
+        >
           <SelectTrigger className='bg-white'>
             <SelectValue placeholder='Select Category' />
           </SelectTrigger>
@@ -90,7 +98,11 @@ export function TableToolbar({
           </SelectContent>
         </Select>
 
-        <Select onValueChange={(val) => setFilter('brandId', val === 'all' ? null : val)}>
+        <Select
+          onValueChange={(val) =>
+            setFilter('brandId', val === 'all' ? null : val)
+          }
+        >
           <SelectTrigger className='bg-white'>
             <SelectValue placeholder='Select Brand' />
           </SelectTrigger>
@@ -108,17 +120,27 @@ export function TableToolbar({
         </Select>
 
         <div className='flex items-center gap-2'>
-          <Input 
-            type='number' 
-            placeholder='Min price' 
-            onChange={(e) => setFilter('minPrice', e.target.value ? Number(e.target.value) : null)}
+          <Input
+            type='number'
+            placeholder='Min price'
+            onChange={(e) =>
+              setFilter(
+                'minPrice',
+                e.target.value ? Number(e.target.value) : null,
+              )
+            }
             className='bg-white'
           />
           <span className='text-muted-foreground'>-</span>
-          <Input 
-            type='number' 
-            placeholder='Max price' 
-            onChange={(e) => setFilter('maxPrice', e.target.value ? Number(e.target.value) : null)}
+          <Input
+            type='number'
+            placeholder='Max price'
+            onChange={(e) =>
+              setFilter(
+                'maxPrice',
+                e.target.value ? Number(e.target.value) : null,
+              )
+            }
             className='bg-white'
           />
         </div>

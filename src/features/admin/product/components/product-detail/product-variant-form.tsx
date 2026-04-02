@@ -98,13 +98,30 @@ const ProductVariantForm = () => {
     return map
   }, [attributesData])
 
+  // Initialize variations from form options (for editing)
+  useEffect(() => {
+    const formOptions = watch('options')
+    if (formOptions && formOptions.length > 0) {
+      // Check if variations actually need initializing from options
+      const hasUninitializedVariations = variations.length === 1 && variations[0].name === ''
+      if (hasUninitializedVariations) {
+        const initialVariations = formOptions.map((opt, index) => ({
+          id: `init-${index}`,
+          name: opt.name,
+          values: opt.values.map((v) => ({ label: v, value: v })),
+        }))
+        setVariations(initialVariations)
+      }
+    }
+  }, [watch('options')])
+
   useEffect(() => {
     if (productType === 'VARIANT') {
       const activeVariations = variations.filter(
         (v) => v.name && v.values.length > 0,
       )
 
-      // Đẩy dữ liệu vào trường options
+      // Update options field in form
       const optionsData = activeVariations.map((v) => ({
         name: v.name,
         values: v.values.map((val) => val.label),
@@ -117,29 +134,58 @@ const ProductVariantForm = () => {
       const combinations = getCombinations(optionValues, optionNames)
 
       if (combinations.length > 0) {
-        const newVariants = combinations.map((combo) => {
-          const skuSuffix = combo
-            .split(' | ')
-            .map((part) => part.split(':')[1])
-            .join('-')
+        // Use getValues instead of watch to avoid potential stale data in high-frequency updates
+        const currentVariants = watch('variants') || []
 
-          const attributes = combo.split(' | ').map((part) => {
+        const newVariants = combinations.map((combo) => {
+          const comboAttributes = combo.split(' | ').map((part) => {
             const [name, value] = part.split(':')
             return { name, value }
           })
 
+          // Create a stable key for comparison
+          const comboKey = comboAttributes
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((a) => `${a.name}:${a.value}`)
+            .join(' | ')
+
+          // Try to find existing variant data to preserve it
+          const existingVariant = currentVariants.find((v) => {
+            if (!v.attributes) return false
+            const vKey = v.attributes
+              .slice()
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((a: any) => `${a.name}:${a.value}`)
+              .join(' | ')
+            return vKey === comboKey
+          })
+
+          const skuSuffix = comboAttributes.map((a) => a.value).join('-')
+
           return {
-            sku: `${skuSuffix}`,
-            price: 0,
-            stock: 0,
-            purchasePrice: 0,
-            lowStockQuantity: 0,
-            attributes,
+            id: existingVariant?.id, // Keep ID if available (crucial for updates)
+            sku: existingVariant?.sku || skuSuffix,
+            price: existingVariant?.price || 0,
+            stock: existingVariant?.stock || 0,
+            purchasePrice: existingVariant?.purchasePrice || 0,
+            attributes: comboAttributes,
           }
         })
-        replace(newVariants)
+
+        // Only replace if count or content changed to avoid unnecessary re-renders
+        // and losing data while typing if lookups fail
+        const isIdentical =
+          currentVariants.length === newVariants.length &&
+          newVariants.every((nv, i) => nv.sku === currentVariants[i]?.sku)
+
+        if (!isIdentical) {
+          replace(newVariants)
+        }
       } else {
-        replace([])
+        // Only clear if we actually had variations set up before
+        if (activeVariations.length > 0) {
+          replace([])
+        }
       }
     } else if (productType === 'SINGLE') {
       const currentVariants = watch('variants')
@@ -155,13 +201,12 @@ const ProductVariantForm = () => {
             price: 0,
             stock: 0,
             purchasePrice: 0,
-            lowStockQuantity: 0,
             attributes: [],
           },
         ])
       }
     }
-  }, [variations, productType])
+  }, [variations, productType, setValue, replace])
 
   const addVariation = () => {
     setVariations([...variations, { id: Date.now(), name: '', values: [] }])
@@ -286,7 +331,7 @@ const ProductVariantForm = () => {
                   <div className='space-y-2'>
                     <Label>Attribute Name</Label>
                     <Select
-                      value={variation.name}
+                      value={variation.name || undefined}
                       onValueChange={(value) =>
                         handleVariationNameChange(variation.id, value)
                       }

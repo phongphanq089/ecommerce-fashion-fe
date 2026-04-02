@@ -51,23 +51,10 @@ const ProductInfoForm = () => {
   const categories = categoriesData?.result || []
   const brands = brandsData?.result || []
 
-  const frameworks: Option[] = [
-    {
-      value: 'sale',
-      label: 'Sale',
-    },
-    {
-      value: 'new',
-      label: 'New',
-    },
-    {
-      value: 'hot',
-      label: 'Hot',
-    },
-    {
-      value: 'limited',
-      label: 'Limited',
-    },
+  const PRODUCT_TAG_OPTIONS: Option[] = [
+    { value: 'sale', label: 'Sale' },
+    { value: 'new', label: 'New' },
+    { value: 'hot', label: 'Hot' },
   ]
   return (
     <Card className='bg-muted shadow-none '>
@@ -123,7 +110,7 @@ const ProductInfoForm = () => {
                 render={({ field }) => (
                   <Select
                     onValueChange={field.onChange}
-                    value={field.value}
+                    value={field.value || undefined}
                     disabled={isLoadingCategories}
                   >
                     <SelectTrigger
@@ -190,7 +177,7 @@ const ProductInfoForm = () => {
                 render={({ field }) => (
                   <Select
                     onValueChange={field.onChange}
-                    value={field.value}
+                    value={field.value || undefined}
                     disabled={isLoadingBrands}
                   >
                     <SelectTrigger
@@ -201,9 +188,7 @@ const ProductInfoForm = () => {
                     >
                       <SelectValue
                         placeholder={
-                          isLoadingBrands
-                            ? 'Loading brands...'
-                            : 'Select Brand'
+                          isLoadingBrands ? 'Loading brands...' : 'Select Brand'
                         }
                       />
                     </SelectTrigger>
@@ -252,11 +237,11 @@ const ProductInfoForm = () => {
             render={({ field }) => (
               <MultipleSelector
                 {...field}
-                className='bg-white dark:bg-accent'
+                className='bg-white dark:bg-muted'
                 commandProps={{
                   label: 'Select Tags',
                 }}
-                defaultOptions={frameworks}
+                defaultOptions={PRODUCT_TAG_OPTIONS}
                 placeholder='Select Tags'
                 hideClearAllButton
                 hidePlaceholderWhenSelected
@@ -266,7 +251,7 @@ const ProductInfoForm = () => {
                 onChange={(options) => {
                   field.onChange(options.map((o) => o.value))
                 }}
-                value={frameworks.filter((f) => field.value?.includes(f.value))}
+                value={PRODUCT_TAG_OPTIONS.filter((f: Option) => field.value?.includes(f.value))}
               />
             )}
           />

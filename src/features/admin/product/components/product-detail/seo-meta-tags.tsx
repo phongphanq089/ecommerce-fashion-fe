@@ -1,7 +1,7 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { useFormContext } from 'react-hook-form'
+
 import { Trash, UploadCloud } from 'lucide-react'
+import { useFormContext } from 'react-hook-form'
 import { Button } from '~/components/ui/core/button'
 import { Card, CardContent, CardHeader } from '~/components/ui/core/card'
 import { Input } from '~/components/ui/core/input'
@@ -13,41 +13,28 @@ import { cn } from '~/lib/utils'
 import { ProductSchemaType } from '../../product.validate'
 
 const SeoMetaTags = () => {
-  const { register, setValue, watch, getValues } =
-    useFormContext<ProductSchemaType>()
-  const [metaImage, setMetaImage] = useState<MediaItem | null>(null)
+  const { register, setValue, watch } = useFormContext<ProductSchemaType>()
 
-  const watchMetaImageId = watch('metaImageId')
-
-  useEffect(() => {
-    const values = getValues() as any
-    if (values.metaImage && !metaImage) {
-      setMetaImage(values.metaImage)
-    }
-  }, [watchMetaImageId, getValues, metaImage])
+  const metaImage = watch('metaImage')
 
   const handleSelectMedia = (items: MediaItem[]) => {
     if (items.length > 0) {
-      setMetaImage(items[0])
       setValue('metaImageId', items[0].id)
       setValue('metaImage', items[0])
     }
   }
 
   const handleRemoveImage = () => {
-    setMetaImage(null)
     setValue('metaImageId', null)
     setValue('metaImage', null)
   }
 
   return (
-    <Card className='bg-muted shadow-none '>
+    <Card className='bg-muted shadow-none'>
       <CardHeader className='border-b font-bold'>Seo Meta Tags</CardHeader>
-      <CardContent className='space-y-5'>
+      <CardContent className='space-y-5 pt-6'>
         <div className='grid grid-cols-1 md:grid-cols-[150px_1fr] items-center gap-4'>
-          <div className='*:not-first:mt-2'>
-            <Label>Meta Title</Label>
-          </div>
+          <Label>Meta Title</Label>
           <Input
             {...register('metaTitle')}
             placeholder='Meta Title'
@@ -56,10 +43,7 @@ const SeoMetaTags = () => {
           />
         </div>
         <div className='grid grid-cols-1 md:grid-cols-[150px_1fr] items-center gap-4'>
-          <div className='*:not-first:mt-2'>
-            <Label>Meta Description</Label>
-          </div>
-
+          <Label>Meta Description</Label>
           <Textarea
             {...register('metaDescription')}
             placeholder='Meta Description'

@@ -27,11 +27,11 @@ export const ProductValidate = z.object({
   isRefunded: z.boolean().default(false),
   hasWarranty: z.boolean().default(false),
   disableShipping: z.boolean().default(false),
-  lowStockQuantity: z.number().optional(),
+  stock: z.number().default(0).optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   metaImageId: z.string().nullable().optional(),
-  discountType: z.enum(['PERCENTAGE', 'FLAT']).default('PERCENTAGE'),
+  discountType: z.enum(['PERCENTAGE', 'FIXED']).default('PERCENTAGE'),
   discountValue: z.number().default(0).optional(),
   // .refine((value) => value > 0, {
   //   message: 'Discount value must be greater than 0',
@@ -55,11 +55,11 @@ export const ProductValidate = z.object({
   variants: z
     .array(
       z.object({
+        id: z.string().optional(),
         sku: z.string(),
         price: z.number().default(0),
         stock: z.number().default(0),
         purchasePrice: z.number().default(0),
-        lowStockQuantity: z.number().optional(),
         attributes: z.array(
           z.object({
             name: z.string(),

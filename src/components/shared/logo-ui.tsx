@@ -18,7 +18,7 @@ const LogoUi = ({ className }: { className?: string }) => {
         alt='Logo'
         width={200}
         height={200}
-        className='w-14 h-14 object-cover'
+        className='max-w-12 h-auto object-cover'
       />
       AKR-SHOP
     </div>

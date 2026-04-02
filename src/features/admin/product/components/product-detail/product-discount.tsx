@@ -47,7 +47,7 @@ const ProductDiscount = () => {
               control={control}
               name='discountType'
               render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select onValueChange={field.onChange} value={field.value || undefined}>
                   <SelectTrigger className='w-full bg-white'>
                     <SelectValue placeholder='Type' />
                   </SelectTrigger>

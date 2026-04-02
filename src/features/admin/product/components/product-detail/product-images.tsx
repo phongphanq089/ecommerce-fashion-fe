@@ -1,175 +1,169 @@
 'use client'
 
-import { Trash, UploadCloud } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import { Plus, Trash, UploadCloud } from 'lucide-react'
+import React from 'react'
 import { useFormContext } from 'react-hook-form'
 import { Button } from '~/components/ui/core/button'
 import { Card, CardContent, CardHeader } from '~/components/ui/core/card'
 import { Label } from '~/components/ui/core/label'
+import { Separator } from '~/components/ui/core/separator'
 import { MediaPickerModal } from '~/features/admin/media/components'
 import { MediaItem } from '~/features/admin/media/types'
 import { cn } from '~/lib/utils'
 import { ProductSchemaType } from '../../product.validate'
 
 const ProductImages = () => {
-  const { setValue, watch, getValues } = useFormContext<ProductSchemaType>()
-  const [thumbnailImage, setThumbnailImage] = useState<MediaItem | null>(null)
-  const [galleryImages, setGalleryImages] = useState<MediaItem[]>([])
+  const { setValue, watch } = useFormContext<ProductSchemaType>()
 
-  const watchThumbnail = watch('thumbnailId')
-  const watchMediaIds = watch('mediaIds')
+  const thumbnailImage = watch('thumbnail')
+  const galleryImages = watch('media') || []
 
-  useEffect(() => {
-    const values = getValues() as any
-    if (values.thumbnail && thumbnailImage === null) {
-      setThumbnailImage(values.thumbnail)
-    }
-    if (values.media && galleryImages.length === 0) {
-      setGalleryImages(values.media)
-    }
-  }, [watchThumbnail, watchMediaIds, getValues])
-
-  useEffect(() => {
-    setValue('thumbnailId', thumbnailImage?.id || null)
-    setValue('thumbnail', thumbnailImage || null)
-  }, [thumbnailImage, setValue])
-
-  useEffect(() => {
-    setValue(
-      'mediaIds',
-      galleryImages.map((item) => item.id),
-    )
-    setValue('media', galleryImages)
-  }, [galleryImages, setValue])
   const handleSelectThumbnailImage = (items: MediaItem[]) => {
-    console.log('Selected Gallery Items:', items)
-
     if (items.length > 0) {
-      setThumbnailImage(items[0])
+      setValue('thumbnailId', items[0].id)
+      setValue('thumbnail', items[0])
     }
   }
-  const handleSelectThumbnailGallary = (items: MediaItem[]) => {
-    console.log('Selected Gallery Items:', items)
-    setGalleryImages(items)
+
+  const handleRemoveThumbnailImage = () => {
+    setValue('thumbnailId', null)
+    setValue('thumbnail', null)
   }
 
-  const handleRemoveThumbnailImageItem = (id: string) => {
-    setThumbnailImage(null)
+  const handleSelectGalleryImages = (items: MediaItem[]) => {
+    if (items.length > 0) {
+      const currentMediaIds = watch('mediaIds') || []
+      const currentMedia = watch('media') || []
+
+      const newMediaIds = [...currentMediaIds]
+      const newMedia = [...currentMedia]
+
+      items.forEach((item) => {
+        if (!newMediaIds.includes(item.id)) {
+          newMediaIds.push(item.id)
+          newMedia.push(item)
+        }
+      })
+
+      setValue('mediaIds', newMediaIds)
+      setValue('media', newMedia)
+    }
   }
-  const handleRemoveGalleryImageItem = (id: string) => {
-    setGalleryImages(galleryImages?.filter((item) => item.id !== id) || null)
+
+  const handleRemoveGalleryImage = (id: string) => {
+    const currentMediaIds = watch('mediaIds') || []
+    const currentMedia = watch('media') || []
+
+    const newMediaIds = currentMediaIds.filter((mediaId) => mediaId !== id)
+    const newMedia = currentMedia.filter((item) => item.id !== id)
+
+    setValue('mediaIds', newMediaIds)
+    setValue('media', newMedia)
   }
+
   return (
-    <>
-      <Card className='bg-muted shadow-none '>
-        <CardHeader className='border-b font-bold'>Product Images</CardHeader>
-        <CardContent className='space-y-5'>
-          <div className='flex flex-col gap-3'>
-            <div>
-              <Label className='text-lg font-medium text-gray-700 dark:text-gray-200'>
-                Thumbnail Image
-              </Label>
-              <p className='text-sm text-gray-500 dark:text-gray-400 mt-1'>
-                Main image for the product. (Recommended: 385x380 px)
-              </p>
-            </div>
-
-            <div className='flex flex-col items-start gap-3'>
-              {thumbnailImage ? (
-                <div className='relative w-full aspect-video rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 overflow-hidden'>
-                  <img
-                    src={thumbnailImage.url}
-                    alt={thumbnailImage.altText || 'Meta Image'}
-                    className='w-full h-full object-cover'
-                  />
-                  <Button
-                    variant='ghost'
-                    size='icon'
-                    className='absolute top-2 right-2 bg-white text-red-500 rounded-full'
-                    onClick={() =>
-                      handleRemoveThumbnailImageItem(thumbnailImage.id)
-                    }
-                  >
-                    <Trash className='h-4 w-4' />
-                  </Button>
-                </div>
-              ) : (
-                <EnhancedImagePlaceholder
-                  text='Choose Thumbnail'
-                  icon={<UploadCloud className='h-8 w-8 text-gray-400' />}
-                  className='h-72'
-                />
-              )}
-
-              <MediaPickerModal
-                onSelect={handleSelectThumbnailImage}
-                trigger={
-                  <Button
-                    variant={'ghost'}
-                    className='text-base font-medium text-primary transition-colors mx-auto'
-                  >
-                    {thumbnailImage ? 'Change Image' : 'Choose File'}
-                  </Button>
-                }
-              />
-            </div>
+    <Card className='bg-muted shadow-none'>
+      <CardHeader className='border-b font-bold'>Product Images</CardHeader>
+      <CardContent className='space-y-6 pt-6'>
+        {/* Main Thumbnail Section */}
+        <div className='flex flex-col gap-3'>
+          <div>
+            <Label className='text-lg font-medium text-gray-700 dark:text-gray-200'>
+              Product Thumbnail
+            </Label>
+            <p className='text-sm text-gray-500 dark:text-gray-400 mt-1'>
+              Main image displayed in shop listings.
+            </p>
           </div>
 
-          <div className='flex flex-col gap-3'>
-            <div>
-              <Label className='text-lg font-medium text-gray-700 dark:text-gray-200'>
-                Gallery Images
-              </Label>
-              <p className='text-sm text-gray-500 dark:text-gray-400 mt-1'>
-                Additional images for the product. (Recommended: 624x624 px)
-              </p>
-            </div>
-
-            <div className='flex flex-col items-start gap-3'>
-              {galleryImages?.length > 0 ? (
-                <div className='grid grid-cols-4 gap-3 p-3 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 text-gray-500 transition-colors hover:border-primary dark:bg-muted dark:hover:border-primary'>
-                  {galleryImages.map((item) => {
-                    return (
-                      <div key={item.id} className='aspect-square relative'>
-                        <img
-                          src={item.url}
-                          alt={item.url}
-                          className='w-full object-cover h-full rounded-lg'
-                        />
-                        <Button
-                          variant={'ghost'}
-                          className='text-base font-medium text-primary transition-colors mx-auto absolute bottom-0 right-0 bg-white '
-                          onClick={() => handleRemoveGalleryImageItem(item.id)}
-                        >
-                          <Trash />
-                        </Button>
-                      </div>
-                    )
-                  })}
-                </div>
-              ) : (
-                <EnhancedImagePlaceholder
-                  text='Choose Gallery Files'
-                  icon={<UploadCloud className='h-8 w-8 text-gray-400' />}
+          <div className='flex flex-col items-start gap-3'>
+            {thumbnailImage ? (
+              <div className='relative w-40 h-40 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden group hover:border-primary transition-colors'>
+                <img
+                  src={thumbnailImage.url}
+                  alt={thumbnailImage.altText || 'Thumbnail'}
+                  className='w-full h-full object-cover'
                 />
-              )}
-
-              <MediaPickerModal
-                onSelect={handleSelectThumbnailGallary}
-                trigger={
-                  <Button
-                    variant={'ghost'}
-                    className='text-base font-medium text-primary transition-colors mx-auto'
-                  >
-                    Choose Files
-                  </Button>
-                }
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  className='absolute top-2 right-2 bg-white/80 hover:bg-white text-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity'
+                  onClick={handleRemoveThumbnailImage}
+                >
+                  <Trash className='h-4 w-4' />
+                </Button>
+              </div>
+            ) : (
+              <EnhancedImagePlaceholder
+                text='Choose Thumbnail'
+                size='md'
+                className='w-40 h-40'
               />
-            </div>
+            )}
+
+            <MediaPickerModal
+              onSelect={handleSelectThumbnailImage}
+              trigger={
+                <Button
+                  variant={'ghost'}
+                  className='text-sm font-medium text-primary transition-colors'
+                >
+                  {thumbnailImage ? 'Change Image' : 'Choose File'}
+                </Button>
+              }
+            />
           </div>
-        </CardContent>
-      </Card>
-    </>
+        </div>
+
+        <Separator />
+
+        {/* Gallery Selection Section */}
+        <div className='flex flex-col gap-3'>
+          <div>
+            <Label className='text-lg font-medium text-gray-700 dark:text-gray-200'>
+              Product Gallery
+            </Label>
+            <p className='text-sm text-gray-500 dark:text-gray-400 mt-1'>
+              Additional images for the product detail page.
+            </p>
+          </div>
+
+          <div className='flex flex-wrap gap-4'>
+            {galleryImages.map((image) => (
+              <div
+                key={image.id}
+                className='relative w-32 h-32 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden group hover:border-primary transition-all'
+              >
+                <img
+                  src={image.url}
+                  alt={image.altText || 'Gallery Image'}
+                  className='w-full h-full object-cover'
+                />
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  className='absolute top-1 right-1 bg-white/80 hover:bg-white text-red-500 h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity'
+                  onClick={() => handleRemoveGalleryImage(image.id)}
+                >
+                  <Trash className='h-3.5 w-3.5' />
+                </Button>
+              </div>
+            ))}
+
+            <MediaPickerModal
+              multiple
+              onSelect={handleSelectGalleryImages}
+              trigger={
+                <div className='flex flex-col items-center justify-center w-32 h-32 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 hover:bg-gray-100 dark:bg-muted dark:hover:bg-muted/80 transition-all cursor-pointer text-gray-400 hover:text-primary hover:border-primary'>
+                  <Plus className='h-8 w-8 mb-1' />
+                  <span className='text-xs font-medium'>Add Gallery</span>
+                </div>
+              }
+            />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -189,7 +183,7 @@ const EnhancedImagePlaceholder = ({
   className,
 }: EnhancedImagePlaceholderProps) => {
   const heightWidth =
-    size === 'sm' ? 'h-24 w-24' : size === 'lg' ? 'h-48 w-' : 'h-36 w-full'
+    size === 'sm' ? 'h-24 w-24' : size === 'lg' ? 'h-48 w-48' : 'h-36 w-full'
   const textSize = size === 'sm' ? 'text-xs' : 'text-sm'
 
   return (

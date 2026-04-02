@@ -1,13 +1,23 @@
 export type Variant = {
-  sku: string
-  price: number
-  stock: number
-  purchasePrice: number
-  lowStockQuantity?: number
   attributes: {
-    name: string
+    attributeValue: {
+      attribute: {
+        id: string
+        name: string
+      }
+    }
+    attributeId: string
+    id: string
     value: string
   }[]
+  attributeValueId: string
+  productVariantId: string
+  id: string
+  price: number
+  productId: string
+  purchasePrice: number
+  sku: string
+  stockQuantity: number
 }
 
 export type AttributeValue = {
@@ -29,26 +39,96 @@ export type ProductAttributeInput = {
   values: string[]
 }
 
+export type CollectionItem = {
+  collection: {
+    id: string
+    name: string
+    createdAt: string
+    updatedAt: string
+    description: string | null
+    imageUrl: string | null
+    slug: string
+  }
+  collectionId: string
+  displayOrder: number
+  productId: string
+}
+
 export type Product = {
   id: string
   name: string
   slug: string
   description?: string
-  summary?: string
-  type: 'SINGLE' | 'VARIANT'
-  imageUrl?: string
-  thumbnailId?: string
-  category: { id: string; name: string }
   brand: { id: string; name: string }
-  stock: number
-  isFeatured: boolean
-  isActive: boolean
-  isRefunded: boolean
-  hasWarranty: boolean
-  unit?: string
-  condition?: string
+  brandId: string
+  category: { id: string; name: string }
+  categoryId: string
+  collections: CollectionItem[]
   createdAt: string
   updatedAt: string
+  disableShipping: boolean
+  discountEndDate: null | string
+  discountStartDate: null | string
+  discountType: 'PERCENTAGE' | 'FIXED' | null
+  discountValue: number | null
+  hasWarranty: boolean
+  thumbnail: {
+    id: string
+    altText: string
+    fileId: string
+    fileName: string
+    fileType: string
+    size: number
+    url: string
+    createdAt: string
+    updatedAt: string
+  }
+  thumbnailId: string
+  images: {
+    id: string
+    url: string
+    mediaId: string
+    productId: string
+    displayOrder: number
+    media: {
+      id: string
+      altText: string
+      fileId: string
+      fileName: string
+      fileType: string
+      size: number
+      url: string
+      createdAt: string
+      updatedAt: string
+    }
+  }[]
+  isFeatured: boolean
+  isRefunded: boolean
+  metaDescription: string
+  metaImage: {
+    id: string
+    altText: string
+    fileId: string
+    fileName: string
+    fileType: string
+    size: number
+    url: string
+    createdAt: string
+    updatedAt: string
+  }
+  metaImageId: string
+  metaTitle: string
+  options: {
+    name: string
+    values: string[]
+  }[]
+  summary?: string
+  type: 'SINGLE' | 'VARIANT'
+  stock: number
+  isActive: boolean
+  unit?: string
+  condition?: string
+  tags: string[]
   variants: Variant[]
 }
 
@@ -69,6 +149,6 @@ export type TableMeta = {
   updateProductStatus: (
     productId: string,
     columnId: 'isActive' | 'isFeatured',
-    value: boolean
+    value: boolean,
   ) => void
 }
