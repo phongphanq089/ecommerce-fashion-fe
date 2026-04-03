@@ -20,7 +20,7 @@ import {
   XCircle,
 } from 'lucide-react'
 import { Button } from '~/components/ui/core/button'
-import { Brand } from '../../types'
+import { Brand, BrandParams } from '../../types'
 import { TableToolbar } from './table-toolbar'
 import { _brandService } from '../../brand.query'
 import { useDebounce } from '~/hooks/use-debounce'
@@ -35,6 +35,7 @@ import {
 } from '~/components/ui/core/dropdown-menu'
 import { cn } from '~/lib/utils'
 import { toast } from 'react-toastify'
+import { Card, CardContent } from '~/components/ui/core/card'
 
 const BrandTable = () => {
   const [globalFilter, setGlobalFilter] = useState('')
@@ -44,7 +45,7 @@ const BrandTable = () => {
 
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 12, // Increased for grid
+    pageSize: 12,
   })
 
   const { data: brandResponse, isLoading } = _brandService.useBrands({
@@ -187,36 +188,24 @@ const BrandTable = () => {
             </Button>
           </div>
         ) : (
-          <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-5'>
-            {data.map((brand) => {
+          <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5'>
+            {data.map((brand: Brand) => {
               const isSelected = table.getRow(brand.id).getIsSelected()
               return (
-                <div
+                <Card
                   key={brand.id}
                   className={cn(
-                    'group relative flex flex-col items-center bg-white rounded-[2rem] p-4 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1 border-2',
+                    'group relative gap-0 p-0 transition-all duration-300 hover:shadow-xl overflow-hidden hover:-translate-y-1 border-none shadow-sm ring-1 ring-black/5',
                     isSelected
                       ? 'border-primary shadow-lg shadow-primary/5 bg-primary/[0.02]'
                       : 'border-transparent',
                   )}
                 >
-                  {/* Select Checkbox */}
-                  <div className='absolute top-4 left-4 z-10'>
-                    <Checkbox
-                      checked={isSelected}
-                      onCheckedChange={(val) =>
-                        table.getRow(brand.id).toggleSelected(!!val)
-                      }
-                      className='rounded-md border-muted-foreground/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary'
-                    />
-                  </div>
-
                   {/* Quick Actions Dropdown */}
                   <div className='absolute top-3 right-3 z-10'>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
-                          variant='ghost'
                           size='icon'
                           className='h-8 w-8 rounded-full hover:bg-muted'
                         >
@@ -249,53 +238,49 @@ const BrandTable = () => {
                   </div>
 
                   {/* Logo Container */}
-                  <div className='relative w-full aspect-square rounded-2xl bg-muted/30 mb-4 p-4 flex items-center justify-center group-hover:bg-muted/50 transition-colors border border-muted-foreground/5'>
+                  <div className='relative w-full aspect-square  bg-muted p-4 flex items-center justify-center group-hover:bg-muted/50 transition-colors border border-muted-foreground/5'>
                     {brand.logoUrl ? (
                       <img
                         src={brand.logoUrl}
                         alt={brand.name}
-                        className='w-full h-full object-contain drop-shadow-sm'
+                        className='w-full h-full object-cover drop-shadow-sm'
                       />
                     ) : (
-                      <div className='flex flex-col items-center gap-1 text-muted-foreground/30'>
+                      <div className='flex flex-col items-center gap-1 text-gray-400'>
                         <Globe className='h-10 w-10' />
                       </div>
                     )}
                   </div>
 
                   {/* Info */}
-                  <div className='text-center w-full space-y-1'>
+                  <CardContent className=' w-full px-3 py-3 space-y-3'>
                     <h3 className='font-bold text-sm truncate px-2 text-foreground/90 uppercase tracking-tight'>
                       {brand.name}
                     </h3>
-                    <div className='flex items-center justify-center gap-1.5'>
+                    <div className='flex items-center justify-between gap-1.5'>
                       {brand.isActive ? (
-                        <Badge
-                          variant='outline'
-                          className='h-5 bg-emerald-50 text-emerald-600 border-emerald-100 rounded-full text-[10px] uppercase font-bold py-0'
-                        >
-                          <CheckCircle2 className='h-2.5 w-2.5 mr-1 bg-emerald-600 rounded-full' />
-                          Active
-                        </Badge>
+                        <span className='text-green-500 text-sm'>Active</span>
                       ) : (
-                        <Badge
-                          variant='outline'
-                          className='h-5 bg-rose-50 text-rose-600 border-rose-100 rounded-full text-[10px] uppercase font-bold py-0'
-                        >
-                          <XCircle className='h-2.5 w-2.5 mr-1 bg-rose-600 rounded-full' />
-                          Hidden
-                        </Badge>
+                        <span className='text-red-500 text-sm'>unActive</span>
                       )}
+
+                      <Checkbox
+                        checked={isSelected}
+                        onCheckedChange={(val) =>
+                          table.getRow(brand.id).toggleSelected(!!val)
+                        }
+                        className='border-muted-foreground/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary'
+                      />
                     </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               )
             })}
           </div>
         )}
 
         {/* Improved Pagination */}
-        <div className='flex items-center justify-between px-6 py-4 bg-white/50 backdrop-blur-sm rounded-3xl border border-white'>
+        <div className='flex items-center justify-between px-6 py-4  backdrop-blur-sm rounded-3xl border '>
           <div className='text-sm font-medium text-muted-foreground'>
             Showing{' '}
             <span className='text-foreground'>{pageIndex * pageSize + 1}</span>{' '}

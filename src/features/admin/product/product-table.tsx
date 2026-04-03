@@ -292,6 +292,7 @@ const ProductTable = () => {
       <ProductFormAction
         productId={editId}
         open={isModalOpen}
+        isModal={true}
         onOpenChange={(open) => {
           setIsModalOpen(open)
           if (!open) setEditId(null)

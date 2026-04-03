@@ -44,7 +44,7 @@ const ProductFormAction = ({
   productId,
   onSuccess,
   onCancel,
-  isModal = true,
+  isModal = false,
   open,
   onOpenChange,
 }: ProductFormActionProps) => {
@@ -102,14 +102,6 @@ const ProductFormAction = ({
     }
   }, [productDetail, productId, form])
 
-  if (productId && isLoading && !productDetail) {
-    return (
-      <div className='flex items-center justify-center h-64'>
-        <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary'></div>
-      </div>
-    )
-  }
-
   const title = productId
     ? `Edit Product: ${productDetail?.result?.name || ''}`
     : 'Add New Product'
@@ -136,7 +128,9 @@ const ProductFormAction = ({
           <SeoMetaTags />
         </div>
       </div>
-      <div className='col-span-12 lg:col-span-4 space-y-8 h-fit lg:sticky lg:top-20'>
+      <div
+        className={`col-span-12 lg:col-span-4 space-y-8 h-fit ${isModal ? '' : 'lg:sticky lg:top-20'}`}
+      >
         <ActionForm
           onCancel={onCancel || resetForm}
           productId={productId}
@@ -159,25 +153,46 @@ const ProductFormAction = ({
     </div>
   )
 
+  // if (productId && isLoading && !productDetail) {
+  //   return (
+  //     <div className='flex items-center justify-center h-64'>
+  //       <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary'></div>
+  //     </div>
+  //   )
+  // }
+
   const content = (
     <FormProvider {...form}>
       {isModal ? (
         <Dialog open={open} onOpenChange={onOpenChange}>
-          <DialogContent className='sm:max-w-full lg:max-w-[85%] xl:max-w-[80%] max-h-[90vh] overflow-y-auto  p-0 border shadow-2xl rounded-2xl flex flex-col'>
-            <DialogHeader className='px-6 py-4 border-b sticky top-0 bg-background z-10'>
-              <DialogTitle className='text-xl font-bold'>{title}</DialogTitle>
-            </DialogHeader>
-            <div className='flex-1 overflow-y-auto px-6 py-6 custom-scrollbar '>
-              {renderForm()}
-            </div>
-            <DialogFooter className='px-6 py-4 border-t sticky bottom-0 bg-background z-10 h-20 items-center'>
-              <ActionForm
-                onCancel={onCancel || resetForm}
-                productId={productId}
-                onSuccess={onSuccess}
-                isFooter
-              />
-            </DialogFooter>
+          <DialogContent className='sm:max-w-full lg:max-w-[90%] xl:max-w-[90%] max-h-[95vh] overflow-hidden p-0 border shadow-2xl rounded-2xl flex flex-col'>
+            <DialogTitle className='text-xl font-bold hidden'>
+              Hidden
+            </DialogTitle>
+            {isLoading && !productDetail ? (
+              <div className='flex items-center justify-center h-[95vh]'>
+                <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary'></div>
+              </div>
+            ) : (
+              <>
+                <DialogHeader className='px-6 py-4 border-b sticky top-0 bg-background z-10'>
+                  <DialogTitle className='text-xl font-bold'>
+                    {title}
+                  </DialogTitle>
+                </DialogHeader>
+                <div className='flex-1 overflow-y-auto px-6 py-6 custom-scrollbar '>
+                  {renderForm()}
+                </div>
+                <DialogFooter className='px-6 py-4 border-t sticky bottom-0 bg-background z-10 h-20 items-center'>
+                  <ActionForm
+                    onCancel={onCancel || resetForm}
+                    productId={productId}
+                    onSuccess={onSuccess}
+                    isFooter
+                  />
+                </DialogFooter>
+              </>
+            )}
           </DialogContent>
         </Dialog>
       ) : (
@@ -277,3 +292,5 @@ const ActionForm = ({
     </div>
   )
 }
+
+// tổng vốn đầu tư

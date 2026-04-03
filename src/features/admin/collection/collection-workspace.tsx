@@ -60,8 +60,8 @@ export default function CollectionWorkspace() {
   }
 
   return (
-    <div className='flex h-[calc(100vh-theme(spacing.20))] overflow-hidden bg-slate-950 rounded-3xl border border-slate-800 shadow-2xl text-slate-200'>
-      <div className='w-80 flex-shrink-0 flex flex-col border-r border-slate-800'>
+    <div className='flex h-[calc(100vh-120px)] overflow-hidden bg-muted/30 rounded-3xl  border'>
+      <div className='w-80 flex-shrink-0 flex flex-col border-r border'>
         <CollectionList
           selectedId={selectedId}
           onSelect={(id) => {
@@ -78,30 +78,24 @@ export default function CollectionWorkspace() {
       <div className='flex-1 overflow-y-auto p-8 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950'>
         {isAdding ? (
           <div className='max-w-4xl mx-auto space-y-6'>
-            <div className='flex justify-between items-center bg-slate-900/50 p-6 rounded-2xl border border-slate-800 backdrop-blur-xl'>
-              <h1 className='text-3xl font-black text-white italic tracking-tighter'>
+            <div className='flex justify-between items-center bg-slate-900/50 p-6 rounded-2xl border backdrop-blur-xl'>
+              <h1 className='text-3xl font-black  italic tracking-tighter'>
                 NEW COLLECTION
               </h1>
-              <Button 
-                variant='ghost' 
-                onClick={() => setIsAdding(false)}
-                className='text-slate-400 hover:text-white hover:bg-slate-800'
-              >
-                CANCEL
-              </Button>
+              <Button onClick={() => setIsAdding(false)}>CANCEL</Button>
             </div>
             <div className='bg-slate-900/50 p-8 rounded-3xl border border-slate-800 backdrop-blur-xl'>
               <CollectionDetailForm onSuccess={() => setIsAdding(false)} />
             </div>
           </div>
         ) : selectedId === null ? (
-          <div className='h-full flex flex-col items-center justify-center text-slate-500 space-y-6'>
-            <div className='h-32 w-32 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center shadow-2xl relative'>
+          <div className='h-full flex flex-col items-center justify-center text-slate-500 space-y-2'>
+            <div className='h-32 w-32 rounded-full bg-muted border flex items-center justify-center relative'>
               <Package size={56} className='text-slate-700' />
               <div className='absolute -top-1 -right-1 h-6 w-6 bg-primary rounded-full animate-pulse' />
             </div>
             <div className='text-center space-y-2'>
-              <p className='text-2xl font-black text-white tracking-tight'>
+              <p className='text-2xl font-black tracking-tight'>
                 SELECT A COLLECTION
               </p>
               <p className='text-slate-500 max-w-[250px] mx-auto'>
@@ -118,8 +112,8 @@ export default function CollectionWorkspace() {
         ) : isLoading ? (
           <div className='h-full flex items-center justify-center'>
             <div className='relative'>
-               <Loader2 className='animate-spin h-12 w-12 text-primary' />
-               <div className='absolute inset-0 blur-xl bg-primary/20' />
+              <Loader2 className='animate-spin h-12 w-12 text-primary' />
+              <div className='absolute inset-0 blur-xl bg-primary/20' />
             </div>
           </div>
         ) : collection ? (
@@ -127,12 +121,12 @@ export default function CollectionWorkspace() {
             <div className='flex justify-between items-end gap-6 bg-slate-900/40 p-10 rounded-[2.5rem] border border-slate-800 backdrop-blur-xl relative overflow-hidden group'>
               <div className='relative z-10'>
                 <div className='flex items-center gap-2 mb-3'>
-                   <div className='h-2 w-2 bg-primary rounded-full animate-pulse' />
-                   <p className='text-primary font-black text-xs uppercase tracking-[0.3em]'>
+                  <div className='h-2 w-2 bg-primary rounded-full animate-pulse' />
+                  <p className='text-primary font-black text-xs uppercase tracking-[0.3em]'>
                     COLLECTION WORKSPACE
                   </p>
                 </div>
-                <h1 className='text-6xl font-black text-white leading-none tracking-tighter'>
+                <h1 className='text-6xl font-black leading-none tracking-tighter'>
                   {collection.name}
                 </h1>
                 <div className='flex items-center gap-4 mt-4'>
@@ -165,52 +159,66 @@ export default function CollectionWorkspace() {
               <TabsList className='bg-slate-900/50 p-1.5 rounded-2xl border border-slate-800 h-16 w-fit mb-8 backdrop-blur-md'>
                 <TabsTrigger
                   value='settings'
-                  className='px-8 h-12 rounded-xl text-xs font-black tracking-widest data-[state=active]:bg-primary data-[state=active]:text-white transition-all uppercase'
+                  className='px-8 h-12 rounded-xl text-xs font-black tracking-widest data-[state=active]:bg-primary data-[state=active] transition-all uppercase'
                 >
                   <Settings size={16} className='mr-2' /> SETTINGS
                 </TabsTrigger>
                 <TabsTrigger
                   value='products'
-                  className='px-8 h-12 rounded-xl text-xs font-black tracking-widest data-[state=active]:bg-primary data-[state=active]:text-white transition-all uppercase'
+                  className='px-8 h-12 rounded-xl text-xs font-black tracking-widest data-[state=active]:bg-primary data-[state=active] transition-all uppercase'
                 >
                   <Package size={16} className='mr-2' /> PRODUCTS (
                   {(collection as any).products?.length || 0})
                 </TabsTrigger>
                 <TabsTrigger
                   value='add'
-                  className='px-8 h-12 rounded-xl text-xs font-black tracking-widest data-[state=active]:bg-primary data-[state=active]:text-white transition-all uppercase'
+                  className='px-8 h-12 rounded-xl text-xs font-black tracking-widest data-[state=active]:bg-primary data-[state=active] transition-all uppercase'
                 >
                   <PlusSquare size={16} className='mr-2' /> EXPLORE & ADD
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value='settings' className='focus:outline-none animate-in fade-in slide-in-from-bottom-4 duration-500'>
+              <TabsContent
+                value='settings'
+                className='focus:outline-none animate-in fade-in slide-in-from-bottom-4 duration-500'
+              >
                 <div className='bg-slate-900/50 p-8 rounded-3xl border border-slate-800 backdrop-blur-xl'>
-                   <CollectionDetailForm
+                  <CollectionDetailForm
                     collection={collection}
                     onSuccess={refetch}
                   />
                 </div>
               </TabsContent>
 
-              <TabsContent value='products' className='focus:outline-none animate-in fade-in slide-in-from-bottom-4 duration-500'>
+              <TabsContent
+                value='products'
+                className='focus:outline-none animate-in fade-in slide-in-from-bottom-4 duration-500'
+              >
                 <CollectionProducts
                   products={(collection as any).products || []}
                   onRemove={handleRemoveProduct}
                 />
               </TabsContent>
 
-              <TabsContent value='add' className='focus:outline-none animate-in fade-in slide-in-from-bottom-4 duration-500'>
+              <TabsContent
+                value='add'
+                className='focus:outline-none animate-in fade-in slide-in-from-bottom-4 duration-500'
+              >
                 <AddProductToCollection
                   collectionId={collection.id}
-                  existingProductIds={(collection as any).products?.map((p: any) => p.id) || []}
+                  existingProductIds={
+                    (collection as any).products?.map((p: any) => p.id) || []
+                  }
                   onSuccess={refetch}
                 />
               </TabsContent>
             </Tabs>
           </div>
         ) : (
-          <Alert variant='destructive' className='bg-red-500/10 border-red-500/50 text-red-500'>
+          <Alert
+            variant='destructive'
+            className='bg-red-500/10 border-red-500/50 text-red-500'
+          >
             <AlertCircle className='h-4 w-4' />
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>

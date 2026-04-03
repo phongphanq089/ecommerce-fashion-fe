@@ -26,12 +26,10 @@ export const CollectionList = ({
   const collections = collectionsRes?.result?.data || []
 
   return (
-    <div className='flex flex-col h-full bg-slate-950/50 backdrop-blur-xl'>
-      <div className='p-6 border-b border-slate-800 space-y-6'>
+    <div className='flex flex-col h-full bg-muted backdrop-blur-xl'>
+      <div className='p-6 border-b border space-y-6'>
         <div className='flex items-center justify-between'>
-          <h2 className='text-2xl font-black text-white tracking-tighter italic'>
-            COLLECTIONS
-          </h2>
+          <h2 className='text-2xl font-black  tracking-tighter'>COLLECTIONS</h2>
           <Button
             size='icon'
             variant='ghost'
@@ -43,12 +41,12 @@ export const CollectionList = ({
         </div>
         <div className='relative group'>
           <Search
-            className='absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary transition-colors'
+            className='absolute left-3 top-1/2 -translate-y-1/2  group-focus-within:text-primary transition-colors'
             size={18}
           />
           <Input
             placeholder='Search master...'
-            className='pl-10 h-11 bg-slate-900/50 border-slate-800 rounded-xl focus:ring-primary focus:border-primary text-slate-200'
+            className='pl-10 h-11 bg-muted/30 border rounded-xl focus:ring-primary focus:border-primary'
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -73,8 +71,8 @@ export const CollectionList = ({
                 className={cn(
                   'w-full text-left p-4 rounded-2xl transition-all duration-300 group relative overflow-hidden',
                   selectedId === item.id
-                    ? 'bg-primary text-white shadow-xl shadow-primary/20 scale-[1.02]'
-                    : 'hover:bg-slate-900 text-slate-400 hover:text-slate-200 border border-transparent hover:border-slate-800',
+                    ? 'bg-primary shadow-xl shadow-primary/20 scale-[1.02]'
+                    : 'hover:bg-muted/30 border border-transparent hover:border',
                 )}
               >
                 <div className='font-bold truncate relative z-10'>
@@ -82,8 +80,8 @@ export const CollectionList = ({
                 </div>
                 <div
                   className={cn(
-                    'text-[10px] mt-1 truncate font-mono uppercase tracking-widest relative z-10',
-                    selectedId === item.id ? 'text-white/60' : 'text-slate-500',
+                    'text-[12px] mt-1 truncate font-mono uppercase relative z-10',
+                    selectedId === item.id ? 'text-white/60' : 'text-slate-700',
                   )}
                 >
                   {item.slug}

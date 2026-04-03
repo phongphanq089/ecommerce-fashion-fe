@@ -67,16 +67,7 @@ export const sidebarData: SidebarData = {
         {
           title: 'Colections',
           icon: IconCategory,
-          items: [
-            {
-              title: 'Colection List',
-              url: '/admin/collection',
-            },
-            {
-              title: 'Create Colection',
-              url: '/admin/collection/create',
-            },
-          ],
+          url: '/admin/collection',
         },
         {
           title: 'Categories',

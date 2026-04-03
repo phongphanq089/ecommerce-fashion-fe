@@ -1,13 +1,9 @@
-import CategoryTable from '~/features/admin/category/components/category-list/category-table'
+import CategoryList from '~/features/admin/category/components/category-list/category-list'
 
-const PageAction = async ({
-  params,
-}: {
-  params: Promise<{ action: string }>
-}) => {
+const PageAction = async () => {
   return (
     <>
-      <CategoryTable />
+      <CategoryList />
     </>
   )
 }

@@ -37,7 +37,7 @@ export const _productApi = {
   },
 
   deleteProduct: async (id: string) => {
-    const res = await https.delete<ApiResponse<null>>(`/products${id}`)
+    const res = await https.delete<ApiResponse<null>>(`/products/${id}`)
     return res.data
   },
 

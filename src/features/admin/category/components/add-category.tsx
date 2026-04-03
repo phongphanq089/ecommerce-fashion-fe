@@ -55,7 +55,9 @@ const AddCategoryModal = ({
   })
 
   const { data: categoriesData } = _categoryService.useCategories()
-  const { data: categoryDetail } = _categoryService.useCategory(categoryId || '')
+  const { data: categoryDetail } = _categoryService.useCategory(
+    categoryId || '',
+  )
   const createCategoryMutation = _categoryService.useCategoryCreate()
   const updateCategoryMutation = _categoryService.useCategoryUpdate()
 
@@ -87,7 +89,10 @@ const AddCategoryModal = ({
   const onSubmit = async (data: CategorySchemaType) => {
     try {
       if (isEdit && categoryId) {
-        await updateCategoryMutation.mutateAsync({ id: categoryId, payload: data })
+        await updateCategoryMutation.mutateAsync({
+          id: categoryId,
+          payload: data,
+        })
         toast.success('Category updated successfully')
       } else {
         await createCategoryMutation.mutateAsync(data)
@@ -106,7 +111,9 @@ const AddCategoryModal = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
-          <DialogTitle>{isEdit ? 'Edit Category' : 'Add New Category'}</DialogTitle>
+          <DialogTitle>
+            {isEdit ? 'Edit Category' : 'Add New Category'}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className='space-y-4 py-4'>
           <div className='grid gap-2'>
@@ -133,7 +140,7 @@ const AddCategoryModal = ({
               <p className='text-xs text-destructive'>{errors.slug.message}</p>
             )}
           </div>
-          <div className='grid gap-2'>
+          <div className='grid gap-3'>
             <Label htmlFor='parentId'>Parent Category</Label>
             <Select
               onValueChange={(value) =>
@@ -141,7 +148,7 @@ const AddCategoryModal = ({
               }
               defaultValue='none'
             >
-              <SelectTrigger>
+              <SelectTrigger className='w-full'>
                 <SelectValue placeholder='Select parent category' />
               </SelectTrigger>
               <SelectContent>
@@ -161,8 +168,8 @@ const AddCategoryModal = ({
                   ? 'Updating...'
                   : 'Creating...'
                 : isEdit
-                ? 'Update Category'
-                : 'Create Category'}
+                  ? 'Update Category'
+                  : 'Create Category'}
             </Button>
           </DialogFooter>
         </form>

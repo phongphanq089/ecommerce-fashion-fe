@@ -8,9 +8,15 @@ import {
   MoreVertical,
   CheckCircle2,
   XCircle,
+  Edit2,
 } from 'lucide-react'
 import { Button } from '~/components/ui/core/button'
-import { Card, CardContent, CardFooter, CardHeader } from '~/components/ui/core/card'
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from '~/components/ui/core/card'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,7 +46,8 @@ const CategoryList = () => {
     page,
     limit: pageSize,
     search: debouncedSearch || null,
-    sort: (columnFilters.find((f) => f.id === 'sort')?.value as any) || 'newest',
+    sort:
+      (columnFilters.find((f) => f.id === 'sort')?.value as any) || 'newest',
   })
 
   const deleteCategoryMutation = _categoryService.useCategoryDelete()
@@ -70,7 +77,7 @@ const CategoryList = () => {
 
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     )
   }
 
@@ -126,7 +133,10 @@ const CategoryList = () => {
         <>
           <div className='flex items-center gap-2 mb-4 px-2'>
             <Checkbox
-              checked={selectedIds.length === categories.length && categories.length > 0}
+              checked={
+                selectedIds.length === categories.length &&
+                categories.length > 0
+              }
               onCheckedChange={toggleSelectAll}
             />
             <span className='text-sm text-muted-foreground'>Select All</span>
@@ -135,22 +145,21 @@ const CategoryList = () => {
             {categories.map((category: Category) => (
               <Card
                 key={category.id}
-                className={`group relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-none bg-white shadow-sm ring-1 ring-black/5 ${
-                  selectedIds.includes(category.id) ? 'ring-2 ring-primary bg-primary/5' : ''
+                className={`group relative gap-0  p-0 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-none shadow-sm ring-1 ring-black/5 ${
+                  selectedIds.includes(category.id) ? 'ring-2 ring-primary' : ''
                 }`}
               >
                 <div className='absolute top-3 left-3 z-10'>
                   <Checkbox
                     checked={selectedIds.includes(category.id)}
                     onCheckedChange={() => toggleSelect(category.id)}
-                    className='bg-white'
                   />
                 </div>
-                
+
                 <div className='absolute top-3 right-3 z-10'>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant='ghost' size='icon' className='h-8 w-8 bg-white/80 hover:bg-white'>
+                      <Button size='icon' className='h-8 w-8 '>
                         <MoreVertical className='h-4 w-4' />
                       </Button>
                     </DropdownMenuTrigger>
@@ -168,7 +177,7 @@ const CategoryList = () => {
                   </DropdownMenu>
                 </div>
 
-                <div className='aspect-square relative overflow-hidden bg-muted flex items-center justify-center group-hover:scale-105 transition-transform duration-500'>
+                <div className='aspect-square relative overflow-hidden bg-muted flex items-center justify-center transition-transform duration-500'>
                   {category.metaImage ? (
                     <img
                       src={category.metaImage}
@@ -178,24 +187,42 @@ const CategoryList = () => {
                   ) : (
                     <FolderOpen className='h-16 w-16 text-muted-foreground/20' />
                   )}
-                  <div className='absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300' />
+                  <div className='absolute bottom-2 right-2'>
+                    <Button
+                      variant='ghost'
+                      size='sm'
+                      className='text-primary font-semibold'
+                      onClick={() => handleEdit(category.id)}
+                    >
+                      <Edit />
+                    </Button>
+                  </div>
                 </div>
-
-                <CardContent className='p-4 space-y-2'>
+                <CardContent className='p-4 space-y-2 relative'>
                   <div className='flex items-start justify-between gap-2'>
-                    <h3 className='font-bold text-lg leading-snug line-clamp-1'>{category.name}</h3>
+                    <h3 className='font-bold text-lg leading-snug line-clamp-1'>
+                      {category.name}
+                    </h3>
                     {category.isActive ? (
-                      <Badge className='capitalize bg-emerald-50 text-emerald-600 border border-emerald-100' size='sm'>
+                      <Badge
+                        className='capitalize bg-emerald-50 text-emerald-600 border border-emerald-100'
+                        size='sm'
+                      >
                         Active
                       </Badge>
                     ) : (
-                      <Badge className='capitalize bg-gray-100 text-gray-600 border border-gray-200' size='sm'>
+                      <Badge
+                        className='capitalize bg-gray-100 text-gray-600 border border-gray-200'
+                        size='sm'
+                      >
                         Inactive
                       </Badge>
                     )}
                   </div>
                   <div className='flex flex-col gap-1'>
-                    <p className='text-xs text-muted-foreground truncate font-mono'>/{category.slug}</p>
+                    <p className='text-xs text-muted-foreground truncate font-mono'>
+                      /{category.slug}
+                    </p>
                     {category.parent && (
                       <div className='flex items-center gap-1 text-[11px] text-muted-foreground bg-accent px-2 py-0.5 rounded-full w-fit'>
                         <FolderOpen className='h-3 w-3' />
@@ -215,14 +242,6 @@ const CategoryList = () => {
                       ) : null}
                     </div>
                   </div>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    className='opacity-0 group-hover:opacity-100 transition-opacity text-primary font-semibold'
-                    onClick={() => handleEdit(category.id)}
-                  >
-                    Manage
-                  </Button>
                 </CardFooter>
               </Card>
             ))}
