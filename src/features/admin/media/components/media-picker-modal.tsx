@@ -21,11 +21,13 @@ import { DisplayItem, MediaItem } from '../types'
 export type MediaPickerModalProps = {
   onSelect: (items: MediaItem[]) => void
   trigger?: React.ReactNode
+  multiple?: boolean
 }
 
-export const MediaPickerModal = ({
+const MediaPickerModal = ({
   onSelect,
   trigger,
+  multiple = false,
 }: MediaPickerModalProps) => {
   const [open, setOpen] = useState(false)
   const [folderMedia] = useQueryState('folderMedia')
@@ -141,3 +143,5 @@ export const MediaPickerModal = ({
     </Dialog>
   )
 }
+
+export default MediaPickerModal

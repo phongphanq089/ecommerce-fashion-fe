@@ -67,44 +67,17 @@ export const sidebarData: SidebarData = {
         {
           title: 'Colections',
           icon: IconCategory,
-          items: [
-            {
-              title: 'Colection List',
-              url: '/admin/collection',
-            },
-            {
-              title: 'Create Colection',
-              url: '/admin/collection/create',
-            },
-          ],
+          url: '/admin/collection',
         },
         {
           title: 'Categories',
           icon: IconPackages,
-          items: [
-            {
-              title: 'Category List',
-              url: '/admin/category/list',
-            },
-            {
-              title: 'Create Category',
-              url: '/admin/category/create',
-            },
-          ],
+          url: '/admin/category',
         },
         {
           title: 'Brands',
           icon: IconBrandAdobe,
-          items: [
-            {
-              title: 'Brands List',
-              url: '/admin/brand',
-            },
-            {
-              title: 'Create Brands',
-              url: '/admin/brand/create',
-            },
-          ],
+          url: '/admin/brand',
         },
         {
           title: 'Custommers',

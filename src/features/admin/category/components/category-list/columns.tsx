@@ -33,74 +33,39 @@ export const columns: ColumnDef<Category>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'metaImage',
-    header: 'Meta Image',
-    enableSorting: false,
-    cell: ({ row }) => {
-      return (
-        <img
-          src={row.original.metaImage}
-          alt={row.original.name}
-          className='h-12 w-12 rounded object-cover'
-        />
-      )
-    },
-  },
-  {
     accessorKey: 'name',
     header: 'Name',
   },
   {
+    accessorKey: 'slug',
+    header: 'Slug',
+  },
+  {
     accessorKey: 'parent.name',
     header: 'Parent',
-  },
-
-  {
-    accessorKey: 'isActive',
-    header: 'Status',
-    enableSorting: false,
-    cell: ({ row, table }) => {
-      const meta = table.options.meta as TableMeta
-      return (
-        <Switch
-          checked={row.original.isActive}
-          onCheckedChange={(value) => {
-            meta.updateProductStatus(row.original.id, 'isActive', value)
-          }}
-          aria-label='Toggle product status'
-        />
-      )
-    },
-  },
-  {
-    accessorKey: 'isFeatured',
-    header: 'Featured',
-    enableSorting: false,
-    cell: ({ row, table }) => {
-      const meta = table.options.meta as TableMeta
-      return (
-        <Switch
-          checked={row.original.isFeatured}
-          onCheckedChange={(value) => {
-            meta.updateProductStatus(row.original.id, 'isFeatured', value)
-          }}
-          aria-label='Toggle featured status'
-        />
-      )
-    },
+    cell: ({ row }) => row.original.parent?.name || 'Root',
   },
   {
     accessorKey: 'Action',
     header: 'Action',
-    cell: () => (
-      <div className='flex items-center gap-3'>
-        <div className='border border-red-500 text-red-500 p-2 rounded-xl cursor-pointer'>
-          <IconTrash />
+    cell: ({ row, table }) => {
+      const meta = table.options.meta as TableMeta
+      return (
+        <div className='flex items-center gap-3'>
+          <div
+            className='border border-red-500 text-red-500 p-2 rounded-xl cursor-pointer'
+            onClick={() => meta.onDelete(row.original.id)}
+          >
+            <IconTrash />
+          </div>
+          <div
+            className='border bg-primary p-2 text-white rounded-xl cursor-pointer'
+            onClick={() => meta.onEdit(row.original.id)}
+          >
+            <IconEdit />
+          </div>
         </div>
-        <div className='border bg-primary p-2 text-white rounded-xl cursor-pointer'>
-          <IconEdit />
-        </div>
-      </div>
-    ),
+      )
+    },
   },
 ]

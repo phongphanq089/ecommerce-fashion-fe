@@ -8,6 +8,8 @@ import ToasterCustom from '~/components/shared/toaster-custom'
 import GlobalLoadingOverlay from '~/components/shared/global-loading-overlay'
 import ProviderReactQuery from '~/providers/provider-react-query'
 import ProviderGoogle from '~/providers/provider-google'
+import AuthProvider from '~/providers/provider-auth'
+import { ViewTransitions } from 'next-view-transitions'
 
 const font = Antonio({
   weight: ['400', '500', '600', '700'],
@@ -25,26 +27,30 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang='en' suppressHydrationWarning>
-      <body
-        className={`${font.className} ${font.variable} antialiased overflow-x-hidden`}
-        suppressHydrationWarning
-      >
-        <ToasterCustom />
-        <GlobalLoadingOverlay />
-        <ProviderReactQuery>
-          <ThemeProvider
-            attribute='class'
-            defaultTheme='system'
-            enableSystem
-            disableTransitionOnChange
-          >
-            <ProviderGoogle>
-              <NuqsAdapter> {children}</NuqsAdapter>
-            </ProviderGoogle>
-          </ThemeProvider>
-        </ProviderReactQuery>
-      </body>
-    </html>
+    <ViewTransitions>
+      <html lang='en' suppressHydrationWarning>
+        <body
+          className={`${font.className} ${font.variable} antialiased overflow-x-hidden`}
+          suppressHydrationWarning
+        >
+          <ToasterCustom />
+          <GlobalLoadingOverlay />
+          <ProviderReactQuery>
+            <ThemeProvider
+              attribute='class'
+              defaultTheme='system'
+              enableSystem
+              disableTransitionOnChange
+            >
+              <ProviderGoogle>
+                <AuthProvider>
+                  <NuqsAdapter>{children}</NuqsAdapter>
+                </AuthProvider>
+              </ProviderGoogle>
+            </ThemeProvider>
+          </ProviderReactQuery>
+        </body>
+      </html>
+    </ViewTransitions>
   )
 }
