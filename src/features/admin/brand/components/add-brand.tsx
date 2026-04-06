@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -17,7 +17,7 @@ import { Plus, FolderOpen, Image as ImageIcon, X } from 'lucide-react'
 import { Switch } from '~/components/ui/core/switch'
 import { brandSchema, BrandSchemaType } from '../brand.validate'
 import { _brandService } from '../brand.query'
-import { generateSlug } from '~/lib/utils'
+import { generateRandomId, generateSlug } from '~/lib/utils'
 import { toast } from 'react-toastify'
 import MediaPickerModal from '../../media/components/media-picker-modal'
 
@@ -77,12 +77,13 @@ const AddBrandModal = ({
   }, [brandDetail, reset, open])
 
   const name = watch('name')
+  const randomId = useMemo(() => generateRandomId(), [])
 
   useEffect(() => {
     if (name && !isEdit) {
-      setValue('slug', generateSlug(name), { shouldValidate: true })
+      setValue('slug', generateSlug(name, randomId), { shouldValidate: true })
     }
-  }, [name, setValue, isEdit])
+  }, [name, setValue, isEdit, randomId])
 
   const onSubmit = async (data: BrandSchemaType) => {
     try {

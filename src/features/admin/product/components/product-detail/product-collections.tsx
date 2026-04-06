@@ -26,6 +26,7 @@ import MultipleSelector, { Option } from '~/components/ui/core/multiselect'
 import { ProductSchemaType } from '../../product.validate'
 import { _collectionService } from '~/features/admin/collection/collection.query'
 import { toast } from 'react-toastify'
+import { generateRandomId, generateSlug } from '~/lib/utils'
 
 const ProductCollections = () => {
   const { control } = useFormContext<ProductSchemaType>()
@@ -61,7 +62,7 @@ const ProductCollections = () => {
     try {
       await createCollectionMutation.mutateAsync({
         name: newCollectionName,
-        slug: newCollectionName.toLowerCase().replace(/ /g, '-'),
+        slug: generateSlug(newCollectionName, generateRandomId()),
         description: '',
         isActive: true,
       } as any)

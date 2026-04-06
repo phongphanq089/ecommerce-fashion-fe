@@ -13,10 +13,14 @@ import {
 import { Switch } from '~/components/ui/core/switch'
 
 import { useCollectionHookForm } from '../use-collection-hook-form'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { CollectionDetail } from '../types'
 import { _collectionService } from '../collection.query'
 import { Card, CardContent } from '~/components/ui/core/card'
+import { Label } from '~/components/ui/core/label'
+import { MediaPickerModal } from '../../media/components'
+import { ImageIcon, X } from 'lucide-react'
+import { generateRandomId, generateSlug } from '~/lib/utils'
 
 interface CollectionDetailFormProps {
   collection?: CollectionDetail | null
@@ -28,8 +32,21 @@ export const CollectionDetailForm = ({
   onSuccess,
 }: CollectionDetailFormProps) => {
   const form = useCollectionHookForm()
+
+  const { watch, setValue } = form
   const createMutation = _collectionService.useCreateCollection()
   const updateMutation = _collectionService.useUpdateCollection()
+
+  const imageUrl = watch('imageUrl')
+  const name = watch('name')
+  const randomId = useMemo(() => generateRandomId(), [])
+  const isEdit = !!collection
+
+  useEffect(() => {
+    if (name && !isEdit) {
+      setValue('slug', generateSlug(name, randomId), { shouldValidate: true })
+    }
+  }, [name, setValue, isEdit, randomId])
 
   useEffect(() => {
     if (collection) {
@@ -94,23 +111,62 @@ export const CollectionDetailForm = ({
               />
             </div>
 
-            <FormField
-              control={form.control}
-              name='imageUrl'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Image URL</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder='https://image-url.com'
-                      {...field}
-                      value={field.value || ''}
+            <div className='grid gap-2'>
+              <Label>Collection Image</Label>
+              <div className='flex flex-col gap-3'>
+                {imageUrl ? (
+                  <div className='relative group w-full aspect-[2/1] rounded-xl overflow-hidden border-2 border-dashed border-muted-foreground/20 bg-muted/30'>
+                    <img
+                      src={imageUrl}
+                      alt='Preview'
+                      className='w-full h-full object-contain p-4'
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <div className='absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2'>
+                      <MediaPickerModal
+                        onSelect={(items) => setValue('imageUrl', items[0].url)}
+                        trigger={
+                          <Button
+                            type='button'
+                            variant='secondary'
+                            size='sm'
+                            className='h-8'
+                          >
+                            Change Logo
+                          </Button>
+                        }
+                      />
+                      <Button
+                        type='button'
+                        variant='destructive'
+                        size='sm'
+                        className='h-8'
+                        onClick={() => setValue('imageUrl', null)}
+                      >
+                        <X className='h-4 w-4' />
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <MediaPickerModal
+                    onSelect={(items) => setValue('imageUrl', items[0].url)}
+                    trigger={
+                      <Button
+                        type='button'
+                        variant='outline'
+                        className='w-full h-32 border-2 border-dashed border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 transition-all flex flex-col gap-2 group'
+                      >
+                        <div className='p-3 rounded-full bg-muted group-hover:bg-primary/10 transition-colors'>
+                          <ImageIcon className='h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors' />
+                        </div>
+                        <span className='text-sm font-medium text-muted-foreground group-hover:text-primary'>
+                          Click to select brand logo
+                        </span>
+                      </Button>
+                    }
+                  />
+                )}
+              </div>
+            </div>
 
             <FormField
               control={form.control}

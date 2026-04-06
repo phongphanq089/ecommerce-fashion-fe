@@ -30,7 +30,6 @@ export const AddProductToCollection = ({
   const [search, setSearch] = useState('')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
 
-  // 1. Gọi API lấy danh sách sản phẩm
   const {
     data: productsRes,
     isLoading,
@@ -43,16 +42,15 @@ export const AddProductToCollection = ({
 
   const addMutation = _collectionService.useAddProducts()
 
-  // 2. Trích xuất danh sách sản phẩm linh hoạt hơn
   const allProducts = useMemo(() => {
     const result = (productsRes as any)?.result
     if (!result) return []
 
-    // Nếu result là mảng thì dùng luôn, nếu có trường data thì lấy data
+    // if result is array return it else return result.data
     return Array.isArray(result) ? result : result.data || []
   }, [productsRes])
 
-  // 3. Lọc sản phẩm (Chỉ hiển thị những sản phẩm CHƯA có trong collection)
+  // filter products that are not in the collection
   const filteredProducts = useMemo(() => {
     return allProducts.filter((p: any) => !existingProductIds.includes(p.id))
   }, [allProducts, existingProductIds])
@@ -83,7 +81,7 @@ export const AddProductToCollection = ({
   }
 
   return (
-    <div className='flex flex-col h-[700px] gap-6 p-8 bg-slate-900/40 rounded-[2.5rem] border border-slate-800 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-500'>
+    <div className='flex flex-col h-[700px] gap-6 p-8 bg-muted rounded-[2.5rem] border backdrop-blur-xl animate-in fade-in zoom-in-95 duration-500'>
       {/* Search Header */}
       <div className='flex flex-col md:flex-row md:items-end justify-between gap-6'>
         <div className='flex items-center gap-4'>
@@ -91,10 +89,10 @@ export const AddProductToCollection = ({
             <ShoppingBag size={24} className='text-primary' />
           </div>
           <div>
-            <h3 className='text-2xl font-black text-white uppercase tracking-tighter leading-none italic'>
+            <h3 className='text-2xl font-black  tracking-tighter leading-none'>
               Assign Products
             </h3>
-            <p className='text-slate-500 text-xs italic font-medium mt-1 uppercase tracking-widest opacity-60'>
+            <p className=' text-xs italic font-medium mt-1 uppercase tracking-widest opacity-60'>
               Total Catalog: {allProducts.length} items
             </p>
           </div>
@@ -103,12 +101,12 @@ export const AddProductToCollection = ({
         <div className='flex items-center gap-4'>
           <div className='relative w-full md:w-80 group'>
             <Search
-              className='absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary transition-colors'
+              className='absolute left-3 top-1/2 -translate-y-1/2  group-focus-within:text-primary transition-colors'
               size={18}
             />
             <Input
               placeholder='Search by name...'
-              className='pl-10 h-12 bg-slate-900/50 border-slate-800 rounded-2xl focus:ring-primary focus:border-primary text-slate-200'
+              className='pl-10 h-12 bg-muted rounded-2xl focus:ring-primary focus:border-primary text-slate-200'
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -116,9 +114,8 @@ export const AddProductToCollection = ({
 
           {filteredProducts.length > 0 && (
             <Button
-              variant='outline'
               onClick={handleSelectAll}
-              className='h-12 border-slate-700 text-slate-400 hover:text-white rounded-2xl font-black px-6 uppercase tracking-widest text-[10px] bg-slate-800/30'
+              className='h-12 border-primary rounded-2xl font-black px-6 text-[10px text-white'
             >
               {selectedIds.length === filteredProducts.length
                 ? 'Deselect All'
@@ -129,7 +126,7 @@ export const AddProductToCollection = ({
       </div>
 
       {/* Main Content Area */}
-      <ScrollArea className='flex-1 border border-slate-800 rounded-[2rem] bg-slate-950/40 overflow-hidden shadow-2xl'>
+      <ScrollArea className='flex-1 border rounded-[2rem] bg-muted overflow-hidden shadow-sm'>
         {isLoading ? (
           <div className='flex flex-col items-center justify-center h-[400px] space-y-6'>
             <div className='relative'>
@@ -172,7 +169,7 @@ export const AddProductToCollection = ({
                   'group flex flex-col gap-4 p-5 rounded-[2rem] transition-all duration-500 border relative overflow-hidden cursor-pointer shadow-lg',
                   selectedIds.includes(product.id)
                     ? 'bg-primary/10 border-primary/50 shadow-primary/10 ring-1 ring-primary/20 scale-[1.02]'
-                    : 'bg-slate-900/40 border-slate-800 hover:border-slate-600 hover:bg-slate-900/60',
+                    : 'bg-muted hover:',
                 )}
                 onClick={() => toggleProduct(product.id)}
               >
@@ -181,13 +178,8 @@ export const AddProductToCollection = ({
                     <img
                       src={product.imageUrl}
                       alt={product.name}
-                      className='h-full w-full rounded-2xl object-cover border border-slate-700 bg-slate-800'
+                      className='h-full w-full rounded-2xl object-cover border bg-muted'
                     />
-                    {selectedIds.includes(product.id) && (
-                      <div className='absolute -top-2 -right-2 h-7 w-7 bg-primary rounded-full flex items-center justify-center border-4 border-slate-900 shadow-xl animate-in zoom-in'>
-                        <CheckCircle2 size={14} className='text-white' />
-                      </div>
-                    )}
                   </div>
                   <Checkbox
                     checked={selectedIds.includes(product.id)}
@@ -202,13 +194,13 @@ export const AddProductToCollection = ({
                       'font-black text-lg truncate tracking-tight transition-colors',
                       selectedIds.includes(product.id)
                         ? 'text-primary'
-                        : 'text-slate-200 group-hover:text-white',
+                        : 'text-foreground',
                     )}
                   >
                     {product.name}
                   </div>
                   <div className='flex items-center justify-between mt-3'>
-                    <span className='text-xl font-black text-white italic tracking-tighter'>
+                    <span className='text-xl font-black  text-primary tracking-tighter'>
                       ${product.variants?.[0]?.price || 0}
                     </span>
                     <div className='flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-full border border-slate-700/50'>
@@ -237,18 +229,16 @@ export const AddProductToCollection = ({
       </ScrollArea>
 
       {/* Action Footer */}
-      <div className='flex flex-col md:flex-row items-center justify-between p-8 bg-slate-900/60 rounded-[2.5rem] border border-slate-800 backdrop-blur-md shadow-2xl relative overflow-hidden group border-b-4 border-b-primary/30'>
+      <div className='flex flex-col md:flex-row items-center justify-between p-8  rounded-[2.5rem] border backdrop-blur-md shadow-2xl relative overflow-hidden group border-b-4 border-b-primary/30'>
         <div className='flex items-center gap-6 mb-6 md:mb-0 relative z-10'>
           <div className='relative h-16 w-16'>
             <div className='absolute inset-0 bg-primary blur-xl opacity-30 animate-pulse' />
             <div className='relative h-16 w-16 rounded-2xl bg-primary flex items-center justify-center shadow-2xl shadow-primary/40 border border-white/20 group-hover:scale-110 transition-transform'>
-              <span className='text-2xl font-black text-white italic'>
-                {selectedIds.length}
-              </span>
+              <span className='text-2xl'>{selectedIds.length}</span>
             </div>
           </div>
           <div>
-            <p className='text-2xl font-black text-white tracking-tighter italic uppercase leading-none'>
+            <p className='text-2xl font-black tracking-tighter uppercase leading-none'>
               Ready to Assign
             </p>
             <p className='text-slate-500 text-sm font-medium mt-1 italic'>
@@ -260,7 +250,7 @@ export const AddProductToCollection = ({
         <Button
           disabled={selectedIds.length === 0 || addMutation.isPending}
           onClick={handleAdd}
-          className='w-full md:w-auto min-w-[300px] h-16 rounded-2xl font-black tracking-[0.25em] uppercase shadow-2xl shadow-primary/40 hover:scale-[1.05] transition-all active:scale-95 disabled:opacity-50 disabled:grayscale overflow-hidden relative group'
+          className='w-full md:w-auto min-w-[300px] h-14 rounded-2xl font-black uppercase shadow-2xl shadow-primary/40 hover:scale-[1.05] transition-all active:scale-95 disabled:opacity-50 text-slate-900 disabled:grayscale overflow-hidden relative group'
         >
           {addMutation.isPending ? (
             <div className='flex items-center gap-3'>

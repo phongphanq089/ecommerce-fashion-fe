@@ -60,7 +60,7 @@ export default function CollectionWorkspace() {
   }
 
   return (
-    <div className='flex h-[calc(100vh-120px)] overflow-hidden bg-muted/30 rounded-3xl  border'>
+    <div className='flex min-h-[calc(100vh-120px)] overflow-hidden bg-muted/30 rounded-3xl  border'>
       <div className='w-80 flex-shrink-0 flex flex-col border-r border'>
         <CollectionList
           selectedId={selectedId}
@@ -75,23 +75,23 @@ export default function CollectionWorkspace() {
         />
       </div>
 
-      <div className='flex-1 overflow-y-auto p-8 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950'>
+      <div className='flex-1 p-8 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950'>
         {isAdding ? (
           <div className='max-w-4xl mx-auto space-y-6'>
-            <div className='flex justify-between items-center bg-slate-900/50 p-6 rounded-2xl border backdrop-blur-xl'>
-              <h1 className='text-3xl font-black  italic tracking-tighter'>
+            <div className='flex justify-between items-center bg-muted rounded-2xl border backdrop-blur-xl p-4'>
+              <h1 className='text-3xl font-black   tracking-tighter'>
                 NEW COLLECTION
               </h1>
               <Button onClick={() => setIsAdding(false)}>CANCEL</Button>
             </div>
-            <div className='bg-slate-900/50 p-8 rounded-3xl border border-slate-800 backdrop-blur-xl'>
+            <div className='bg-muted p-8 rounded-3xl border  backdrop-blur-xl'>
               <CollectionDetailForm onSuccess={() => setIsAdding(false)} />
             </div>
           </div>
         ) : selectedId === null ? (
-          <div className='h-full flex flex-col items-center justify-center text-slate-500 space-y-2'>
+          <div className='h-full flex flex-col items-center justify-center space-y-2'>
             <div className='h-32 w-32 rounded-full bg-muted border flex items-center justify-center relative'>
-              <Package size={56} className='text-slate-700' />
+              <Package size={56} className='text-white' />
               <div className='absolute -top-1 -right-1 h-6 w-6 bg-primary rounded-full animate-pulse' />
             </div>
             <div className='text-center space-y-2'>
@@ -118,7 +118,7 @@ export default function CollectionWorkspace() {
           </div>
         ) : collection ? (
           <div className='max-w-6xl mx-auto space-y-8'>
-            <div className='flex justify-between items-end gap-6 bg-slate-900/40 p-10 rounded-[2.5rem] border border-slate-800 backdrop-blur-xl relative overflow-hidden group'>
+            <div className='flex justify-between items-end gap-6 bg-muted p-10 rounded-[2.5rem] border  backdrop-blur-xl relative overflow-hidden group'>
               <div className='relative z-10'>
                 <div className='flex items-center gap-2 mb-3'>
                   <div className='h-2 w-2 bg-primary rounded-full animate-pulse' />
@@ -130,10 +130,10 @@ export default function CollectionWorkspace() {
                   {collection.name}
                 </h1>
                 <div className='flex items-center gap-4 mt-4'>
-                  <p className='text-slate-500 font-mono text-xs bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700/50'>
+                  <p className='text-xs bg-muted px-3 py-1 rounded-full border'>
                     ID: {collection.id}
                   </p>
-                  <p className='text-slate-500 font-mono text-xs bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700/50'>
+                  <p className='text-xs bg-muted px-3 py-1 rounded-full border'>
                     SLUG: {collection.slug}
                   </p>
                 </div>
@@ -141,8 +141,7 @@ export default function CollectionWorkspace() {
 
               <div className='flex gap-3 relative z-10'>
                 <Button
-                  variant='outline'
-                  className='border-slate-700 text-slate-400 hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/50 rounded-2xl h-14 w-14 transition-all'
+                  variant='destructive'
                   size='icon'
                   onClick={handleDelete}
                 >
@@ -156,7 +155,7 @@ export default function CollectionWorkspace() {
             </div>
 
             <Tabs defaultValue='settings' className='w-full'>
-              <TabsList className='bg-slate-900/50 p-1.5 rounded-2xl border border-slate-800 h-16 w-fit mb-8 backdrop-blur-md'>
+              <TabsList className='bg-muted p-1.5 rounded-2xl border  h-16 w-fit mb-8 backdrop-blur-md'>
                 <TabsTrigger
                   value='settings'
                   className='px-8 h-12 rounded-xl text-xs font-black tracking-widest data-[state=active]:bg-primary data-[state=active] transition-all uppercase'
@@ -182,7 +181,7 @@ export default function CollectionWorkspace() {
                 value='settings'
                 className='focus:outline-none animate-in fade-in slide-in-from-bottom-4 duration-500'
               >
-                <div className='bg-slate-900/50 p-8 rounded-3xl border border-slate-800 backdrop-blur-xl'>
+                <div className='bg-muted p-8 rounded-3xl border  backdrop-blur-xl'>
                   <CollectionDetailForm
                     collection={collection}
                     onSuccess={refetch}

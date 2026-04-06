@@ -1,5 +1,4 @@
-import React from 'react'
-import BrandTable from '~/features/admin/brand/components/brand-list/brand-table'
+import BrandList from '~/features/admin/brand/components/brand-list/brand-list'
 
 export const metadata = {
   title: 'Brand Management | Admin Dashboard',
@@ -9,7 +8,7 @@ export const metadata = {
 const BrandPage = () => {
   return (
     <div className=''>
-      <BrandTable />
+      <BrandList />
     </div>
   )
 }

@@ -1,22 +1,15 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import {
   Edit,
   Trash2,
   FolderOpen,
   MoreVertical,
   CheckCircle2,
-  XCircle,
-  Edit2,
 } from 'lucide-react'
 import { Button } from '~/components/ui/core/button'
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from '~/components/ui/core/card'
+import { Card, CardContent, CardFooter } from '~/components/ui/core/card'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -91,197 +84,203 @@ const CategoryList = () => {
 
   return (
     <div className='w-full bg-accent/40 p-6 min-h-screen rounded-2xl'>
-      <div className='flex items-center justify-between mb-8'>
-        <h1 className='text-3xl font-bold tracking-tight'>Categories</h1>
-      </div>
-
-      <TableToolbar
-        filterValue={globalFilter}
-        setFilter={(key: string, value: any) => {
-          if (key === 'search') {
-            setGlobalFilter(String(value || ''))
-          } else {
-            setColumnFilters([{ id: key, value }])
-          }
-        }}
-        selectedRows={selectedIds}
-        onDelete={() => handleDelete(selectedIds)}
-        onAdd={() => {
-          setEditId(null)
-          setIsModalOpen(true)
-        }}
-      />
-
-      {isLoading ? (
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-          {[...Array(8)].map((_, i) => (
-            <Card key={i} className='animate-pulse border-none shadow-sm'>
-              <div className='h-48 bg-muted rounded-t-xl'></div>
-              <CardContent className='p-4 space-y-3'>
-                <div className='h-4 bg-muted rounded w-3/4'></div>
-                <div className='h-3 bg-muted rounded w-1/2'></div>
-              </CardContent>
-            </Card>
-          ))}
+      <div className='max-w-7xl mx-auto'>
+        <div className='flex items-center justify-between mb-8'>
+          <h1 className='text-3xl font-bold tracking-tight'>Categories</h1>
         </div>
-      ) : categories.length === 0 ? (
-        <div className='flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-dashed'>
-          <FolderOpen className='h-12 w-12 text-muted-foreground mb-4 opacity-20' />
-          <p className='text-muted-foreground'>No categories found.</p>
-        </div>
-      ) : (
-        <>
-          <div className='flex items-center gap-2 mb-4 px-2'>
-            <Checkbox
-              checked={
-                selectedIds.length === categories.length &&
-                categories.length > 0
-              }
-              onCheckedChange={toggleSelectAll}
-            />
-            <span className='text-sm text-muted-foreground'>Select All</span>
-          </div>
+
+        <TableToolbar
+          filterValue={globalFilter}
+          setFilter={(key: string, value: any) => {
+            if (key === 'search') {
+              setGlobalFilter(String(value || ''))
+            } else {
+              setColumnFilters([{ id: key, value }])
+            }
+          }}
+          selectedRows={selectedIds}
+          onDelete={() => handleDelete(selectedIds)}
+          onAdd={() => {
+            setEditId(null)
+            setIsModalOpen(true)
+          }}
+        />
+
+        {isLoading ? (
           <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-            {categories.map((category: Category) => (
-              <Card
-                key={category.id}
-                className={`group relative gap-0  p-0 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-none shadow-sm ring-1 ring-black/5 ${
-                  selectedIds.includes(category.id) ? 'ring-2 ring-primary' : ''
-                }`}
-              >
-                <div className='absolute top-3 left-3 z-10'>
-                  <Checkbox
-                    checked={selectedIds.includes(category.id)}
-                    onCheckedChange={() => toggleSelect(category.id)}
-                  />
-                </div>
-
-                <div className='absolute top-3 right-3 z-10'>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button size='icon' className='h-8 w-8 '>
-                        <MoreVertical className='h-4 w-4' />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align='end'>
-                      <DropdownMenuItem onClick={() => handleEdit(category.id)}>
-                        <Edit className='mr-2 h-4 w-4' /> Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className='text-destructive'
-                        onClick={() => handleDelete(category.id)}
-                      >
-                        <Trash2 className='mr-2 h-4 w-4' /> Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-
-                <div className='aspect-square relative overflow-hidden bg-muted flex items-center justify-center transition-transform duration-500'>
-                  {category.metaImage ? (
-                    <img
-                      src={category.metaImage}
-                      alt={category.name}
-                      className='object-cover w-full h-full'
-                    />
-                  ) : (
-                    <FolderOpen className='h-16 w-16 text-muted-foreground/20' />
-                  )}
-                  <div className='absolute bottom-2 right-2'>
-                    <Button
-                      variant='ghost'
-                      size='sm'
-                      className='text-primary font-semibold'
-                      onClick={() => handleEdit(category.id)}
-                    >
-                      <Edit />
-                    </Button>
-                  </div>
-                </div>
-                <CardContent className='p-4 space-y-2 relative'>
-                  <div className='flex items-start justify-between gap-2'>
-                    <h3 className='font-bold text-lg leading-snug line-clamp-1'>
-                      {category.name}
-                    </h3>
-                    {category.isActive ? (
-                      <Badge
-                        className='capitalize bg-emerald-50 text-emerald-600 border border-emerald-100'
-                        size='sm'
-                      >
-                        Active
-                      </Badge>
-                    ) : (
-                      <Badge
-                        className='capitalize bg-gray-100 text-gray-600 border border-gray-200'
-                        size='sm'
-                      >
-                        Inactive
-                      </Badge>
-                    )}
-                  </div>
-                  <div className='flex flex-col gap-1'>
-                    <p className='text-xs text-muted-foreground truncate font-mono'>
-                      /{category.slug}
-                    </p>
-                    {category.parent && (
-                      <div className='flex items-center gap-1 text-[11px] text-muted-foreground bg-accent px-2 py-0.5 rounded-full w-fit'>
-                        <FolderOpen className='h-3 w-3' />
-                        <span>{category.parent.name}</span>
-                      </div>
-                    )}
-                  </div>
+            {[...Array(8)].map((_, i) => (
+              <Card key={i} className='animate-pulse border-none shadow-sm'>
+                <div className='h-48 bg-muted rounded-t-xl'></div>
+                <CardContent className='p-4 space-y-3'>
+                  <div className='h-4 bg-muted rounded w-3/4'></div>
+                  <div className='h-3 bg-muted rounded w-1/2'></div>
                 </CardContent>
-
-                <CardFooter className='p-4 pt-0 flex justify-between items-center'>
-                  <div className='flex items-center gap-4'>
-                    <div className='flex items-center gap-1 text-xs'>
-                      {category.isFeatured ? (
-                        <span className='flex items-center gap-1 text-amber-600 font-medium'>
-                          <CheckCircle2 className='h-3 w-3' /> Featured
-                        </span>
-                      ) : null}
-                    </div>
-                  </div>
-                </CardFooter>
               </Card>
             ))}
           </div>
-
-          {totalPages > 1 && (
-            <div className='flex items-center justify-center space-x-2 mt-12 py-4'>
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className='bg-white'
-              >
-                Previous
-              </Button>
-              {[...Array(totalPages)].map((_, i) => (
-                <Button
-                  key={i}
-                  variant={page === i + 1 ? 'default' : 'outline'}
-                  size='sm'
-                  onClick={() => setPage(i + 1)}
-                  className={page !== i + 1 ? 'bg-white' : ''}
-                >
-                  {i + 1}
-                </Button>
-              ))}
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                className='bg-white'
-              >
-                Next
-              </Button>
+        ) : categories.length === 0 ? (
+          <div className='flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-dashed'>
+            <FolderOpen className='h-12 w-12 text-muted-foreground mb-4 opacity-20' />
+            <p className='text-muted-foreground'>No categories found.</p>
+          </div>
+        ) : (
+          <>
+            <div className='flex items-center gap-2 mb-4 px-2'>
+              <Checkbox
+                checked={
+                  selectedIds.length === categories.length &&
+                  categories.length > 0
+                }
+                onCheckedChange={toggleSelectAll}
+              />
+              <span className='text-sm text-muted-foreground'>Select All</span>
             </div>
-          )}
-        </>
-      )}
+            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
+              {categories.map((category: Category) => (
+                <Card
+                  key={category.id}
+                  className={`group relative gap-0  p-0 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-none shadow-sm ring-1 ring-black/5 ${
+                    selectedIds.includes(category.id)
+                      ? 'ring-2 ring-primary'
+                      : ''
+                  }`}
+                >
+                  <div className='absolute top-3 left-3 z-10'>
+                    <Checkbox
+                      checked={selectedIds.includes(category.id)}
+                      onCheckedChange={() => toggleSelect(category.id)}
+                    />
+                  </div>
+
+                  <div className='absolute top-3 right-3 z-10'>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button size='icon' className='h-8 w-8 '>
+                          <MoreVertical className='h-4 w-4' />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align='end'>
+                        <DropdownMenuItem
+                          onClick={() => handleEdit(category.id)}
+                        >
+                          <Edit className='mr-2 h-4 w-4' /> Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className='text-destructive'
+                          onClick={() => handleDelete(category.id)}
+                        >
+                          <Trash2 className='mr-2 h-4 w-4' /> Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+
+                  <div className='aspect-square relative overflow-hidden bg-muted flex items-center justify-center transition-transform duration-500'>
+                    {category.metaImage ? (
+                      <img
+                        src={category.metaImage}
+                        alt={category.name}
+                        className='object-cover w-full h-full'
+                      />
+                    ) : (
+                      <FolderOpen className='h-16 w-16 text-muted-foreground/20' />
+                    )}
+                    <div className='absolute bottom-2 right-2'>
+                      <Button
+                        variant='ghost'
+                        size='sm'
+                        className='text-primary font-semibold'
+                        onClick={() => handleEdit(category.id)}
+                      >
+                        <Edit />
+                      </Button>
+                    </div>
+                  </div>
+                  <CardContent className='p-4 space-y-2 relative'>
+                    <div className='flex items-start justify-between gap-2'>
+                      <h3 className='font-bold text-lg leading-snug line-clamp-1'>
+                        {category.name}
+                      </h3>
+                      {category.isActive ? (
+                        <Badge
+                          className='capitalize bg-emerald-50 text-emerald-600 border border-emerald-100'
+                          size='sm'
+                        >
+                          Active
+                        </Badge>
+                      ) : (
+                        <Badge
+                          className='capitalize bg-gray-100 text-gray-600 border border-gray-200'
+                          size='sm'
+                        >
+                          Inactive
+                        </Badge>
+                      )}
+                    </div>
+                    <div className='flex flex-col gap-1'>
+                      <p className='text-xs text-muted-foreground truncate font-mono'>
+                        /{category.slug}
+                      </p>
+                      {category.parent && (
+                        <div className='flex items-center gap-1 text-[11px] text-muted-foreground bg-accent px-2 py-0.5 rounded-full w-fit'>
+                          <FolderOpen className='h-3 w-3' />
+                          <span>{category.parent.name}</span>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+
+                  <CardFooter className='p-4 pt-0 flex justify-between items-center'>
+                    <div className='flex items-center gap-4'>
+                      <div className='flex items-center gap-1 text-xs'>
+                        {category.isFeatured ? (
+                          <span className='flex items-center gap-1 text-amber-600 font-medium'>
+                            <CheckCircle2 className='h-3 w-3' /> Featured
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <div className='flex items-center justify-center space-x-2 mt-12 py-4'>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className='bg-white'
+                >
+                  Previous
+                </Button>
+                {[...Array(totalPages)].map((_, i) => (
+                  <Button
+                    key={i}
+                    variant={page === i + 1 ? 'default' : 'outline'}
+                    size='sm'
+                    onClick={() => setPage(i + 1)}
+                    className={page !== i + 1 ? 'bg-white' : ''}
+                  >
+                    {i + 1}
+                  </Button>
+                ))}
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className='bg-white'
+                >
+                  Next
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
       <AddCategoryModal
         open={isModalOpen}

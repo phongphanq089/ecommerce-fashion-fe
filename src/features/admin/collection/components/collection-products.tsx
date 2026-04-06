@@ -4,6 +4,7 @@ import { ScrollArea } from '~/components/ui/core/scroll-area'
 import { Package, Trash2 } from 'lucide-react'
 import { Button } from '~/components/ui/core/button'
 import { cn } from '~/lib/utils'
+import { Collection } from '../types'
 
 interface CollectionProductsProps {
   products: Product[]
@@ -15,11 +16,11 @@ export const CollectionProducts = ({
   onRemove,
 }: CollectionProductsProps) => {
   return (
-    <div className='bg-slate-900/40 rounded-3xl border border-slate-800 overflow-hidden backdrop-blur-xl animate-in fade-in zoom-in-95 duration-500'>
-      <div className='p-6 bg-slate-900/60 border-b border-slate-800 flex justify-between items-center'>
+    <div className='bg-muted border overflow-hidden backdrop-blur-xl animate-in fade-in zoom-in-95 duration-500'>
+      <div className='p-6 bg-muted border-b  flex justify-between items-center'>
         <div className='flex items-center gap-3'>
           <div className='h-8 w-1 bg-primary rounded-full' />
-          <h3 className='font-black text-white uppercase tracking-wider'>
+          <h3 className='font-black uppercase tracking-wider'>
             Products In Collection ({products.length})
           </h3>
         </div>
@@ -27,7 +28,7 @@ export const CollectionProducts = ({
       <ScrollArea className='h-[500px]'>
         {products.length === 0 ? (
           <div className='p-20 text-center space-y-4'>
-            <div className='h-20 w-20 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto border border-slate-700'>
+            <div className='h-20 w-20 bg-muted rounded-full flex items-center justify-center mx-auto border'>
               <Package size={32} className='text-slate-600' />
             </div>
             <p className='text-slate-500 font-medium italic'>
@@ -36,18 +37,16 @@ export const CollectionProducts = ({
           </div>
         ) : (
           <table className='w-full text-sm text-left border-collapse'>
-            <thead className='bg-slate-900/80 text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] sticky top-0 z-10 backdrop-blur-md'>
+            <thead className='bg-muted/85  uppercase text-[10px] tracking-[0.2em] sticky top-0 z-10 backdrop-blur-md'>
               <tr>
-                <th className='p-5 border-b border-slate-800'>Product</th>
-                <th className='p-5 border-b border-slate-800'>SKU</th>
-                <th className='p-5 border-b border-slate-800'>Stock</th>
-                <th className='p-5 border-b border-slate-800 text-right'>
-                  Action
-                </th>
+                <th className='p-5 border-b'>Product</th>
+                <th className='p-5 border-b'>SKU</th>
+                <th className='p-5 border-b'>Stock</th>
+                <th className='p-5 border-b text-right'>Action</th>
               </tr>
             </thead>
-            <tbody className='divide-y divide-slate-800/50'>
-              {products.map((product) => (
+            <tbody className='divide-y '>
+              {products.map((product: Collection) => (
                 <tr
                   key={product.id}
                   className='group hover:bg-white/[0.02] transition-colors'
@@ -55,15 +54,23 @@ export const CollectionProducts = ({
                   <td className='p-5'>
                     <div className='flex items-center gap-4'>
                       <div className='relative h-14 w-14 flex-shrink-0 group-hover:scale-110 transition-transform duration-500'>
-                        <img
-                          src={product.imageUrl}
-                          alt={product.name}
-                          className='h-full w-full rounded-2xl object-cover border border-slate-700 shadow-2xl'
-                        />
+                        {product.imageUrl ? (
+                          <img
+                            src={product.imageUrl}
+                            alt={product.name}
+                            className='h-full w-full rounded-2xl object-cover border shadow-2xl'
+                          />
+                        ) : (
+                          <>
+                            <div className='h-full w-full rounded-2xl object-cover border shadow-2xl'>
+                              <Package size={24} className='text-slate-600' />
+                            </div>
+                          </>
+                        )}
                         <div className='absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10' />
                       </div>
                       <div className='min-w-0'>
-                        <span className='font-bold text-slate-200 block truncate max-w-[250px] group-hover:text-primary transition-colors'>
+                        <span className='font-bold  block truncate max-w-[250px] group-hover:text-primary transition-colors'>
                           {product.name}
                         </span>
                         <span className='text-[10px] text-slate-500 font-mono uppercase tracking-tighter'>
@@ -75,8 +82,8 @@ export const CollectionProducts = ({
                   <td className='p-5 font-mono text-slate-500 text-xs italic'>
                     {product.slug}
                   </td>
-                  <td className='p-5'>
-                    <div className='inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/50 border border-slate-700'>
+                  {/* <td className='p-5'>
+                    <div className='inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted border'>
                       <div
                         className={cn(
                           'h-1.5 w-1.5 rounded-full',
@@ -87,7 +94,7 @@ export const CollectionProducts = ({
                         {product.stock} in stock
                       </span>
                     </div>
-                  </td>
+                  </td> */}
                   <td className='p-5 text-right'>
                     <Button
                       variant='ghost'

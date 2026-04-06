@@ -15,12 +15,13 @@ import {
 } from '~/components/ui/core/select'
 import MultipleSelector, { Option } from '~/components/ui/core/multiselect'
 import { FieldError } from '~/components/ui/core/field'
-import { generateSlug } from '~/lib/utils'
+import { generateRandomId, generateSlug } from '~/lib/utils'
 import { Button } from '~/components/ui/core/button'
 import { _categoryService } from '~/features/admin/category/category.query'
 import AddCategoryModal from '~/features/admin/category/components/add-category'
 import { _brandService } from '~/features/admin/brand/brand.query'
 import AddBrandModal from '~/features/admin/brand/components/add-brand'
+import { useMemo } from 'react'
 
 const ProductInfoForm = () => {
   const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] =
@@ -35,12 +36,13 @@ const ProductInfoForm = () => {
   } = useFormContext<ProductSchemaType>()
 
   const name = watch('name')
+  const randomId = useMemo(() => generateRandomId(), [])
 
   useEffect(() => {
     if (name) {
-      setValue('slug', generateSlug(name), { shouldValidate: true })
+      setValue('slug', generateSlug(name, randomId), { shouldValidate: true })
     }
-  }, [name, setValue])
+  }, [name, setValue, randomId])
 
   const { data: categoriesData, isLoading: isLoadingCategories } =
     _categoryService.useCategories()

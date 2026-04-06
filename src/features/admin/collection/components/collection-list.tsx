@@ -34,7 +34,7 @@ export const CollectionList = ({
             size='icon'
             variant='ghost'
             onClick={onAdd}
-            className='h-10 w-10 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all'
+            className='h-10 w-10 rounded-xl bg-primary/10  hover:bg-primary hover:text-white transition-all'
           >
             <Plus size={20} />
           </Button>
@@ -45,7 +45,7 @@ export const CollectionList = ({
             size={18}
           />
           <Input
-            placeholder='Search master...'
+            placeholder='Search collection...'
             className='pl-10 h-11 bg-muted/30 border rounded-xl focus:ring-primary focus:border-primary'
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -81,7 +81,7 @@ export const CollectionList = ({
                 <div
                   className={cn(
                     'text-[12px] mt-1 truncate font-mono uppercase relative z-10',
-                    selectedId === item.id ? 'text-white/60' : 'text-slate-700',
+                    selectedId === item.id ? 'text-white' : 'text-slate-600',
                   )}
                 >
                   {item.slug}

@@ -22,8 +22,9 @@ import {
 } from '~/components/ui/core/select'
 import { categorySchema, CategorySchemaType } from '../category.validate'
 import { _categoryService } from '../category.query'
-import { generateSlug } from '~/lib/utils'
+import { generateRandomId, generateSlug } from '~/lib/utils'
 import { toast } from 'react-toastify'
+import { useMemo } from 'react'
 
 interface AddCategoryModalProps {
   open: boolean
@@ -79,12 +80,13 @@ const AddCategoryModal = ({
   }, [categoryDetail, reset, open])
 
   const name = watch('name')
+  const randomId = useMemo(() => generateRandomId(), [])
 
   useEffect(() => {
     if (name && !isEdit) {
-      setValue('slug', generateSlug(name), { shouldValidate: true })
+      setValue('slug', generateSlug(name, randomId), { shouldValidate: true })
     }
-  }, [name, setValue, isEdit])
+  }, [name, setValue, isEdit, randomId])
 
   const onSubmit = async (data: CategorySchemaType) => {
     try {

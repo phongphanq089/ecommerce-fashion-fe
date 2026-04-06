@@ -8,7 +8,7 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table'
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Edit,
   Trash2,
@@ -16,16 +16,13 @@ import {
   ShieldCheck,
   Globe,
   LayoutGrid,
-  CheckCircle2,
-  XCircle,
 } from 'lucide-react'
 import { Button } from '~/components/ui/core/button'
-import { Brand, BrandParams } from '../../types'
+import { Brand } from '../../types'
 import { TableToolbar } from './table-toolbar'
 import { _brandService } from '../../brand.query'
 import { useDebounce } from '~/hooks/use-debounce'
 import AddBrandModal from '../add-brand'
-import { Badge } from '~/components/ui/core/badge'
 import { Checkbox } from '~/components/ui/core/checkbox'
 import {
   DropdownMenu,
@@ -37,7 +34,7 @@ import { cn } from '~/lib/utils'
 import { toast } from 'react-toastify'
 import { Card, CardContent } from '~/components/ui/core/card'
 
-const BrandTable = () => {
+const BrandList = () => {
   const [globalFilter, setGlobalFilter] = useState('')
   const debouncedSearch = useDebounce(globalFilter, 500)
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -345,4 +342,4 @@ const BrandTable = () => {
   )
 }
 
-export default BrandTable
+export default BrandList
